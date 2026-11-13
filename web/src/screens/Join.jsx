@@ -14,15 +14,22 @@ export default function Join() {
   const { token } = useParams()
   const [level, setLevel] = useState(getPreferredLevel())
   const [checked, setChecked] = useState(false)
-  const invitation = readInvitation(token)
+  const [invitation, setInvitation] = useState(null)
 
   // Lien déjà ouvert sur cet appareil : on reprend la dégustation au lieu d'en créer une seconde
   useEffect(() => {
-    if (!invitation) { setChecked(true); return }
-    db.findBySession(invitation.id, 'guest').then(existing => {
+    let cancelled = false
+    setChecked(false)
+    readInvitation(token).then(async (inv) => {
+      if (cancelled) return
+      setInvitation(inv)
+      if (!inv) return setChecked(true)
+      const existing = await db.findBySession(inv.id, 'guest')
+      if (cancelled) return
       if (!existing) return setChecked(true)
       navigate(existing.status === 'done' ? `/entry/${existing.id}` : `/tasting/${existing.id}`, { replace: true })
     })
+    return () => { cancelled = true }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
@@ -59,6 +66,7 @@ export default function Join() {
         hostName: invitation.host,
         mcq: invitation.mcq ?? {},
         k: invitation.k ?? {},      // codes des indices
+        a: invitation.a ?? null,    // indices et pistes d'attention rédigés par l'assistant de l'hôte
         s: invitation.s, i: invitation.i, c: invitation.c, // bouteille chiffrée
       },
     })

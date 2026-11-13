@@ -68,13 +68,14 @@ Notes :
 { role: 'guest', id, hostName,
   mcq: { grape: [4 cépages], region: [4 régions] | country: [4 pays] },   // en clair
   k: { c: 'frais', s: 'rouge-epice', i: 'R', p: 'pays'?, x: [1, 3] },      // codes des indices, en clair
+  a: null | { q: [indices de l'assistant], f: { d: 'piste Débutant', a: 'piste Amateur' } },  // en clair, filtré
   hostNote: '', aiProfile: '',                                             // remplis à la révélation
   s: '<sel>', i: '<vecteur>', c: '<bouteille chiffrée>' }                  // base64url
 ```
 
 `id` est commun à l'hôte et à tous ses invités. Après révélation, la bouteille déchiffrée est copiée dans `reality` ; les champs chiffrés restent sur la fiche sans être relus.
 
-Le jeton du lien est le JSON `{ v: 1, id, host, mcq, k, s, i, c }` encodé en base64url. La partie chiffrée `c` contient les champs renseignés de la bouteille, plus `note` (mot de l'hôte) et `ai` (texte de l'assistant) s'ils existent.
+Le jeton du lien est le JSON `{ v: 1, id, host, mcq, k, a?, s, i, c }`, compressé (`deflate-raw`) puis encodé en base64url avec le préfixe `~` ; sans compression disponible, simple base64url. La partie chiffrée `c` contient les champs renseignés de la bouteille, plus `note` (mot de l'hôte) et `ai` (texte de l'assistant) s'ils existent.
 
 ### Structure par type (`structure.data`)
 

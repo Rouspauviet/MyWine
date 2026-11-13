@@ -21,8 +21,8 @@ import {
 } from '../data/wineData'
 import { GRAPE_VARIETIES_SORTED } from '../data/grapeVarieties'
 import { commonGrapesFor, DEFAULT_LEVEL } from '../data/levels'
-import { vintageRanges, buildClues } from '../utils/session'
-import { Lightbulb } from 'lucide-react'
+import { vintageRanges, buildClues, focusFor } from '../utils/session'
+import { Lightbulb, Sparkles } from 'lucide-react'
 
 const STEPS = [
   { label: 'Perception', subtitle: 'Ce que tu vois et sens' },
@@ -115,6 +115,7 @@ export default function Tasting() {
   const level = rec.level ?? DEFAULT_LEVEL
   const mcq = rec.session?.mcq ?? null
   // Indices de la dégustation à plusieurs : ceux déjà demandés restent affichés
+  const focus = focusFor(rec.session, level)
   const clues = buildClues(rec.session, level)
   const shownClues = clues.slice(0, rec.cluesUsed ?? 0)
   const removedGrapes = shownClues.flatMap(c => c.removeGrapes ?? [])
@@ -170,6 +171,8 @@ export default function Tasting() {
       <Header title={info.label} label={`Étape ${step} / ${TOTAL_STEPS}`} onBack={goBack} progress={step / TOTAL_STEPS} />
       <Body innerRef={bodyRef}>
         <p className="step-subtitle">{info.subtitle}</p>
+        {/* Piste d'attention préparée par l'assistant de l'hôte : affichée pendant qu'on regarde et qu'on goûte */}
+        {focus && step <= 2 && <p className="banner focus"><Sparkles size={14} /> {focus}</p>}
         {step === 1 && <StepPerception wineType={rec.wineType} level={level} value={rec.perception} onChange={section('perception')} />}
         {step === 2 && <StepStructure wineType={rec.wineType} level={level} data={structureData} onChange={onStructureChange} />}
         {step === 3 && clues.length > 0 && (

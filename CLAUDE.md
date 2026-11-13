@@ -57,7 +57,7 @@ npm run build    # génère web/dist
 | Webapp v2 — parcours Aveugle + Mémoire, journal, photos, prix, sauvegarde | ✅ En ligne : https://rouspauviet.github.io/MyWine/ |
 | Niveaux (Débutant / Amateur / Expert) + dégustation à plusieurs sans serveur | ✅ À valider en conditions réelles |
 | Fiche "Pour comprendre", leurres plausibles, indices, mot de l'hôte | ✅ |
-| Assistant IA optionnel (lecture d'étiquette, profil attendu) | ✅ Codé — **jamais testé contre la vraie API** (clé d'essai sans crédit) |
+| Assistant IA optionnel (lecture d'étiquette, profil attendu) | ✅ Testé contre la vraie API sur une étiquette simple ; étiquettes difficiles à valider |
 | Test sur iPhone à plusieurs (QR code, code de révélation, partage) | ⏳ **Prochain chantier** |
 | Statistiques, mode sombre | Backlog — voir [Roadmap](docs/70_Backlog/Roadmap.md) |
 

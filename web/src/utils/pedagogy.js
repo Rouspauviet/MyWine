@@ -73,7 +73,12 @@ function aromaLine(record, grape) {
 // Renvoie null s'il n'y a rien à dire (cépage et région absents de la base)
 export function buildLesson(record) {
   const reality = record.reality ?? {}
-  const grapes = (reality.grapes ?? []).map(findGrape).filter(Boolean)
+  // Les profils de cépage décrivent des vins tranquilles de leur couleur : on ne les applique pas
+  // à un pétillant ou à un rosé (un Pinot Noir de Champagne n'a rien d'un rouge de Bourgogne).
+  const fits = (grape) => !reality.type
+    || (grape.color === 'rouge' && reality.type === 'rouge')
+    || (grape.color === 'blanc' && (reality.type === 'blanc' || reality.type === 'orange'))
+  const grapes = (reality.grapes ?? []).map(findGrape).filter(Boolean).filter(fits)
   const region = findRegion(reality.region)
   if (!grapes.length && !region) return null
 

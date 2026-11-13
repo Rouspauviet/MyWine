@@ -68,7 +68,11 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 
 - [ ] Sans clé : aucun bouton "Remplir depuis la photo", aucune carte IA chez l'hôte
 - [ ] Paramètres : coller la clé → "Clé enregistrée (se termine par …XXXX)", jamais affichée en entier
-- [ ] "Remplir depuis la photo" : champs remplis, **un champ déjà saisi n'est pas écrasé**
+- [ ] Ajouter une photo → "Lecture de l'étiquette en cours…" puis champs remplis, sans rien toucher ; **un champ déjà saisi n'est pas écrasé**
+- [ ] Sans clé, avec une photo → ligne "Astuce : avec une clé d'API Claude…"
+- [ ] Modifier une fiche existante : ses photos ne déclenchent pas de nouvelle lecture
+- [ ] Hôte avec assistant : chez un invité Débutant, bandeau de piste d'attention aux étapes 1 et 2, indices rédigés pour la bouteille
+- [ ] **Anti-révélation** : ni la piste ni les indices ne nomment le cépage, la région, le producteur ou le millésime
 - [ ] Étiquette courbe, puis face + contre-étiquette
 - [ ] Hôte : "Ajouter ce qu'on attend de ce vin" → texte visible chez l'invité après le code
 - [ ] Mode avion → message "Pas de connexion", le reste du formulaire reste utilisable
@@ -120,6 +124,15 @@ Même jour, après ajout des niveaux et de la dégustation à plusieurs : créat
 
 Même jour, après ajout de la pédagogie et de l'assistant : leurres plausibles, indices (climat, style, deux cépages écartés), mot de l'hôte chiffré et révélé, fiche "Pour comprendre" (confirmation, écart, cépage inconnu, fiche Mémoire). Assistant IA testé **avec un faux serveur** (`window.fetch` remplacé) : enregistrement de la clé, lecture d'étiquette sans écraser un champ saisi, profil attendu joint à l'invitation et affiché chez l'invité.
 
-**Assistant IA jamais testé contre la vraie API** : la clé d'essai a répondu "credit balance is too low". La qualité de lecture sur de vraies étiquettes et le coût réel restent à mesurer.
+**Assistant IA, essai réel du 2026-11-13** sur une photo d'étiquette plate et nette (Cour-Cheverny, réduite à 1600 px, une seule photo) :
+
+| Modèle | Lecture | Coût mesuré (lecture + profil attendu) |
+|---|---|---|
+| Sonnet 5.5 | Tous les champs lisibles justes ; cépage Romorantin déduit de l'appellation | environ 1 centime (3 334 + 530 tokens en entrée, 102 + 145 en sortie) |
+| Haiku 5.5 | Tous les champs lisibles justes ; cépage laissé vide | moins de 0,1 centime |
+
+Une photo de cette taille compte environ 3 300 tokens. Même jour, préparation d'une dégustation (`prepareTasting`, Sonnet 5.5) sur un champagne et un malbec argentin : pistes, indices, leurres et profil pertinents, sans fuite ; environ 0,6 centime par invitation (≈ 1 350 tokens en entrée, 350 en sortie). Contre-étiquette de champagne lue sans erreur (4 960 tokens en entrée).
+
+**Reste à valider** : étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
 
 **Non vérifié** : le scan réel du QR code entre deux téléphones, la feuille de partage, et tout ce qui dépend d'un vrai iPhone (appareil photo, installation, zones sûres, clavier, feuille de partage à l'export) et le mode hors ligne.

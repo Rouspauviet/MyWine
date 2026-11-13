@@ -90,7 +90,7 @@ src/
 `utils/session.js` :
 
 - `createInvitation(reality, hostName)` tire un code de 4 lettres, dérive une clé (PBKDF2, 100 000 itérations, SHA-256, sel aléatoire) et chiffre la bouteille en AES-GCM. Le jeton regroupe, en JSON encodé base64url : identifiant de session, prénom de l'hôte, propositions de choix multiples **en clair**, sel, vecteur d'initialisation, données chiffrées.
-- Le lien est `…/#/join/<jeton>` (≈ 650 caractères), affiché en QR code. Seuls les champs renseignés sont transmis pour garder le QR lisible.
+- Le lien est `…/#/join/<jeton>`, affiché en QR code. Le jeton est compressé (`deflate-raw`, préfixe `~`) quand le navigateur le permet ; `readInvitation()` est donc asynchrone. Environ 500 caractères pour une bouteille simple, 1100 avec le mot de l'hôte et l'accompagnement de l'assistant.
 - Chez l'invité, `Join` copie le jeton dans `record.session` ; `Reveal` appelle `revealInvitation(session, code)` qui renvoie la bouteille, ou `null` si le code est faux (échec d'authentification AES-GCM).
 - `buildMcq()` fabrique les choix multiples : bonne réponse + 3 leurres, mélangés.
 
@@ -113,7 +113,9 @@ Ajouter un cépage : une entrée dans `GRAPES`, avec des familles aromatiques **
 - **Clé** : saisie dans les paramètres, stockée en `localStorage` (`mywine.apiKey`), jamais affichée en entier (4 derniers caractères), absente de la sauvegarde exportée. Modèle choisi dans `mywine.aiModel`.
 - **Appel** : `askClaude()` — `messages.create` avec `output_config: { effort: 'low', format: { type: 'json_schema', schema } }`, puis `JSON.parse` du bloc texte. `dangerouslyAllowBrowser: true` est assumé : la clé est celle de l'utilisateur, sur son appareil.
 - **`readLabel(images)`** : une ou deux photos (base64) → champs de la bouteille. La consigne interdit d'inventer ; `LabelReader` (dans `Forms.jsx`) ne remplit que les champs vides.
-- **`describeWine(reality)`** : texte de 320 caractères au plus sur ce qu'on attend du vin. L'hôte le joint à l'invitation ; un échec de l'assistant n'empêche jamais de créer l'invitation.
+- **`prepareTasting(reality)`** : un seul appel à la création de l'invitation → `profile` (320 caractères, chiffré, lu après la révélation), `clues` (2 indices), `focus` (piste d'attention Débutant et Amateur), `grapeDecoys` et `placeDecoys`. Un échec de l'assistant n'empêche jamais de créer l'invitation : on retombe sur la base intégrée.
+- **Lecture automatique** : `LabelReader` lance `readLabel` dès qu'une photo *nouvelle* est ajoutée (pas pour les photos déjà enregistrées d'une fiche qu'on modifie), une seule fois par photo.
+- **Anti-révélation** : `revealsBottle(text, reality)` dans `session.js` écarte tout indice ou piste qui nommerait la bouteille. À conserver absolument : ces textes voyagent en clair.
 - **Erreurs** : converties en `AiError` avec un message en français (clé refusée, pas de crédit, limite atteinte, pas de connexion, refus du modèle).
 - **Sans clé** : `hasApiKey()` est faux, aucun bouton ni carte IA n'apparaît hors des paramètres.
 

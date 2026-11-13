@@ -42,7 +42,7 @@ Prénom de l'hôte (mémorisé) + formulaire bouteille habituel, photos comprise
 - Minimum : nom du vin, producteur ou appellation.
 - Cépage, région (ou pays) et millésime alimentent les choix multiples : un bandeau le rappelle.
 - **Ton mot pour la révélation** (optionnel, 280 caractères) : une anecdote, un avis. Chiffré avec la bouteille, lu par les invités à la révélation.
-- Avec une clé d'API : bouton "Remplir depuis la photo", et interrupteur "Ajouter ce qu'on attend de ce vin" (un court texte de l'assistant, lui aussi chiffré).
+- Avec une clé d'API : la fiche se remplit toute seule dès qu'une photo est ajoutée, et l'interrupteur "Préparer l'accompagnement des invités" (activé par défaut) demande à l'assistant une piste d'attention par niveau, deux indices sur mesure, des propositions plausibles pour le quiz et ce qu'on attend de ce vin.
 - "Créer l'invitation" → la bouteille est enregistrée dans le journal de l'hôte (fiche de type Souvenir) et l'invitation est générée.
 
 ### 2. Invitation `/host/:id`
@@ -77,6 +77,10 @@ Le wizard du mode Aveugle, adapté au niveau. L'en-tête rappelle "Organisée pa
 1. le climat d'origine ("Ce vin vient d'un climat plutôt frais.") ;
 2. le style du cépage ("C'est un cépage qui donne des rouges puissants et épicés.") ;
 3. Débutant : deux cépages sont écartés des propositions. Autres niveaux : l'initiale de la région (ou du pays).
+
+Si l'hôte a activé l'assistant, les deux premiers indices sont ceux qu'il a rédigés pour cette bouteille ; le troisième reste le même.
+
+**Piste d'attention.** Avec l'assistant, un bandeau en haut des étapes Perception et Structure dit au Débutant et à l'Amateur sur quoi se concentrer avec ce vin ("Regarde la finesse des bulles…"), sans rien révéler. L'Expert n'en reçoit pas.
 
 Un indice n'apparaît que si la bouteille permet de le calculer. Le nombre d'indices demandés figure dans le résultat et dans le texte partagé : ce n'est pas une pénalité, c'est une information.
 

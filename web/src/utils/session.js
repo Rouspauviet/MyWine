@@ -34,8 +34,32 @@ function base64UrlToBytes(text) {
   return Uint8Array.from(bin, c => c.charCodeAt(0))
 }
 
-const encodeJson = (obj) => bytesToBase64Url(new TextEncoder().encode(JSON.stringify(obj)))
-const decodeJson = (text) => JSON.parse(new TextDecoder().decode(base64UrlToBytes(text)))
+// Le jeton du lien est compressé quand le navigateur le permet : un lien plus court donne un QR code
+// plus facile à scanner. Un jeton compressé commence par "~" (caractère absent du base64url).
+const COMPRESSED = '~'
+const canCompress = typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined'
+
+async function pipeBytes(bytes, transform) {
+  const stream = new Blob([bytes]).stream().pipeThrough(transform)
+  return new Uint8Array(await new Response(stream).arrayBuffer())
+}
+
+async function encodeToken(obj) {
+  const json = new TextEncoder().encode(JSON.stringify(obj))
+  if (!canCompress) return bytesToBase64Url(json)
+  return COMPRESSED + bytesToBase64Url(await pipeBytes(json, new CompressionStream('deflate-raw')))
+}
+
+async function decodeToken(token) {
+  let bytes
+  if (token.startsWith(COMPRESSED)) {
+    if (!canCompress) throw new Error('décompression indisponible')
+    bytes = await pipeBytes(base64UrlToBytes(token.slice(1)), new DecompressionStream('deflate-raw'))
+  } else {
+    bytes = base64UrlToBytes(token)
+  }
+  return JSON.parse(new TextDecoder().decode(bytes))
+}
 
 // ─── Chiffrement ─────────────────────────────────────────────────────────────
 
@@ -74,11 +98,16 @@ function shuffle(list) {
 // Les leurres "plausibles" (cépages qu'on confond, régions voisines) passent d'abord : l'hésitation
 // doit être instructive. On complète au hasard dans la liste générale si besoin.
 function withDecoys(answer, plausible, pool, excluded = []) {
-  const taken = [answer, ...excluded].map(normalize)
-  const free = (list) => list.filter(p => !taken.includes(normalize(p)))
-  const first = shuffle(free(plausible ?? []))
-  const rest = shuffle(free(pool).filter(p => !first.map(normalize).includes(normalize(p))))
-  const decoys = [...first, ...rest].slice(0, 3)
+  const taken = new Set([answer, ...excluded].map(normalize))
+  const decoys = []
+  // Les leurres plausibles gardent leur ordre (ceux de l'assistant d'abord) ; un même nom n'est pris qu'une fois
+  for (const candidate of [...(plausible ?? []), ...shuffle(pool)]) {
+    const key = normalize(candidate)
+    if (!key || taken.has(key)) continue
+    taken.add(key)
+    decoys.push(candidate)
+    if (decoys.length === 3) break
+  }
   return decoys.length === 3 ? shuffle([answer, ...decoys]) : null
 }
 
@@ -92,22 +121,51 @@ export function vintageRanges(year = new Date().getFullYear()) {
   ]
 }
 
-export function buildMcq(reality) {
+// `ai` : préparation de l'assistant (facultative) — ses leurres passent avant ceux de la base de connaissances
+export function buildMcq(reality, ai = null) {
   const mcq = {}
   const grape = reality.grapes?.[0]
   if (grape) {
-    const options = withDecoys(grape, findGrape(grape)?.confusables, commonGrapesFor(reality.type), reality.grapes)
+    const plausible = [...(ai?.grapeDecoys ?? []), ...(findGrape(grape)?.confusables ?? [])]
+    const options = withDecoys(grape, plausible, commonGrapesFor(reality.type), reality.grapes)
     if (options) mcq.grape = options
   }
   if (normalize(reality.country) === 'france' && reality.region) {
-    const options = withDecoys(reality.region, findRegion(reality.region)?.neighbors, REGIONS.filter(r => r !== 'Île-de-France'))
+    const known = REGIONS.filter(r => r !== 'Île-de-France')
+    // Les régions proposées par l'assistant ne sont gardées que si elles existent dans le référentiel
+    const fromAi = (ai?.placeDecoys ?? []).map(p => known.find(r => normalize(r) === normalize(p))).filter(Boolean)
+    const options = withDecoys(reality.region, [...fromAi, ...(findRegion(reality.region)?.neighbors ?? [])], known)
     if (options) mcq.region = options
   } else if (reality.country) {
-    const options = withDecoys(reality.country, findCountry(reality.country)?.neighbors, COUNTRIES.filter(c => c !== 'Autre'))
+    const plausible = [...(ai?.placeDecoys ?? []), ...(findCountry(reality.country)?.neighbors ?? [])]
+    const options = withDecoys(reality.country, plausible, COUNTRIES.filter(c => c !== 'Autre'))
     if (options) mcq.country = options
   }
   // Le millésime n'a pas besoin de propositions : les tranches sont toujours les 4 mêmes (vintageRanges)
   return mcq
+}
+
+// Garde-fou anti-révélation : un texte destiné à être lu PENDANT la dégustation ne doit nommer
+// ni le cépage, ni l'origine, ni la bouteille. On écarte tout texte de l'assistant qui le ferait.
+export function revealsBottle(text, reality) {
+  const haystack = normalize(text)
+  const secrets = [
+    ...(reality.grapes ?? []), reality.region, reality.appellation, reality.country,
+    reality.cuvee, reality.producer, reality.vintage,
+  ].map(normalize).filter(secret => secret.length >= 4)
+  return secrets.some(secret => haystack.includes(secret))
+}
+
+// Ce que l'assistant a écrit pour le temps de la dégustation, une fois filtré : { q: indices, f: pistes par niveau }
+function buildAiGuide(reality, ai) {
+  if (!ai) return null
+  const safe = (text) => (text && !revealsBottle(text, reality) ? text : '')
+  const guide = {}
+  const clues = (ai.clues ?? []).map(safe).filter(Boolean)
+  if (clues.length) guide.q = clues
+  const focus = { d: safe(ai.focus?.debutant), a: safe(ai.focus?.amateur) }
+  if (focus.d || focus.a) guide.f = focus
+  return Object.keys(guide).length ? guide : null
 }
 
 // ─── Indices ─────────────────────────────────────────────────────────────────
@@ -133,12 +191,17 @@ function buildClueData(reality, mcq) {
 // Indices proposés à un invité, du plus vague au plus précis. Le dernier dépend du niveau :
 // le Débutant voit deux cépages écartés, les autres reçoivent une initiale.
 export function buildClues(session, level) {
-  const k = session?.k
-  if (!k) return []
+  const k = session?.k ?? {}
   const clues = []
-  if (CLIMATE_CLUES[k.c]) clues.push({ text: CLIMATE_CLUES[k.c] })
-  if (GRAPE_STYLES[k.s]) clues.push({ text: `C'est ${GRAPE_STYLES[k.s]}.` })
-  const grapes = session.mcq?.grape
+  // Les deux premiers indices : ceux de l'assistant s'il en a préparé, sinon ceux de la base de connaissances
+  const fromAi = session?.a?.q ?? []
+  if (fromAi.length) {
+    fromAi.forEach(text => clues.push({ text }))
+  } else {
+    if (CLIMATE_CLUES[k.c]) clues.push({ text: CLIMATE_CLUES[k.c] })
+    if (GRAPE_STYLES[k.s]) clues.push({ text: `C'est ${GRAPE_STYLES[k.s]}.` })
+  }
+  const grapes = session?.mcq?.grape
   if (level === 'debutant' && grapes && k.x?.length) {
     const removed = k.x.map(index => grapes[index]).filter(Boolean)
     clues.push({ text: `Ce n'est ni ${removed.join(' ni ')}.`, removeGrapes: removed })
@@ -148,10 +211,18 @@ export function buildClues(session, level) {
   return clues
 }
 
+// Piste d'attention rédigée par l'assistant pour ce niveau (aucune pour l'Expert)
+export function focusFor(session, level) {
+  const focus = session?.a?.f
+  if (!focus) return null
+  return (level === 'debutant' ? focus.d : level === 'amateur' ? focus.a : null) || null
+}
+
 // ─── Invitation ──────────────────────────────────────────────────────────────
 
 // Côté hôte : renvoie { id, code, token } — `token` est la partie du lien à partager
-export async function createInvitation(reality, hostName, note = '', aiProfile = '') {
+// `ai` : résultat de prepareTasting() si l'hôte a activé l'assistant, sinon null
+export async function createInvitation(reality, hostName, note = '', ai = null) {
   const code = randomCode()
   const salt = crypto.getRandomValues(new Uint8Array(16))
   const iv = crypto.getRandomValues(new Uint8Array(12))
@@ -159,17 +230,19 @@ export async function createInvitation(reality, hostName, note = '', aiProfile =
   const truth = Object.fromEntries(REALITY_FIELDS.map(k => [k, reality[k]]).filter(([, v]) => v && v.length !== 0))
   // Le mot de l'hôte est chiffré avec la bouteille : il n'apparaît qu'à la révélation
   if (note.trim()) truth.note = note.trim().slice(0, NOTE_MAX_LENGTH)
-  if (aiProfile.trim()) truth.ai = aiProfile.trim()
+  if (ai?.profile) truth.ai = ai.profile
   const key = await deriveKey(code, salt)
   const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(truth)))
   const id = generateId()
-  const mcq = buildMcq(reality)
-  const token = encodeJson({
+  const mcq = buildMcq(reality, ai)
+  const guide = buildAiGuide(reality, ai)
+  const token = await encodeToken({
     v: 1,
     id,
     host: hostName,
     mcq,
     k: buildClueData(reality, mcq),
+    ...(guide ? { a: guide } : {}),
     s: bytesToBase64Url(salt),
     i: bytesToBase64Url(iv),
     c: bytesToBase64Url(new Uint8Array(cipher)),
@@ -182,9 +255,9 @@ export function invitationLink(token) {
 }
 
 // Côté invité : lit la partie en clair de l'invitation (null si le lien est abîmé)
-export function readInvitation(token) {
+export async function readInvitation(token) {
   try {
-    const data = decodeJson(token)
+    const data = await decodeToken(token)
     if (data?.v !== 1 || !data.id || !data.c) return null
     return data
   } catch {

@@ -40,7 +40,7 @@ Règle commune : un composant ne contient aucune valeur visuelle en dur. Il pose
 | `BottleForm` | Identité réelle de la bouteille | **Un seul formulaire** pour la Révélation, le mode Mémoire, la modification et l'hôte d'une dégustation à plusieurs. Ajouter un champ ici l'ajoute partout. |
 | `ImpressionForm` | Note, coup de cœur, accords, commentaire, occasion, date | Mode Mémoire et modification. En mode Aveugle, ces champs sont saisis à l'étape Style. |
 | `PhotoPicker` | Ajout et retrait de photos | Rien n'est écrit en base avant l'enregistrement du formulaire. |
-| `LabelReader` | Bouton "Remplir depuis la photo" (assistant IA) | N'apparaît qu'avec une clé et une photo. Ne remplit que les champs vides. Toujours suivi d'un rappel : "vérifie-les, l'assistant peut se tromper". |
+| `LabelReader` | Lecture de l'étiquette par l'assistant IA | Avec une clé : part toute seule à l'ajout d'une photo, bouton "Relire la photo" ensuite. Sans clé : une ligne d'astuce. Ne remplit que les champs vides. Toujours suivi d'un rappel : "vérifie-les, l'assistant peut se tromper". |
 | `AppellationInput` | Appellation avec autocomplétion | Choisir une suggestion remplit région et pays **seulement s'ils sont vides**. |
 | `LevelPicker` | Choix du niveau de dégustateur | Trois cartes avec une phrase d'explication. Jamais présenté comme une évaluation. |
 

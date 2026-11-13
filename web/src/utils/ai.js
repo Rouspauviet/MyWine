@@ -65,14 +65,25 @@ Règles :
 - abv : le degré d'alcool, sous la forme "13,5".
 - type : la couleur du vin, si l'étiquette ou l'appellation la détermine ; sinon chaîne vide.`
 
-const PROFILE_SCHEMA = {
+// Tout ce que l'assistant prépare pour une dégustation à plusieurs, en un seul appel
+const TASTING_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['profile'],
-  properties: { profile: { type: 'string' } },
+  required: ['profile', 'clue1', 'clue2', 'focus_debutant', 'focus_amateur', 'grape_decoys', 'place_decoys'],
+  properties: {
+    profile: { type: 'string' },
+    clue1: { type: 'string' },
+    clue2: { type: 'string' },
+    focus_debutant: { type: 'string' },
+    focus_amateur: { type: 'string' },
+    grape_decoys: { type: 'array', items: { type: 'string' } },
+    place_decoys: { type: 'array', items: { type: 'string' } },
+  },
 }
 
-function profilePrompt(reality) {
+const FRENCH_REGIONS = 'Alsace, Beaujolais, Bordeaux, Bourgogne, Champagne, Corse, Jura, Languedoc, Loire, Provence, Rhône, Roussillon, Savoie, Sud-Ouest'
+
+function tastingPrompt(reality) {
   const facts = [
     reality.type && `Type : ${reality.type}`,
     reality.cuvee && `Cuvée : ${reality.cuvee}`,
@@ -84,14 +95,27 @@ function profilePrompt(reality) {
     reality.grapes?.length && `Cépages : ${reality.grapes.join(', ')}`,
     reality.abv && `Alcool : ${reality.abv} %`,
   ].filter(Boolean).join('\n')
+  const french = /^france$/i.test((reality.country ?? '').trim())
 
-  return `Des amis viennent de déguster ce vin à l'aveugle. Ils vont découvrir la bouteille et lire ton texte.
+  return `Un hôte fait déguster ce vin à l'aveugle à ses invités, chacun sur son téléphone. Prépare ce qui va les accompagner. Écris en français, en tutoyant.
 
+La bouteille (les invités ne la connaissent pas) :
 ${facts}
 
-Écris en français, en les tutoyant, ce qu'on attend en général d'un vin comme celui-ci : sa structure en bouche (corps, tanins ou acidité) et deux ou trois arômes typiques, puis un détail qui aide à le reconnaître la prochaine fois.
+Deux moments, deux règles opposées.
 
-Contraintes : ${PROFILE_MAX_LENGTH} caractères au maximum, deux ou trois phrases, sans liste ni titre. Parle de tendances ("souvent", "en général") : tu n'as pas goûté cette bouteille. Si tu ne connais pas ce vin précisément, appuie-toi sur l'appellation, le cépage et le millésime.`
+PENDANT la dégustation, les invités ne doivent rien apprendre de la bouteille. Dans clue1, clue2, focus_debutant et focus_amateur, ne cite JAMAIS le cépage, la région, l'appellation, le pays, le producteur, la cuvée ni le millésime. Tu peux t'appuyer sur ce qui se voit dans le verre : la couleur, les bulles.
+- focus_debutant : une phrase (110 caractères au plus) qui dit à un débutant sur quoi porter son attention avec ce vin précis, en mots simples. Exemple de ton : "Regarde la finesse des bulles, puis demande-toi si le vin te paraît sec ou un peu sucré."
+- focus_amateur : une phrase (110 caractères au plus) pour quelqu'un qui connaît le vocabulaire : l'axe de structure ou l'arôme qui en dit le plus sur l'origine de ce vin.
+- clue1 : un premier indice volontairement vague (80 caractères au plus), sur le climat, le style ou l'élevage.
+- clue2 : un second indice plus précis (80 caractères au plus), qui rapproche de la réponse sans la donner.
+
+APRÈS la révélation :
+- profile : ce qu'on attend en général d'un vin comme celui-ci, en deux ou trois phrases et ${PROFILE_MAX_LENGTH} caractères au plus : sa structure en bouche, deux ou trois arômes typiques, puis un détail qui aide à le reconnaître la prochaine fois. Parle de tendances ("souvent", "en général") : tu n'as pas goûté cette bouteille.
+
+Pour le quiz des débutants :
+- grape_decoys : exactement 3 cépages de la même couleur, qu'on pourrait vraiment confondre avec le cépage principal à l'aveugle, aucun n'étant un cépage de cette bouteille. Tableau vide si aucun cépage n'est indiqué.
+- place_decoys : ${french ? `exactement 3 autres régions viticoles françaises plausibles, choisies dans cette liste : ${FRENCH_REGIONS}` : 'exactement 3 autres pays producteurs plausibles'}. Tableau vide si l'origine n'est pas indiquée.`
 }
 
 // ─── Appel ───────────────────────────────────────────────────────────────────
@@ -159,10 +183,20 @@ export async function readLabel(images, { apiKey = getApiKey(), model = getAiMod
   }
 }
 
-// Profil attendu d'un vin, rédigé pour être lu après la révélation
-export async function describeWine(reality, { apiKey = getApiKey(), model = getAiModel() } = {}) {
-  const { data, usage } = await askClaude({ apiKey, model, content: [{ type: 'text', text: profilePrompt(reality) }], schema: PROFILE_SCHEMA })
-  return { usage, profile: String(data.profile ?? '').trim().slice(0, PROFILE_MAX_LENGTH + 80) }
+// Prépare l'accompagnement d'une dégustation à plusieurs : profil attendu (lu après la révélation),
+// indices et pistes d'attention (lus pendant), leurres du quiz.
+export async function prepareTasting(reality, { apiKey = getApiKey(), model = getAiModel() } = {}) {
+  const { data, usage } = await askClaude({ apiKey, model, content: [{ type: 'text', text: tastingPrompt(reality) }], schema: TASTING_SCHEMA })
+  const text = (value, max) => String(value ?? '').trim().slice(0, max)
+  const list = (value) => (Array.isArray(value) ? value.map(v => String(v).trim()).filter(Boolean).slice(0, 3) : [])
+  return {
+    usage,
+    profile: text(data.profile, PROFILE_MAX_LENGTH + 80),
+    clues: [text(data.clue1, 120), text(data.clue2, 120)].filter(Boolean),
+    focus: { debutant: text(data.focus_debutant, 160), amateur: text(data.focus_amateur, 160) },
+    grapeDecoys: list(data.grape_decoys),
+    placeDecoys: list(data.place_decoys),
+  }
 }
 
 // Convertit une photo du formulaire (Blob) au format attendu par readLabel

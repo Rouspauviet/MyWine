@@ -1,5 +1,5 @@
 // Formulaires partagés — photos, identité de la bouteille, impression personnelle
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Camera, X, Sparkles } from 'lucide-react'
 import { hasApiKey, readLabel, blobToImage, AiError } from '../utils/ai'
 import { Field, TextField, ChipGroup, TagInput, SuggestInput, RatingStars, Switch } from './Inputs'
@@ -60,18 +60,23 @@ export function PhotoPicker({ draft }) {
   )
 }
 
-// Lecture de l'étiquette par l'assistant IA — visible seulement si une clé est configurée et qu'il y a une photo.
+// Lecture de l'étiquette par l'assistant IA.
+// Avec une clé : la lecture part toute seule dès qu'une photo est ajoutée, et un bouton permet de relire.
+// Sans clé : une ligne rappelle que la fonction existe.
 // Ne remplit que les champs encore vides : ce que l'utilisateur a saisi n'est jamais écrasé.
 function LabelReader({ value, onChange, photoDraft }) {
   const [state, setState] = useState({ busy: false, message: null, kind: null })
-  if (!hasApiKey() || photoDraft.photos.length === 0) return null
+  const available = hasApiKey()
+  const seen = useRef(new Set())      // photos déjà envoyées à l'assistant
+  const latest = useRef(value)        // la lecture prend quelques secondes : on fusionne dans la fiche à jour
+  latest.current = value
 
   const run = async () => {
     setState({ busy: true, message: null, kind: null })
     try {
       const images = await Promise.all(photoDraft.photos.slice(0, 2).map(p => blobToImage(p.blob)))
       const { reality: found } = await readLabel(images)
-      const next = { ...value }
+      const next = { ...latest.current }
       let filled = 0
       for (const [key, val] of Object.entries(found)) {
         const empty = Array.isArray(next[key]) ? next[key].length === 0 : !next[key]
@@ -91,12 +96,30 @@ function LabelReader({ value, onChange, photoDraft }) {
     }
   }
 
+  // Lecture automatique à l'ajout d'une photo (pas pour les photos déjà enregistrées d'une fiche qu'on modifie)
+  const freshIds = photoDraft.photos.filter(p => p.isNew).map(p => p.id).join(',')
+  useEffect(() => {
+    if (!available || photoDraft.busy) return
+    const fresh = photoDraft.photos.filter(p => p.isNew && !seen.current.has(p.id))
+    if (!fresh.length) return
+    fresh.forEach(p => seen.current.add(p.id))
+    run()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [freshIds, photoDraft.busy, available])
+
+  if (photoDraft.photos.length === 0) return null
+  if (!available) {
+    return <p className="muted left">Astuce : avec une clé d'API Claude, ajoutée dans les paramètres, l'app remplit cette fiche toute seule depuis la photo.</p>
+  }
+
   return (
     <>
-      <button type="button" className="btn btn-secondary block" disabled={state.busy || photoDraft.busy} onClick={run}>
-        <Sparkles size={18} /> {state.busy ? 'Lecture de l\'étiquette…' : 'Remplir depuis la photo'}
+      {state.busy
+        ? <p className="banner"><Sparkles size={14} /> Lecture de l'étiquette en cours…</p>
+        : state.message && <p className={`banner ${state.kind ?? ''}`}>{state.message}</p>}
+      <button type="button" className="btn btn-ghost block" disabled={state.busy || photoDraft.busy} onClick={run}>
+        <Sparkles size={18} /> Relire la photo
       </button>
-      {state.message && <p className={`banner ${state.kind ?? ''}`}>{state.message}</p>}
     </>
   )
 }

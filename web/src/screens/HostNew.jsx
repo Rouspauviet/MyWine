@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Users } from 'lucide-react'
 import { Screen, Header, Body, Footer, Card } from '../components/Layout'
 import { TextField, Switch } from '../components/Inputs'
-import { hasApiKey, describeWine } from '../utils/ai'
+import { hasApiKey, prepareTasting } from '../utils/ai'
 import { BottleForm } from '../components/Forms'
 import * as db from '../db/db'
 import { usePhotoDraft } from '../utils/photos'
@@ -32,18 +32,18 @@ export default function HostNew() {
     try {
       const name = hostName.trim()
       setPreferredName(name)
-      // Profil attendu : un échec de l'assistant ne doit jamais empêcher de créer l'invitation
-      let aiProfile = ''
+      // Un échec de l'assistant ne doit jamais empêcher de créer l'invitation : on se rabat sur la base intégrée
+      let ai = null
       if (aiAvailable && withAi) {
-        try { aiProfile = (await describeWine(r)).profile } catch { aiProfile = '' }
+        try { ai = await prepareTasting(r) } catch { ai = null }
       }
-      const invitation = await createInvitation(r, name, note, aiProfile)
+      const invitation = await createInvitation(r, name, note, ai)
       const thumb = await photoDraft.commit(rec.id)
       await db.saveRecord({
         ...rec,
         status: 'done',
         thumb,
-        session: { role: 'host', id: invitation.id, hostName: name, code: invitation.code, token: invitation.token, hostNote: note.trim(), aiProfile },
+        session: { role: 'host', id: invitation.id, hostName: name, code: invitation.code, token: invitation.token, hostNote: note.trim(), aiProfile: ai?.profile ?? '' },
       })
       navigate(`/host/${rec.id}`, { replace: true })
     } catch (err) {
@@ -80,14 +80,14 @@ export default function HostNew() {
         </Card>
         {aiAvailable && (
           <Card title="Assistant IA">
-            <Switch label="Ajouter ce qu'on attend de ce vin" value={withAi} onChange={setWithAi} />
-            <p className="muted left">Un court texte rédigé par l'assistant à partir de la fiche, que tes invités liront après la révélation. Les informations de la bouteille sont envoyées à Anthropic.</p>
+            <Switch label="Préparer l'accompagnement des invités" value={withAi} onChange={setWithAi} />
+            <p className="muted left">L'assistant rédige, à partir de la fiche : une piste d'attention adaptée au niveau de chacun, des indices sur mesure et des propositions plausibles pour le quiz, puis ce qu'on attend de ce vin, lu après la révélation. Les informations de la bouteille sont envoyées à Anthropic (environ 1 centime).</p>
           </Card>
         )}
       </Body>
       <Footer>
         <button className="btn btn-primary grow" disabled={saving || photoDraft.busy || !supported} onClick={create}>
-          <Users size={18} /> {saving ? 'Création…' : 'Créer l\'invitation'}
+          <Users size={18} /> {saving ? (aiAvailable && withAi ? 'Préparation par l\'assistant…' : 'Création…') : 'Créer l\'invitation'}
         </button>
       </Footer>
     </Screen>

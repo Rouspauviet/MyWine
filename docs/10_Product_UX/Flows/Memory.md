@@ -22,7 +22,7 @@ Bouton "Mémoriser un vin" → `/memory/new`. Aucune fiche n'est créée en base
 
 | Champ | Détail |
 |---|---|
-| Photos | Une ou plusieurs. Sur iPhone : appareil photo ou photothèque. Compressées à 1600 px. Avec une clé d'API : bouton "Remplir depuis la photo", qui ne remplit que les champs encore vides. |
+| Photos | Une ou plusieurs. Sur iPhone : appareil photo ou photothèque. Compressées à 1600 px. Avec une clé d'API : la fiche se remplit toute seule à l'ajout d'une photo (champs vides uniquement), avec un bouton "Relire la photo". Sans clé, une ligne signale la fonction. |
 | Type | Rouge · Blanc · Rosé · Pétillant · Orange · Clairet · Autre |
 | Cuvée / Nom du vin | |
 | Producteur / Domaine | |

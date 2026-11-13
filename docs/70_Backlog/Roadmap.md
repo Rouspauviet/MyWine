@@ -31,14 +31,14 @@
 ## Pédagogie et assistant IA — livré ✅
 
 - Fiche "Pour comprendre" (base de connaissances intégrée), leurres plausibles, indices à la demande, mot de l'hôte
-- Assistant IA optionnel avec la clé de l'utilisateur : lecture d'étiquette, profil attendu joint à l'invitation
+- Assistant IA optionnel avec la clé de l'utilisateur : lecture d'étiquette automatique, préparation de la dégustation (pistes d'attention par niveau, indices, leurres, profil attendu)
 
 ## Prochain chantier — validation en conditions réelles ⏳
 
 | Priorité | Tâche |
 |---|---|
 | ✅ | Mise en ligne sur GitHub Pages : https://rouspauviet.github.io/MyWine/ |
-| P0 | **Créditer le compte Claude et tester l'assistant sur de vraies étiquettes** (courbes, recto/verso) ; mesurer le coût réel par étiquette et choisir le modèle par défaut |
+| P0 | Tester l'assistant IA sur des étiquettes difficiles (courbes, reflets, recto/verso) depuis l'iPhone ; confirmer le modèle par défaut |
 | P0 | Une vraie dégustation à plusieurs : scan du QR code, lisibilité, compréhension par des débutants |
 | P0 | Dérouler la [checklist QA](../40_QA/README.md) sur un vrai iPhone : appareil photo, installation, zones sûres, clavier, export, hors ligne |
 | P1 | Corriger ce que le test iPhone révèle |
