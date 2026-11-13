@@ -23,7 +23,7 @@ export default function Home() {
   const needsBackup = count >= BACKUP_REMINDER_MIN_RECORDS && (days === null || days > BACKUP_REMINDER_DAYS)
 
   return (
-    <Screen className="relative">
+    <Screen>
       <div className="home-top">
         <button className="icon-btn" onClick={() => navigate('/settings')} aria-label="Paramètres">
           <Settings size={22} />
@@ -72,9 +72,15 @@ export default function Home() {
         <button className="btn btn-secondary block" onClick={() => navigate('/memory/new')}>
           <Bookmark size={20} /> Mémoriser un vin
         </button>
-        <button className="link-btn" onClick={() => navigate('/journal')}>
-          <BookOpen size={14} /> Mon journal
-        </button>
+        <div className="link-row">
+          <button className="link-btn" onClick={() => navigate('/journal')}>
+            <BookOpen size={14} /> Mon journal
+          </button>
+          <button className="link-btn" onClick={() => navigate('/settings')}>
+            <Settings size={14} /> Paramètres
+          </button>
+        </div>
+        <p className="muted">v{__APP_VERSION__}</p>
       </Footer>
     </Screen>
   )
