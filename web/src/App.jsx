@@ -12,6 +12,7 @@ import Settings from './screens/Settings'
 import HostNew from './screens/HostNew'
 import HostSession from './screens/HostSession'
 import Join from './screens/Join'
+import AssistantJoin from './screens/AssistantJoin'
 
 export default function App() {
   return (
@@ -34,6 +35,8 @@ export default function App() {
         <Route path="/entry/:id" element={<Entry />} />
         <Route path="/entry/:id/edit" element={<RecordEdit />} />
         <Route path="/settings" element={<Settings />} />
+        {/* Assistant prêté par un ami : lien de partage chiffré */}
+        <Route path="/assistant/:token" element={<AssistantJoin />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

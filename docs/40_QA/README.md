@@ -78,6 +78,10 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 - [ ] Mode avion → message "Pas de connexion", le reste du formulaire reste utilisable
 - [ ] Clé fausse → "La clé d'API est refusée"
 - [ ] "Retirer la clé" → les boutons IA disparaissent
+- [ ] "Partager mon assistant avec un ami" → avertissement, QR code, code de 8 lettres ; le lien envoyé ne contient pas le code
+- [ ] Chez l'ami : lien ouvert, code faux → "Ce code ne correspond pas" ; bon code → "Assistant activé", lecture d'étiquette disponible
+- [ ] Chez l'ami, paramètres : "Assistant prêté par un ami", pas de bouton de partage
+- [ ] App installée sur iPhone : coller le lien dans le champ de la clé → "Ouvrir le lien de partage"
 - [ ] La sauvegarde exportée ne contient pas la clé
 
 ### Parcours Mémoire
@@ -132,6 +136,8 @@ Même jour, après ajout de la pédagogie et de l'assistant : leurres plausibles
 | Haiku 5.5 | Tous les champs lisibles justes ; cépage laissé vide | moins de 0,1 centime |
 
 Une photo de cette taille compte environ 3 300 tokens. Même jour, préparation d'une dégustation (`prepareTasting`, Sonnet 5.5) sur un champagne et un malbec argentin : pistes, indices, leurres et profil pertinents, sans fuite ; environ 0,6 centime par invitation (≈ 1 350 tokens en entrée, 350 en sortie). Contre-étiquette de champagne lue sans erreur (4 960 tokens en entrée).
+
+2026-11-14, partage de l'assistant : parcours complet vérifié dans le navigateur avec une fausse clé (code faux refusé, bon code accepté, clé marquée prêtée, lien collé dans les paramètres). À valider entre deux iPhone.
 
 **Reste à valider** : étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
 

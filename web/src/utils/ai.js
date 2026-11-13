@@ -5,6 +5,7 @@
 
 const KEY_STORAGE = 'mywine.apiKey'
 const MODEL_STORAGE = 'mywine.aiModel'
+const BORROWED_STORAGE = 'mywine.apiKeyBorrowed'
 
 export const AI_MODELS = [
   { value: 'claude-haiku-5-5', label: 'Haiku 5.5', description: 'Le plus économique : une fraction de centime par étiquette.' },
@@ -18,12 +19,16 @@ function read(key) { try { return localStorage.getItem(key) } catch { return nul
 
 export function getApiKey() { return read(KEY_STORAGE) ?? '' }
 export function hasApiKey() { return getApiKey().length > 0 }
-export function setApiKey(key) {
+// `borrowed` : la clé vient du partage d'un ami (utils/aiShare.js) — on ne propose pas de la repartager
+export function setApiKey(key, borrowed = false) {
   try {
     if (key) localStorage.setItem(KEY_STORAGE, key.trim())
     else localStorage.removeItem(KEY_STORAGE)
+    if (key && borrowed) localStorage.setItem(BORROWED_STORAGE, '1')
+    else localStorage.removeItem(BORROWED_STORAGE)
   } catch { /* stockage indisponible */ }
 }
+export function isKeyBorrowed() { return read(BORROWED_STORAGE) === '1' }
 export function getAiModel() {
   const stored = read(MODEL_STORAGE)
   return AI_MODELS.some(m => m.value === stored) ? stored : DEFAULT_AI_MODEL

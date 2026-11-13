@@ -28,7 +28,7 @@ Trois usages : **déguster à l'aveugle** en remplissant un formulaire adapté �
 6. **Anti-objectif révélation** — en mode Aveugle, jamais d'info réelle avant l'étape Révélation. Chez un invité, la bouteille reste chiffrée jusqu'au code.
 9. **Pas de score ni de classement** — la comparaison est bienveillante ; le niveau adapte le formulaire, il ne juge pas.
 7. **Pas de pipeline OCR maison** — abandonné. La lecture d'étiquette passe par l'assistant IA optionnel (`web/src/utils/ai.js`).
-10. **Aucun secret dans le dépôt** — il est public. La clé d'API de l'utilisateur vit dans le navigateur de son appareil, jamais dans un fichier, un test ou un commit.
+10. **Aucun secret dans le dépôt** — il est public. La clé d'API de l'utilisateur vit dans le navigateur de son appareil, jamais dans un fichier, un test ou un commit. Elle n'en sort que s'il la prête lui-même à un ami, chiffrée dans un lien (jamais dans une invitation de dégustation).
 11. **L'app fonctionne entièrement sans clé d'API** — l'assistant IA n'ajoute que du confort.
 12. **Tendances, pas vérités** — ce que disent la base de connaissances et l'assistant est présenté comme typique ; un écart n'est jamais une faute.
 8. **Toute évolution du modèle de données reste compatible** avec les fiches et les sauvegardes existantes (valeurs par défaut à la lecture).
@@ -57,6 +57,7 @@ npm run build    # génère web/dist
 | Webapp v2 — parcours Aveugle + Mémoire, journal, photos, prix, sauvegarde | ✅ En ligne : https://rouspauviet.github.io/MyWine/ |
 | Niveaux (Débutant / Amateur / Expert) + dégustation à plusieurs sans serveur | ✅ À valider en conditions réelles |
 | Fiche "Pour comprendre", leurres plausibles, indices, mot de l'hôte | ✅ |
+| Partage de l'assistant avec un ami (lien chiffré + code de 8 lettres) | ✅ À valider entre deux iPhone |
 | Assistant IA optionnel (lecture d'étiquette, profil attendu) | ✅ Testé contre la vraie API sur une étiquette simple ; étiquettes difficiles à valider |
 | Test sur iPhone à plusieurs (QR code, code de révélation, partage) | ⏳ **Prochain chantier** |
 | Statistiques, mode sombre | Backlog — voir [Roadmap](docs/70_Backlog/Roadmap.md) |

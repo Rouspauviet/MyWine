@@ -12,7 +12,7 @@ Après la révélation, une fiche explique le vin : ce qui est typique du cépag
 
 Tes données restent sur ton appareil : pas de compte, pas de serveur. La sauvegarde se fait par export d'un fichier depuis les paramètres.
 
-**Assistant IA (optionnel).** Avec ta propre clé d'API Claude, collée dans les paramètres, l'app remplit la fiche depuis une photo d'étiquette. La clé reste sur ton appareil. Sans clé, tout le reste fonctionne.
+**Assistant IA (optionnel).** Avec ta propre clé d'API Claude, collée dans les paramètres, l'app remplit la fiche depuis une photo d'étiquette. La clé reste sur ton appareil ; tu peux prêter ton assistant à un ami par un lien chiffré et un code. Sans clé, tout le reste fonctionne.
 
 ## Installer sur iPhone
 

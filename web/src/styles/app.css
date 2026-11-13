@@ -447,6 +447,7 @@ button.banner { text-align: left; width: 100%; }
   color: var(--primary);
   padding: var(--s-3) 0;
 }
+.reveal-code.long { font-size: var(--f-3xl); letter-spacing: 0.2em; text-indent: 0.2em; }
 .code-input {
   font-size: var(--f-3xl);
   font-weight: var(--w-bold);

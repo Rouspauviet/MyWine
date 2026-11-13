@@ -118,7 +118,7 @@ Produit par `utils/backup.js` — `mywine-sauvegarde-YYYY-MM-DD.json` :
 
 L'import **fusionne par identifiant** : une fiche du fichier remplace la fiche locale de même `id`, les autres fiches locales sont conservées.
 
-Clés `localStorage` (préférences de l'appareil, hors sauvegarde) : `mywine.lastExport` (rappel de sauvegarde), `mywine.level` (dernier niveau choisi), `mywine.name` (prénom de l'hôte), `mywine.apiKey` (clé d'API Claude de l'utilisateur) et `mywine.aiModel` (modèle choisi).
+Clés `localStorage` (préférences de l'appareil, hors sauvegarde) : `mywine.lastExport` (rappel de sauvegarde), `mywine.level` (dernier niveau choisi), `mywine.name` (prénom de l'hôte), `mywine.apiKey` (clé d'API Claude de l'utilisateur), `mywine.apiKeyBorrowed` (`1` si la clé a été prêtée par un ami) et `mywine.aiModel` (modèle choisi).
 
 La sauvegarde contient le code de révélation des invitations créées par l'hôte.
 

@@ -31,6 +31,7 @@
 ## Pédagogie et assistant IA — livré ✅
 
 - Fiche "Pour comprendre" (base de connaissances intégrée), leurres plausibles, indices à la demande, mot de l'hôte
+- Partage de l'assistant avec un ami (lien chiffré + code), sans serveur
 - Assistant IA optionnel avec la clé de l'utilisateur : lecture d'étiquette automatique, préparation de la dégustation (pistes d'attention par niveau, indices, leurres, profil attendu)
 
 ## Prochain chantier — validation en conditions réelles ⏳

@@ -22,13 +22,13 @@ export function isSessionSupported() {
 
 // ─── Encodage ────────────────────────────────────────────────────────────────
 
-function bytesToBase64Url(bytes) {
+export function bytesToBase64Url(bytes) {
   let bin = ''
   for (const b of bytes) bin += String.fromCharCode(b)
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
-function base64UrlToBytes(text) {
+export function base64UrlToBytes(text) {
   const b64 = text.replace(/-/g, '+').replace(/_/g, '/')
   const bin = atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4))
   return Uint8Array.from(bin, c => c.charCodeAt(0))
@@ -67,15 +67,22 @@ export function normalizeCode(code) {
   return String(code ?? '').toUpperCase().replace(/[^A-Z]/g, '')
 }
 
-function randomCode() {
-  const values = crypto.getRandomValues(new Uint8Array(CODE_LENGTH))
-  return Array.from(values, v => CODE_ALPHABET[v % CODE_ALPHABET.length]).join('')
+export function randomCode(length = CODE_LENGTH) {
+  // Tirage sans biais : on écarte les octets qui favoriseraient les premières lettres
+  const limit = 256 - (256 % CODE_ALPHABET.length)
+  let code = ''
+  while (code.length < length) {
+    for (const v of crypto.getRandomValues(new Uint8Array(length * 2))) {
+      if (v < limit && code.length < length) code += CODE_ALPHABET[v % CODE_ALPHABET.length]
+    }
+  }
+  return code
 }
 
-async function deriveKey(code, salt) {
+export async function deriveKey(code, salt, iterations = PBKDF2_ITERATIONS) {
   const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(normalizeCode(code)), 'PBKDF2', false, ['deriveKey'])
   return crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
     material,
     { name: 'AES-GCM', length: 256 },
     false,

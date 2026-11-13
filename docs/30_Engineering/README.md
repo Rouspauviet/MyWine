@@ -75,7 +75,8 @@ src/
 | `/journal` | Journal | commun |
 | `/entry/:id` | Entry — fiche complète | commun |
 | `/entry/:id/edit` | RecordEdit (modification) | commun |
-| `/settings` | Settings — export, import, effacement | — |
+| `/settings` | Settings — export, import, effacement, assistant IA et son partage | — |
+| `/assistant/:token` | AssistantJoin — un ami prête son assistant : saisie du code de 8 lettres | — |
 
 ## Photos
 
@@ -111,6 +112,7 @@ Ajouter un cépage : une entrée dans `GRAPES`, avec des familles aromatiques **
 `utils/ai.js`, via le SDK officiel `@anthropic-ai/sdk` importé dynamiquement (un fichier séparé, téléchargé seulement au premier usage).
 
 - **Clé** : saisie dans les paramètres, stockée en `localStorage` (`mywine.apiKey`), jamais affichée en entier (4 derniers caractères), absente de la sauvegarde exportée. Modèle choisi dans `mywine.aiModel`.
+- **Partage à un ami** (`utils/aiShare.js`, décision [`2026-11-14`](../60_Decisions/2026-11-14-partage-assistant.md)) : `createAssistantShare(apiKey, model)` chiffre la clé et le modèle (AES-GCM, PBKDF2 600 000 itérations) avec un code de 8 lettres tiré au hasard ; le lien `…/#/assistant/<jeton>` ne contient que le texte chiffré, le code se donne de vive voix. `openAssistantShare(token, code)` installe la clé chez l'ami et la marque prêtée (`mywine.apiKeyBorrowed`) : l'app ne propose pas de la repartager. Dans l'app installée, qui n'ouvre pas les liens, on colle le lien dans le champ de la clé. **Jamais dans le lien d'invitation** d'une dégustation : 4 lettres ne protègent pas une clé.
 - **Appel** : `askClaude()` — `messages.create` avec `output_config: { effort: 'low', format: { type: 'json_schema', schema } }`, puis `JSON.parse` du bloc texte. `dangerouslyAllowBrowser: true` est assumé : la clé est celle de l'utilisateur, sur son appareil.
 - **`readLabel(images)`** : une ou deux photos (base64) → champs de la bouteille. La consigne interdit d'inventer ; `LabelReader` (dans `Forms.jsx`) ne remplit que les champs vides.
 - **`prepareTasting(reality)`** : un seul appel à la création de l'invitation → `profile` (320 caractères, chiffré, lu après la révélation), `clues` (2 indices), `focus` (piste d'attention Débutant et Amateur), `grapeDecoys` et `placeDecoys`. Un échec de l'assistant n'empêche jamais de créer l'invitation : on retombe sur la base intégrée.
