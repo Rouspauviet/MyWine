@@ -1,0 +1,79 @@
+/* Design tokens — MyWine Design System v2 (version web)
+   Source de vérité unique des valeurs visuelles. Aucune valeur en dur dans app.css ni dans les composants.
+   Référence : docs/20_Design_UI/Design_System_v2.md */
+
+:root {
+  /* ── Fonds & surfaces ── */
+  --bg:              #F8F5F0;  /* papier crème — fond de toutes les vues */
+  --surface:         #FDFCF9;  /* blanc chaud — cards, sections, modals, footers */
+  --surface-alt:     #EDE8E0;  /* sable chaud — en-têtes de section, zones info */
+  --surface-sunken:  #F2EDE6;  /* en creux — fond des champs de saisie */
+  --backdrop:        #2B2522;  /* fond hors application sur grand écran */
+
+  /* ── Bordures ── */
+  --border:          #DDD5CB;
+  --border-strong:   #C4B8AE;
+
+  /* ── Texte ── */
+  --text:            #1C1512;
+  --text-secondary:  #6E5E52;
+  --text-disabled:   #B5A898;
+  --text-placeholder:#9A8A7E;
+  --text-on-primary: #FDFCF9;
+
+  /* ── Accent principal ── */
+  --primary:         #6B2D3E;
+  --primary-mid:     #8F3E52;
+  --primary-subtle:  #F5EAEC;
+  --primary-border:  #D9B0B8;
+
+  /* ── États ── */
+  --error:           #8B1A2A;
+  --error-subtle:    #F5E6E8;
+  --success:         #2E6B4F;
+  --success-subtle:  #E8F2EB;
+
+  /* ── Badges de comparaison ── */
+  --match:           #2E6B4F;
+  --match-subtle:    #E8F2EB;
+  --close:           #8C5A1A;
+  --close-subtle:    #F5EAD8;
+  --miss:            #6E5E52;
+  --miss-subtle:     #EDE8E0;
+
+  /* ── Types de vin (pastilles uniquement) ── */
+  --wine-rouge:      #8B2C2C;
+  --wine-blanc:      #C8A84B;
+  --wine-rose:       #D4748A;
+  --wine-petillant:  #8B9BAD;
+  --wine-orange:     #C77B3A;
+  --wine-clairet:    #B8485A;
+  --wine-autre:      #9A8A7E;
+
+  --overlay:         rgba(28, 21, 18, 0.55);
+
+  /* ── Espacements ── */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px; --s-5: 20px;
+  --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 48px; --s-16: 64px;
+
+  /* ── Rayons ── */
+  --r-sm: 4px; --r-md: 6px; --r-lg: 10px; --r-xl: 14px; --r-full: 999px;
+
+  /* ── Typographie ── */
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  --f-xs: 11px; --f-sm: 13px; --f-base: 15px; --f-lg: 17px;
+  --f-xl: 20px; --f-2xl: 24px; --f-3xl: 30px;
+  --f-input: 16px;  /* 16px minimum : en dessous, Safari iOS zoome à la mise au point */
+  --w-regular: 400; --w-medium: 500; --w-semibold: 600; --w-bold: 700;
+
+  /* ── Ombres (teinte chaude, jamais noir pur) ── */
+  --shadow-sm: 0 1px 3px rgba(28, 21, 18, 0.06);
+  --shadow-md: 0 2px 8px rgba(28, 21, 18, 0.09);
+  --shadow-lg: 0 4px 16px rgba(28, 21, 18, 0.13);
+
+  /* ── Dimensions ── */
+  --app-max: 520px;   /* largeur max de l'app sur grand écran */
+  --tap: 44px;        /* cible tactile minimale */
+  --thumb: 64px;      /* vignette du journal */
+  --photo: 132px;     /* photo dans un formulaire */
+}

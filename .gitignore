@@ -1,0 +1,21 @@
+# Dépendances
+node_modules/
+
+# Build de la webapp
+web/dist/
+
+# Environnement
+.env
+.env.local
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Anciennes photos de test OCR (locales, non versionnées)
+docs/40_QA/.ocr-tests/
