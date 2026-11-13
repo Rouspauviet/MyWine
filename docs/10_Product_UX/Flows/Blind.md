@@ -27,6 +27,7 @@ Accueil
 
 Rituel : "Avant de découvrir ce vin… L'étiquette est mise de côté."
 
+- Choix du **niveau** (Débutant / Amateur / Expert) : il adapte les étapes du wizard — voir [Group.md](Group.md#les-trois-niveaux). Le dernier niveau choisi est proposé par défaut.
 - "Commencer la dégustation" → **crée le brouillon** (`mode: 'blind'`, `status: 'draft'`) puis ouvre le wizard. Le brouillon n'est pas créé avant ce clic : pas de brouillon orphelin.
 - Lien "Tu connais déjà ce vin ? → Mémorise-le" → `/memory/new`.
 
@@ -40,6 +41,8 @@ Rouge · Blanc · Rosé · Pétillant · Orange · Clairet · Autre.
 - Retour depuis l'étape 0 sans type choisi → le brouillon vide est supprimé.
 
 ## 4. Wizard — étapes 1 à 4
+
+Le tableau décrit le niveau **Amateur**. Débutant : moins de champs et hypothèses en choix à cocher. Expert : section avancée toujours ouverte.
 
 | Étape | Contenu |
 |---|---|
@@ -57,6 +60,8 @@ Comportements :
 
 ## 5. Révélation `/reveal/:id`
 
+*Dégustation à plusieurs : l'invité ne voit pas ces deux états mais un champ "code de révélation" — voir [Group.md](Group.md).*
+
 **État A — Le moment de vérité.** Trois actions :
 
 - "Révéler la bouteille" → état B.
@@ -71,6 +76,7 @@ Comportements :
 
 - Résumé : "3 justes · 1 proche · 1 à revoir" + confiance annoncée.
 - Tableau côte à côte **Mes hypothèses | badge | La réalité** pour : type, cépages, pays, région, appellation, millésime, producteur.
+- Carte "Pour comprendre" : profil typique du cépage et de la région, et rapprochement avec la perception. Une perception identique au profil est confirmée ("Des tanins marqués : c'est typique du cépage Syrah"), une perception opposée est expliquée sans jugement, une perception voisine n'est pas commentée.
 - Carte "À retenir" : jusqu'à 2 indices déduits de la structure perçue, plus climat et sol perçus.
 
 Règles de comparaison (`web/src/utils/comparison.js`) :
@@ -81,6 +87,7 @@ Règles de comparaison (`web/src/utils/comparison.js`) :
 | Cépages | au moins un cépage commun | un nom en contient un autre | aucun |
 | Pays, région, appellation, producteur | identique (sans casse ni accents) | l'un contient l'autre | sinon |
 | Millésime | identique | écart ≤ 2 ans | sinon |
+| Millésime en tranche (Débutant) | la réalité est dans la tranche | à 2 ans de la tranche | sinon |
 
 Un champ n'est comparé que si l'hypothèse **et** la réalité sont renseignées. Pas de score global chiffré.
 

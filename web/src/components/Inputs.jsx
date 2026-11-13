@@ -6,8 +6,9 @@ import { normalize } from '../utils/text'
 export const RATING_LABELS = ['', 'Bof', 'Bien', 'Très bien', 'Excellent', 'Parfait']
 
 // Champ avec libellé — `hint` ajoute une aide affichée à la demande
-export function Field({ label, optional, hint, children }) {
-  const [showHint, setShowHint] = useState(false)
+// `hintOpen` l'affiche d'office (niveau Débutant)
+export function Field({ label, optional, hint, hintOpen = false, children }) {
+  const [showHint, setShowHint] = useState(hintOpen)
   return (
     <div className="field">
       <div className="field-header">

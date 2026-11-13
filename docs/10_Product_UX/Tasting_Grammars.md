@@ -3,8 +3,8 @@
 > **Principe** : la couleur du vin est une hypothèse utilisateur, jamais une vérité.
 > Le formulaire suit l'hypothèse, pas la réalité. On ne corrige jamais.
 >
-> Ce document définit les grammaires sensorielles — pas les composants UI.
-> Les composants polymorphes sont décrits en fin de document.
+> Ce document définit les grammaires sensorielles — pas l'interface.
+> La correspondance avec le code est donnée en fin de document.
 
 ---
 
@@ -516,59 +516,20 @@ L'utilisateur commence par nommer ce qu'il perçoit, pas par remplir des cases.
 
 ---
 
-## Composants UI polymorphes
+## Dans le code
 
-> Ces composants changent de nature selon le type de vin, pas seulement de label.
+| Grammaire | Où |
+|---|---|
+| Vocabulaire (robe, arômes, options de chaque axe) | `web/src/data/wineData.js` |
+| Champs de l'étape Structure par type, ordre, aides, champs conditionnels | `STRUCTURE_FIELDS` dans `web/src/screens/Tasting.jsx` |
+| Affichage sur la fiche | `STRUCTURE_ROWS` dans `web/src/screens/Entry.jsx` |
+| Indices tirés de la structure perçue | `buildInsights()` dans `web/src/utils/comparison.js` |
 
-### `<StructureBlock>` → polymorphe par type
+État de l'implémentation :
 
-| Type | Composant rendu | Axes |
-|---|---|---|
-| Rouge | `<TaninBlock>` | Tanins (intensité + texture) + Maturité du fruit |
-| Blanc | `<TensionBlock>` | Acidité + Gras/Texture + Minéralité |
-| Rosé | `<FraicheurBlock>` | Vivacité + Corps + Sucrosité perçue |
-| Pétillant | `<EffervescenceBlock>` | Qualité des bulles + Dosage + Vivacité |
-| Orange | `<PhenolicBlock>` | Texture phénolique + Amers + Oxydation |
-| Clairet | `<LightStructureBlock>` | Fraîcheur + Structure légère + Corps |
-| Autre | `<DeclarativeBlock>` | Texte libre + sous-type + axes à la carte |
+- **Rouge, Blanc, Rosé, Pétillant, Orange** : grammaire dédiée, conforme à ce document.
+- **Clairet, Autre** : pas de grammaire dédiée pour l'instant. La robe et les arômes du clairet sont proposés ; l'étape Structure passe en saisie libre (corps, longueur, notes). Les sections "Clairet" et "Autre" ci-dessus décrivent la cible.
+- **Niveau Débutant** : seuls les axes centraux de chaque type sont proposés (marqués `beginner: true` dans `STRUCTURE_FIELDS`), avec leur aide affichée d'office.
+- **Communs à tous les types** : intensité aromatique (échelle 1–5), longueur (courte / moyenne / longue), étape Style.
 
-### `<RobeChips>` → même composant, options différentes
-
-Même composant `ChipGroup` — les options sont injectées par le type :
-```
-ROBE_OPTIONS = {
-  rouge:     ['Rubis clair', 'Rubis', 'Grenat', 'Pourpre', 'Tuilé', 'Brun'],
-  blanc:     ['Jaune pâle', 'Jaune citrin', 'Jaune doré', 'Or', 'Ambré'],
-  rosé:      ['Rose pâle', 'Rose saumon', 'Rose framboise', 'Rose foncé', 'Orangé'],
-  pétillant: ['Blanc cristallin', 'Jaune pâle', 'Rosé', 'Doré'],
-  orange:    ['Jaune ambré', 'Or cuivré', 'Tuilé orangé', 'Ocre', 'Brun orangé'],
-  clairet:   ['Rose foncé', 'Rouge rosé', 'Grenat très pâle'],
-}
-```
-
-### `<AromeFamiliesChips>` → même composant, corpus différent
-
-Les familles aromatiques proposées sont spécifiques au type.
-Le composant `ChipGroup` multiselect est identique — les options changent.
-
-### `<IntensiteAromatique>` → identique partout
-
-Slider 1–5 ("Discret → Expressif"). Jamais de modification selon le type.
-
-### `<LongueurBlock>` → identique partout
-
-ChipGroup 3 options (Courte · Moyenne · Longue). Universel.
-
-### `<StyleBlock>` → identique partout
-
-Note (RatingStars) · Coup de cœur (Switch) · Accords (ChipGroup) · Impression globale (texte).
-Section finale, même pour tous les types.
-
----
-
-## Décisions associées
-
-| Sujet | Décision | Fichier |
-|---|---|---|
-| Changement de type en cours de saisie | Réinitialisation complète du formulaire — retour à la sélection du type, confirmation si champs remplis | [60_Decisions/tasting-type-change-resets-form.md](../60_Decisions/tasting-type-change-resets-form.md) |
-| Types "Autre" et "Clairet" | Différés post-Phase 5 — repli sur formulaire libre en attendant, sous-formulaires adaptatifs en Phase 6 | [60_Decisions/autre-clairet-deferred-post-phase5.md](../60_Decisions/autre-clairet-deferred-post-phase5.md) |
+Changer de type en cours de saisie efface la robe, les arômes et la structure, après confirmation ; les hypothèses et le style sont conservés.

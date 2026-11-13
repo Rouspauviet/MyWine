@@ -1,10 +1,11 @@
 // Fiche complète — souvenir de la bouteille + (en mode Aveugle) notes, hypothèses et comparaison
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Heart } from 'lucide-react'
+import { Pencil, Trash2, Heart, Users } from 'lucide-react'
 import { Screen, Header, Body, Card, InfoRow, ConfirmModal, Loading, useAsync } from '../components/Layout'
 import { RATING_LABELS } from '../components/Inputs'
-import { ComparisonTable, Insights, summarize } from './Comparison'
+import { ComparisonTable, Insights, summarize, ShareResultButton, HostNote, Lesson } from './Comparison'
+import { LEVELS } from '../data/levels'
 import * as db from '../db/db'
 import { usePhotoUrls } from '../utils/photos'
 import { formatDate, formatPrice, labelOf, labelsOf, recordTitle, hasReality } from '../utils/text'
@@ -98,7 +99,7 @@ export default function Entry() {
     <Screen>
       <Header
         title={recordTitle(record)}
-        label={isBlind ? 'Dégustation à l\'aveugle' : 'Souvenir'}
+        label={record.session?.role === 'guest' ? `Dégustation chez ${record.session.hostName}` : isBlind ? 'Dégustation à l\'aveugle' : 'Souvenir'}
         onBack={() => navigate('/journal', { replace: true })}
         actions={<>
           <button className="icon-btn" onClick={() => navigate(`/entry/${id}/edit`)} aria-label="Modifier"><Pencil size={20} /></button>
@@ -110,6 +111,12 @@ export default function Entry() {
           <div className="photo-gallery">
             {photos.map(url => <img key={url} src={url} alt="Photo de la bouteille" onClick={() => setZoom(url)} />)}
           </div>
+        )}
+
+        {record.session?.role === 'host' && (
+          <button className="btn btn-secondary block" onClick={() => navigate(`/host/${id}`)}>
+            <Users size={18} /> Rouvrir l'invitation et le code
+          </button>
         )}
 
         {!known && photos.length === 0 && (
@@ -134,6 +141,8 @@ export default function Entry() {
             <InfoRow label="Lieu d'achat" value={r.purchasePlace} />
           </Card>
         )}
+
+        <HostNote record={record} />
 
         <Card title="Mon impression" tight>
           <InfoRow label="Date" value={formatDate(record.tastedAt || record.createdAt, true)} />
@@ -160,9 +169,13 @@ export default function Entry() {
               </section>
             )}
             <ComparisonTable record={record} />
+            {record.session && summary && <ShareResultButton record={record} />}
+            <Lesson record={record} />
             <Insights record={record} />
 
             <Card title="Perception sensorielle" tight>
+              <InfoRow label="Niveau" value={labelOf(LEVELS, record.level)} />
+              <InfoRow label="Indices demandés" value={record.cluesUsed ? String(record.cluesUsed) : null} />
               <InfoRow label="Type supposé" value={labelOf(WINE_TYPES, record.wineType)} />
               <InfoRow label="Robe" value={perc.robe?.join(', ')} />
               <InfoRow label="Intensité" value={perc.aromaIntensity ? `${perc.aromaIntensity}/5` : null} />
@@ -172,6 +185,9 @@ export default function Entry() {
             <StructureCard structure={record.structure} />
           </>
         )}
+
+        {/* Souvenir sans dégustation à l'aveugle : la fiche pédagogique seule */}
+        {!isBlind && <Lesson record={record} />}
       </Body>
 
       <ConfirmModal

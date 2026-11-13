@@ -14,7 +14,7 @@ Pas de rituel, pas d'hypothèses, pas de comparaison. Un seul écran de saisie.
 
 ## 1. Accueil `/`
 
-Bouton secondaire "Mémoriser un vin" → `/memory/new`. Aucune fiche n'est créée en base avant l'enregistrement.
+Bouton "Mémoriser un vin" → `/memory/new`. Aucune fiche n'est créée en base avant l'enregistrement.
 
 ## 2. Fiche rapide `/memory/new`
 
@@ -22,7 +22,7 @@ Bouton secondaire "Mémoriser un vin" → `/memory/new`. Aucune fiche n'est cré
 
 | Champ | Détail |
 |---|---|
-| Photos | Une ou plusieurs. Sur iPhone : appareil photo ou photothèque. Compressées à 1600 px. |
+| Photos | Une ou plusieurs. Sur iPhone : appareil photo ou photothèque. Compressées à 1600 px. Avec une clé d'API : bouton "Remplir depuis la photo", qui ne remplit que les champs encore vides. |
 | Type | Rouge · Blanc · Rosé · Pétillant · Orange · Clairet · Autre |
 | Cuvée / Nom du vin | |
 | Producteur / Domaine | |
@@ -52,4 +52,4 @@ Commun aux deux modes.
 
 ## 4. Fiche `/entry/:id`
 
-Photos (touche pour agrandir), carte bouteille, carte impression. Actions : **modifier** (même formulaire) et **supprimer** (avec confirmation, photos comprises).
+Photos (touche pour agrandir), carte bouteille, carte impression, et la fiche "Pour comprendre" si le cépage ou la région sont connus de la base. Actions : **modifier** (même formulaire) et **supprimer** (avec confirmation, photos comprises).

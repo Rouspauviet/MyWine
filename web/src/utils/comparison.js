@@ -31,6 +31,14 @@ function matchVintage(hypo, real) {
   return Math.abs(h - r) <= 2 ? 'close' : 'miss'
 }
 
+// Millésime donné en tranche (choix multiples) : juste si la réalité est dans la tranche, proche à ± 2 ans
+function matchVintageRange(range, real) {
+  const r = parseInt(real, 10)
+  if (!range || isNaN(r)) return null
+  if (r >= range.min && r <= range.max) return 'exact'
+  return (r >= range.min - 2 && r <= range.max + 2) ? 'close' : 'miss'
+}
+
 // Indices déterministes tirés de la structure perçue (format v2 : { v, wineType, data })
 function buildInsights(wineType, data) {
   const out = []
@@ -106,7 +114,7 @@ export function computeComparison(record, reality) {
   set('country', matchField(h.country, reality.country))
   set('region', matchField(h.region, reality.region))
   set('appellation', matchField(h.appellation, reality.appellation))
-  set('vintage', matchVintage(h.vintage, reality.vintage))
+  set('vintage', h.vintage ? matchVintage(h.vintage, reality.vintage) : matchVintageRange(h.vintageRange, reality.vintage))
   set('producer', matchField(h.producer, reality.producer))
 
   return {

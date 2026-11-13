@@ -21,11 +21,25 @@
 - Sauvegarde complète (fiches + photos) : export, import, rappel
 - PWA : installable, utilisable hors ligne
 
-## Prochain chantier — mise en ligne ⏳
+## Niveaux et dégustation à plusieurs — livré, à valider ✅
+
+- Trois niveaux (Débutant / Amateur / Expert), en solo comme à plusieurs
+- Hôte : bouteille → QR code et lien d'invitation → code de révélation
+- Invité : lien → niveau → dégustation → code → comparaison → partage du résultat
+- Sans serveur : bouteille chiffrée dans le lien
+
+## Pédagogie et assistant IA — livré ✅
+
+- Fiche "Pour comprendre" (base de connaissances intégrée), leurres plausibles, indices à la demande, mot de l'hôte
+- Assistant IA optionnel avec la clé de l'utilisateur : lecture d'étiquette, profil attendu joint à l'invitation
+
+## Prochain chantier — validation en conditions réelles ⏳
 
 | Priorité | Tâche |
 |---|---|
-| P0 | Choisir l'hébergement et publier (voir [50_Release](../50_Release/README.md)) |
+| ✅ | Mise en ligne sur GitHub Pages : https://rouspauviet.github.io/MyWine/ |
+| P0 | **Créditer le compte Claude et tester l'assistant sur de vraies étiquettes** (courbes, recto/verso) ; mesurer le coût réel par étiquette et choisir le modèle par défaut |
+| P0 | Une vraie dégustation à plusieurs : scan du QR code, lisibilité, compréhension par des débutants |
 | P0 | Dérouler la [checklist QA](../40_QA/README.md) sur un vrai iPhone : appareil photo, installation, zones sûres, clavier, export, hors ligne |
 | P1 | Corriger ce que le test iPhone révèle |
 
@@ -41,4 +55,7 @@
 | P2 | Session multi-bouteilles | Plusieurs vins à l'aveugle dans une même soirée, révélation groupée |
 | P2 | Export lisible | CSV ou PDF d'une fiche |
 | P2 | Synchronisation entre appareils | Nécessite une nouvelle décision (remet en cause "données locales") |
-| P2 | Lecture d'étiquette (OCR) | Abandonné ; à reprendre uniquement avec une nouvelle décision |
+| P1 | Étendre la base de connaissances | Cépages et régions hors de France, vins doux et mutés |
+| P2 | Commentaire personnalisé par invité | Demande une clé chez chaque invité ou un serveur relais |
+| P1 | Session en direct | Salle d'attente, révélation simultanée, vue de groupe (consensus de la table). Demande un serveur |
+| P2 | Transmettre la photo de l'hôte aux invités | Impossible dans un lien ; viendrait avec le serveur |

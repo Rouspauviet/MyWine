@@ -1,8 +1,6 @@
 # UX Workbench — MyWine
 
-> ⚠️ **Document écrit pour l'ancienne app native (React Native).** Les principes restent valables ; les mentions de scan/OCR, de `tokens.js`, de `StyleSheet` et des écrans `.jsx` de `mobile/` sont obsolètes. Implémentation actuelle : `web/src/` — voir [docs/README.md](../README.md).
-
-*Document de travail UX — à mettre à jour au fil des retours et des tests*
+*Document de travail UX : intentions, rituels, questions ouvertes. Les parcours tels qu'ils sont construits sont décrits dans [`Flows/`](Flows/).*
 
 ---
 
@@ -12,7 +10,7 @@
 
 **Pourquoi l'utilisateur lance ce mode**
 - Il veut tester et entraîner son palais — c'est un exercice de progression personnelle
-- Il est en situation de dégustation délibérée (cave, dîner préparé, concours entre amis)
+- Il est en situation de dégustation délibérée (cave, dîner préparé, soirée entre amis)
 - Il veut objectiver son ressenti avant d'être influencé par l'étiquette ou le prix
 - Il cherche la satisfaction de la découverte : "est-ce que j'avais raison ?"
 
@@ -26,185 +24,108 @@
 - Voir des informations qui trahissent le vin avant d'avoir fini ses hypothèses
 - Être interrompu par des questions non pertinentes à mi-parcours
 - Perdre ses saisies en cas de mauvaise navigation
-- Que la comparaison finale soit trop sévère ou décourageante — il apprend, il ne passe pas un examen
-
----
+- Que la comparaison finale soit sévère ou décourageante — il apprend, il ne passe pas un examen
 
 ### Mode Mémoire
 
 **Pourquoi il lance ce mode**
 - Il est à table, il vient de goûter un vin qui lui plaît et veut en garder une trace
-- Il consulte la carte des vins et veut noter une bouteille pour y revenir
 - Il visite une cave, une foire — il accumule des références rapidement
 - Il n'est pas en mode "exercice", il est en mode "capture rapide"
 
-**Ce qu'il veut aller vite**
-- Identifier la bouteille en quelques champs (nom, millésime, région au minimum)
-- Donner une note et un sentiment en 3 secondes
+**Ce qu'il veut faire vite**
+- Identifier la bouteille : une photo de l'étiquette peut suffire
+- Donner une note et un sentiment en quelques secondes
 - Sauvegarder et retourner à la conversation — l'app ne doit pas être le centre d'attention
 
 **Ce qu'il est prêt à détailler**
-- Si c'est un coup de cœur, il peut prendre 2 minutes pour tout remplir
-- Les accords mets : il vient peut-être de vivre un accord parfait
+- Si c'est un coup de cœur : le prix, où l'acheter, l'accord qui a fonctionné
 - Un commentaire libre : l'émotion pendant qu'elle est fraîche
-- Le cépage, si c'est ce qui l'a surpris
+
+### Dégustation à plusieurs
+
+**L'hôte**
+- Il a choisi la bouteille et veut voir ses invités chercher — le plaisir est dans leur surprise
+- Il ne veut ni installer quoi que ce soit chez les autres, ni gérer des comptes
+- Il veut garder la main sur le moment de la révélation
+
+**L'invité**
+- Il n'a pas forcément de vocabulaire du vin et ne veut pas se sentir jugé
+- Il veut une réponse à "qu'est-ce que je suis censé remarquer ?" — d'où les niveaux et les aides
+- Il veut comparer avec les autres, pour rire et pour apprendre, pas pour être classé
 
 ---
 
 ## 2. Rituels clés (moments forts)
 
-### Scan avant / arrière
-**Rôle UX** : acte fondateur de la session. Il matérialise l'intention.
-- Mode Aveugle : le scan précède tout jugement. L'image est "mise sous scellés" — l'utilisateur la capture mais ne la lit pas encore. L'UI doit renforcer cette idée de mise en réserve.
-- Mode Mémoire : le scan est optionnel mais recommandé. Il sert de mémo visuel dans le journal. L'UI peut être plus permissive (pas obligatoire pour continuer).
+### Écran "En sommeil" *(Aveugle)*
+**Rôle** : sas psychologique entre la vie de table et la concentration.
+- Signal fort que "l'étiquette est mise de côté"
+- Court mais mémorable ; ton poétique, pas fonctionnel
+- Seul contrôle admis : le choix du niveau, parce qu'il conditionne tout le wizard
 
-**Points d'attention**
-- La prise de photo doit être rapide — éviter les permissions qui coupent le flux
-- Permettre galerie + appareil pour les deux modes
-- Proposer "passer sans photo" clairement (surtout Mode Mémoire)
+### Révélation *(Aveugle)*
+**Rôle** : le moment de vérité, le plus fort émotionnellement.
+- Un moment d'abord, un formulaire ensuite : l'écran "Le moment de vérité" précède la saisie
+- En solo, on retourne la bouteille et on la saisit pendant qu'on l'a sous les yeux
+- À plusieurs, c'est l'hôte qui déclenche en annonçant le code : la révélation devient un geste collectif
+- Toujours prévoir "je ne connais pas la bouteille"
 
----
-
-### Écran "En sommeil" *(Mode Aveugle uniquement)*
-**Rôle UX** : sas de transition psychologique entre la capture et le jugement.
-- Signal fort que "l'étiquette est cachée" — pas de retour en arrière possible sans intention
-- Crée une micro-anticipation avant le wizard
-- Doit être court mais mémorable — c'est le seul écran purement émotionnel de l'app
-
-**Points d'attention**
-- Ne pas proposer d'options ou de formulaires ici — c'est un écran de pause
-- Le CTA "Commencer la dégustation" doit être le seul choix
-- Ton : poétique, pas fonctionnel
+### Comparaison *(Aveugle)*
+**Rôle** : bilan pédagogique, clôture du rituel.
+- Badges lisibles d'un coup d'œil : Juste / Proche / À revoir
+- Les indices sont la valeur ajoutée : ils relient ce qui a été perçu à ce que c'est
+- Ton encourageant, jamais condescendant ; pas de score, pas de classement
 
 ---
 
-### Révélation *(Mode Aveugle uniquement)*
-**Rôle UX** : moment de vérité — le plus fort émotionnellement. L'image de l'étiquette apparaît pour la première fois.
-- L'utilisateur vient de passer par le wizard, il a des hypothèses formées
-- La révélation doit être un moment, pas un formulaire
-- La saisie des données réelles (producteur, millésime…) se fait immédiatement après — pendant que l'étiquette est sous les yeux
+## 3. Principes acquis
 
-**Points d'attention**
-- Afficher l'image grand format en premier, avant les champs
-- Rendre la saisie optionnelle si l'utilisateur préfère juste voir le résultat
-- Prévoir un état "je ne sais pas / bouteille anonyme"
+- **Guidance décroissante** : plus on avance dans le wizard, moins l'app guide. Perception et Structure sont fermées (chips), Hypothèses demande de se mouiller, Style est libre.
+- **Aides à la demande** : icône `?` par champ, texte définitionnel uniquement (un concept, jamais un exemple de vin). Exception : au niveau Débutant, les aides sont affichées d'office.
+- **Le type de vin est une hypothèse** : le formulaire suit ce que l'utilisateur croit boire, et ne le corrige jamais en cours de route.
+- **Tout est optionnel** dans le wizard : on peut passer une étape sans rien cocher.
+- **Rien ne se perd** : autosave continu, reprise depuis l'accueil.
+- **Le niveau adapte, il ne juge pas** : il change le nombre et la forme des questions, pas le regard porté sur les réponses.
 
 ---
 
-### Comparaison *(Mode Aveugle uniquement)*
-**Rôle UX** : bilan pédagogique. Clôture le rituel, offre une lecture de sa propre progression.
-- Les badges (Juste / Proche / Raté) doivent être lisibles d'un coup d'œil
-- Les insights sont la valeur ajoutée — ils apprennent quelque chose à l'utilisateur
-- Le ton doit être encourageant, jamais condescendant
-
-**Points d'attention**
-- Ne jamais afficher "Raté" sans contexte ou explication
-- Proposer un CTA clair vers le journal (pas juste "Fermer")
-- Penser à la réutilisation pédagogique : peut-on voir l'évolution sur plusieurs dégustations ? (Phase 6)
-
----
-
-## 3. Questions UX ouvertes
-
-### Où placer les hints sans casser l'aveugle ?
-**Problème** : les hints (tooltips sur Acidité, Tanins, Corps…) aident l'utilisateur débutant. Mais s'ils donnent trop d'informations, ils brisent l'exercice ou biaisent le jugement.
-
-**Pistes**
-- Hints disponibles "à la demande" uniquement (icône ℹ️ à tapper)
-- Hints définitionnels uniquement (explication du concept, pas d'exemple de vin)
-- Masquer les hints en mode compétition / sans assistance (toggle dans settings ?)
-- Afficher les hints après la saisie, pas avant (mode feedback)
-
-**Décision en attente** : la solution actuelle (tooltip toujours visible) a un bug B1. Avant de corriger le bug, décider si c'est le bon pattern.
-
----
-
-### Jusqu'où guider sans biaiser ?
-**Problème** : trop de guidance transforme le wizard en formulaire QCM prévisible. Pas assez de guidance et l'utilisateur débutant est perdu.
-
-**Pistes**
-- Étape 1 (Perception) : très guidée — choix fermés pour la robe, arômes par familles
-- Étape 2 (Structure) : guidée avec definitions — c'est technique
-- Étape 3 (Hypothèses) : champ libre + autocomplete — l'utilisateur doit se mouiller
-- Étape 4 (Style) : courte, subjective — laisser la liberté
-
-**Principe proposé** : plus on avance dans le wizard, moins l'app guide. Les premières étapes forment, les dernières libèrent.
-
----
+## 4. Questions ouvertes
 
 ### Que faire si l'utilisateur connaît déjà partiellement le vin ?
-**Scénario** : l'utilisateur voit le vin au restaurant, sait que c'est un Bourgogne rouge mais veut quand même faire l'exercice sur le millésime et le producteur.
+Au restaurant, il sait que c'est un Bourgogne rouge mais veut jouer sur le millésime et le producteur.
+- Piste : pouvoir "verrouiller" des hypothèses déjà connues, exclues de la comparaison
+- Aujourd'hui : on le laisse remplir librement ; l'app ne peut pas vérifier
 
-**Pistes**
-- Permettre de "verrouiller" certains champs d'hypothèses (ex : "Je sais que c'est France > Bourgogne")
-- Créer un mode "semi-aveugle" ou des niveaux de difficulté (Phase 6 ?)
-- Simplement accepter que l'utilisateur soit honnête — l'app ne peut pas vérifier
+### Le débutant apprend-il vraiment quelque chose avec des choix à cocher ?
+Les quatre propositions rendent l'exercice accessible, mais le hasard donne une bonne réponse sur quatre.
+- Fait : la fiche "Pour comprendre" explique le cépage après la révélation, et les leurres sont plausibles
+- À observer : la fiche est-elle lue ? Trop longue, trop savante ?
 
-**Pour l'instant** : ne rien faire, laisser l'utilisateur remplir ses hypothèses librement.
+### Comment faire exister le groupe sans serveur ?
+Aujourd'hui chacun partage son résumé dans la messagerie. Il manque la vue d'ensemble : sur quoi la table était d'accord.
+- Piste sans serveur : chaque invité montre un QR code de son résultat, l'hôte les scanne
+- Piste avec serveur : session en direct (voir [Roadmap](../70_Backlog/Roadmap.md))
+
+### L'étiquette ne dit pas le goût
+La comparaison porte sur des faits (cépage, région, millésime), pas sur la perception (acidité, tanins).
+- Fait : le profil typique du cépage est rapproché de la perception ; l'assistant IA peut rédiger un profil attendu pour le vin précis
+- À observer : les rapprochements sonnent-ils juste face à de vrais vins ?
+- Piste : le consensus de la table comme seule vraie référence du goût de cette bouteille-là
 
 ---
 
-## 4. Hypothèses UX à tester
+## 5. Hypothèses à tester
 
 ### H1 — Wizard 4 étapes vs 3
-**Hypothèse** : fusionner Perception + Structure en une seule étape réduirait la friction sans perdre de valeur pédagogique.
-- Pour : le wizard actuel semble long sur un téléphone
-- Contre : la séparation perception / structure est une distinction œnologique importante — elle sert l'apprentissage
-- **À tester** : mesurer le taux d'abandon entre étape 1 et étape 4
+Fusionner Perception et Structure réduirait la friction.
+- Contre : la distinction est œnologique, elle sert l'apprentissage
+- À observer : où les gens décrochent pendant une vraie dégustation
 
----
+### H2 — Comparaison immédiate vs différée
+Certains voudraient digérer la dégustation avant de voir le résultat.
+- Aujourd'hui : immédiate. C'est le schéma le plus satisfaisant, à confirmer.
 
-### H2 — Hints automatiques vs à la demande
-**Hypothèse** : afficher les hints uniquement à la demande (icône ℹ️) est préférable à l'affichage automatique.
-- Pour : moins de bruit visuel, le hint n'est lu que quand l'utilisateur en a besoin
-- Contre : l'utilisateur débutant ne sait pas qu'ils existent s'ils sont cachés
-- **Compromise possible** : afficher une fois au premier lancement, puis à la demande
-
----
-
-### H3 — Comparaison immédiate vs différée
-**Hypothèse** : permettre de voir la comparaison plus tard (ex : après avoir dormi sur le vin) pourrait être intéressant pour certains profils.
-- Pour : certains utilisateurs veulent digérer la dégustation avant de voir leur score
-- Contre : la comparaison immédiate est le schéma naturel et le plus satisfaisant
-- **Pour l'instant** : comparaison immédiate. Différée à considérer en Phase 6.
-
----
-
-### H4 — Mode Mémoire : scan obligatoire ou optionnel ?
-**Hypothèse** : rendre le scan optionnel en Mode Mémoire augmenterait l'utilisation du mode (moins de friction au démarrage).
-- Pour : l'utilisateur n'a pas toujours accès à l'étiquette au moment de la saisie
-- Contre : la photo est une ancre mémorielle importante dans le journal
-- **Compromise possible** : ajouter une option "Renseigner sans photo" dès l'accueil
-
----
-
-## 5. Décisions prises — Session UX 2026-02-27
-
-> Détail complet dans `docs/Decisions/`. Ce tableau résume les 10 décisions clés.
-
-| # | Question | Décision | Fichier |
-|---|---|---|---|
-| Q1 | Photo dans Reveal | Carrefour à 3 choix (scanner / saisir / inconnu) · photo plein écran si scan | `reveal-carrefour.md` |
-| Q2 | Format comparaison | Lignes côte à côte (hypothèse → badge → réalité) | `comparison-redesign.md` |
-| Q3 | Scan Mode Mémoire | Optionnel — intégré dans le formulaire, pas prérequis | `memory-scan-optional.md` |
-| Q4 | Stratégie hints | À la demande uniquement (icône ?) | `hints-on-demand.md` |
-| Q5 | Score comparaison | Pas de score global — résumé textuel "2 justes · 1 proche · 1 à revoir" | `comparison-redesign.md` |
-| Q6 | Champs Hypothèses | Entonnoir général→particulier · section "Avancé" dépliable (Appellation, Producteur, Millésime) | `hypotheses-structure.md` |
-| Q7 | Reveal sans réalité | Conservé mais secondaire — "Je ne connais pas la bouteille" | `reveal-carrefour.md` |
-| Q8 | Navigation Comparison | Non terminale — CTA "Voir la fiche" + "Journal" en secondaire | `comparison-redesign.md` |
-| Q9 | Minimum Mode Mémoire | Nom/cuvée OU photo obligatoire pour sauvegarder | `memory-scan-optional.md` |
-| Q10 | Bouton "Passer" Sleep | Supprimé — remplacé par lien "Tu connais ce vin ? → Mémorise-le" | `blind-no-scan-before-tasting.md` |
-
-## 6. Décision majeure — Architecture Mode Aveugle
-
-**En Mode Aveugle, aucun scan n'a lieu avant la dégustation.**
-
-Le scan est un outil de révélation (Phase 5 = OCR), pas un point d'entrée. Le flux Aveugle ne passe plus par `scan.jsx`. `scan.jsx` reste pour le Mode Mémoire uniquement (accès alternatif avec scan en entrée).
-
-Impact sur les routes :
-- `sleep/[scanId].jsx` → `sleep/[draftId].jsx`
-- `index.jsx` → CTA Aveugle crée un draft sans scan, navigue vers `/sleep/[draftId]`
-
----
-
-*Mis à jour : 2026-02-27*
+### H3 — Trois niveaux suffisent-ils ?
+- À observer : un invité hésite-t-il entre deux niveaux ? Change-t-il d'avis en cours de route ?
+- Le niveau n'est pas modifiable une fois la dégustation commencée : est-ce un manque ?

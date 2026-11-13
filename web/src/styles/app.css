@@ -59,7 +59,7 @@ input, textarea { font: inherit; color: inherit; }
 .icon-btn.danger { color: var(--error); }
 
 .progress { height: 3px; background: var(--border); }
-.progress-fill { height: 100%; background: var(--primary); border-radius: var(--r-full); transition: width 0.25s ease; }
+.progress-fill { height: 100%; background: var(--primary); border-radius: var(--r-full); transition: width 0.2s ease; }
 
 .body {
   flex: 1;
@@ -416,3 +416,55 @@ input, textarea { font: inherit; color: inherit; }
 .resume-card { width: 100%; text-align: left; }
 button.banner { text-align: left; width: 100%; }
 .link-btn svg { vertical-align: text-bottom; }
+
+/* ── Niveaux et dégustation à plusieurs ────────────────────────────────────── */
+
+.level-list { display: flex; flex-direction: column; gap: var(--s-2); width: 100%; }
+.level-card {
+  display: flex; flex-direction: column; gap: 2px;
+  width: 100%; min-height: var(--tap);
+  padding: var(--s-3) var(--s-4);
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+.level-card.active { background: var(--primary-subtle); border-color: var(--primary-border); }
+.level-label { font-size: var(--f-base); font-weight: var(--w-semibold); }
+.level-card.active .level-label { color: var(--primary); }
+.level-desc { font-size: var(--f-sm); color: var(--text-secondary); line-height: 1.4; }
+
+.step-text { font-size: var(--f-sm); line-height: 1.5; color: var(--text-secondary); }
+.qr { display: block; width: 100%; max-width: calc(var(--photo) * 2.5); margin: 0 auto; border-radius: var(--r-md); }
+.reveal-code {
+  font-size: calc(var(--f-3xl) * 1.6);
+  font-weight: var(--w-bold);
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  text-align: center;
+  color: var(--primary);
+  padding: var(--s-3) 0;
+}
+.code-input {
+  font-size: var(--f-3xl);
+  font-weight: var(--w-bold);
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  text-align: center;
+  text-transform: uppercase;
+  min-height: var(--s-16);
+  flex-shrink: 0;
+}
+
+/* ── Indices, fiche pédagogique, mot de l'hôte ─────────────────────────────── */
+
+.clue-box { display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-3); background: var(--close-subtle); border-radius: var(--r-lg); flex-shrink: 0; }
+.lesson-text { font-size: var(--f-sm); line-height: 1.5; color: var(--text); }
+.quote { font-size: var(--f-base); line-height: 1.5; font-style: italic; color: var(--text); white-space: pre-wrap; padding-left: var(--s-3); border-left: 2px solid var(--primary-border); }
+.muted.left { text-align: left; }
+.insight svg.lucide-check { color: var(--match); }
+
+/* ── Assistant IA ──────────────────────────────────────────────────────────── */
+
+.ai-tag { font-size: var(--f-xs); color: var(--text-secondary); white-space: nowrap; }
+.banner svg { vertical-align: text-bottom; }

@@ -21,6 +21,8 @@ Deux magasins :
   createdAt: 'ISO',
   updatedAt: 'ISO',
   tastedAt: 'YYYY-MM-DD',          // date de dégustation, modifiable ; sert au tri du journal
+  level: 'debutant' | 'amateur' | 'expert',   // adapte le formulaire à l'aveugle ; absent des anciennes fiches → 'amateur'
+  session: null | { … },           // dégustation à plusieurs, voir plus bas
 
   // ── Mode Aveugle uniquement (valeurs par défaut inertes en mode Mémoire) ──
   step: 0..4,                      // 0 = choix du type
@@ -30,11 +32,13 @@ Deux magasins :
   hypotheses: {
     grapes: [], confidence: 1..5, country: '', region: '',
     appellation: '', vintage: '', producer: '', climate: null, soil: null,
+    vintageRange: null | { label, min, max },   // millésime donné en tranche (Débutant) ; exclusif avec vintage
   },
   comparison: {
     matches: { type, grapes, country, region, appellation, vintage, producer },   // 'exact' | 'close' | 'miss', clé absente si non comparable
     insights: [],                                                                  // 0 à 2 phrases
   },
+  cluesUsed: 0,                    // indices demandés pendant une dégustation à plusieurs
 
   // ── Commun aux deux modes ──
   style: { category: null, overallImpression: '', rating: 1..5 | null, favorite: false, pairings: [], context: '' },
@@ -53,6 +57,24 @@ Notes :
 - `wineType` (hypothèse) et `reality.type` (vérité) sont deux champs distincts ; leur comparaison donne `matches.type`.
 - `price` et `abv` sont des chaînes saisies librement (virgule acceptée) ; `formatPrice()` gère l'affichage.
 - Une fiche à l'aveugle "bouteille inconnue" a une `reality` vide et `comparison.matches` vide.
+
+### Dégustation à plusieurs (`session`)
+
+```js
+// Fiche de l'hôte (mode 'memory') — permet de rouvrir l'invitation
+{ role: 'host', id, hostName, code: 'ABCD', token: '<jeton du lien>', hostNote: '', aiProfile: '' }
+
+// Fiche de l'invité (mode 'blind')
+{ role: 'guest', id, hostName,
+  mcq: { grape: [4 cépages], region: [4 régions] | country: [4 pays] },   // en clair
+  k: { c: 'frais', s: 'rouge-epice', i: 'R', p: 'pays'?, x: [1, 3] },      // codes des indices, en clair
+  hostNote: '', aiProfile: '',                                             // remplis à la révélation
+  s: '<sel>', i: '<vecteur>', c: '<bouteille chiffrée>' }                  // base64url
+```
+
+`id` est commun à l'hôte et à tous ses invités. Après révélation, la bouteille déchiffrée est copiée dans `reality` ; les champs chiffrés restent sur la fiche sans être relus.
+
+Le jeton du lien est le JSON `{ v: 1, id, host, mcq, k, s, i, c }` encodé en base64url. La partie chiffrée `c` contient les champs renseignés de la bouteille, plus `note` (mot de l'hôte) et `ai` (texte de l'assistant) s'ils existent.
 
 ### Structure par type (`structure.data`)
 
@@ -95,7 +117,9 @@ Produit par `utils/backup.js` — `mywine-sauvegarde-YYYY-MM-DD.json` :
 
 L'import **fusionne par identifiant** : une fiche du fichier remplace la fiche locale de même `id`, les autres fiches locales sont conservées.
 
-La date du dernier export est gardée dans `localStorage` (`mywine.lastExport`) pour le rappel de sauvegarde.
+Clés `localStorage` (préférences de l'appareil, hors sauvegarde) : `mywine.lastExport` (rappel de sauvegarde), `mywine.level` (dernier niveau choisi), `mywine.name` (prénom de l'hôte), `mywine.apiKey` (clé d'API Claude de l'utilisateur) et `mywine.aiModel` (modèle choisi).
+
+La sauvegarde contient le code de révélation des invitations créées par l'hôte.
 
 ---
 

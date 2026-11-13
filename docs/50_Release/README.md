@@ -65,5 +65,6 @@ Version dans `web/package.json`, affichée en bas des paramètres.
 | Version | Date | Contenu |
 |---|---|---|
 | 2.0.0 | 2026-11-13 | Réécriture en webapp : parcours Aveugle et Mémoire, photos, prix, fiche modifiable, sauvegarde complète |
+| 2.1.0 | 2026-11-13 | Niveaux, dégustation à plusieurs sans serveur, fiche "Pour comprendre", indices, mot de l'hôte, assistant IA optionnel |
 
 Pour forcer le renouvellement du cache hors ligne après un changement de `sw.js`, incrémenter `CACHE` dans `web/public/sw.js`.

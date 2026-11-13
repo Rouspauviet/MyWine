@@ -28,6 +28,54 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 - [ ] Au moins un indice dans "À retenir" (ex : rouge, tanins marqués + corps ample)
 - [ ] "Je ne connais pas la bouteille" → fiche enregistrée, "Comparaison impossible"
 
+### Niveaux
+
+- [ ] Sommeil : trois niveaux, le dernier choisi est présélectionné la fois suivante
+- [ ] Débutant : Structure réduite à 2–3 champs avec aides ouvertes ; Hypothèses en choix à cocher ; Style réduit
+- [ ] Débutant en solo : cépages courants du type supposé, liste des pays, 4 tranches d'âge
+- [ ] Expert : appellation, millésime, producteur, climat, sol visibles sans déplier
+- [ ] Tranche d'âge contenant le vrai millésime → "Juste" ; à 2 ans près → "Proche"
+
+### Dégustation à plusieurs (site en HTTPS, idéalement deux téléphones)
+
+- [ ] Hôte : prénom obligatoire, puis au moins nom / producteur / appellation
+- [ ] Invitation : QR code affiché, code de révélation masqué par défaut
+- [ ] Le QR code se scanne avec l'appareil photo d'un autre téléphone, à distance de table
+- [ ] "Partager le lien" ouvre la feuille de partage
+- [ ] Invité : "{Hôte} t'invite…", choix du niveau, wizard avec "Organisée par {Hôte}"
+- [ ] Invité Débutant : la bonne réponse figure parmi les 4 cépages et les 4 régions (ou pays)
+- [ ] **Anti-révélation** : aucune info de la bouteille visible chez l'invité avant le code
+- [ ] Code faux → message, nouvel essai possible ; minuscules acceptées
+- [ ] Code juste → comparaison, fiche au journal de l'invité avec prix et appellation
+- [ ] "Partager mon résultat" → texte lisible dans une messagerie
+- [ ] Rouvrir le lien d'invitation → reprise de la dégustation, pas de doublon
+- [ ] Fiche de l'hôte → "Rouvrir l'invitation et le code"
+- [ ] Adresse de test en Wi-Fi (HTTP) → message expliquant qu'il faut la version en ligne
+
+### Pour comprendre, indices, mot de l'hôte
+
+- [ ] Rouge, Syrah, tanins marqués et corps ample saisis → "c'est typique du cépage Syrah"
+- [ ] Perception opposée au profil → explication sans jugement ; perception voisine → rien
+- [ ] Cépage absent de la base → pas de ligne sur le cépage, pas d'erreur
+- [ ] Fiche Mémoire avec un cépage connu → texte sur le cépage, sans rapprochement
+- [ ] Invité : "Demander un indice" → climat, puis style, puis dernier indice selon le niveau
+- [ ] Débutant, dernier indice → deux cépages disparaissent des propositions, jamais le bon
+- [ ] Le nombre d'indices apparaît dans le résumé, la fiche et le texte partagé
+- [ ] Mot de l'hôte : absent du lien en clair, affiché à la révélation chez l'invité
+- [ ] Leurres : pour une Syrah, les propositions contiennent Grenache, Mourvèdre ou Malbec
+
+### Assistant IA (avec une clé d'API créditée)
+
+- [ ] Sans clé : aucun bouton "Remplir depuis la photo", aucune carte IA chez l'hôte
+- [ ] Paramètres : coller la clé → "Clé enregistrée (se termine par …XXXX)", jamais affichée en entier
+- [ ] "Remplir depuis la photo" : champs remplis, **un champ déjà saisi n'est pas écrasé**
+- [ ] Étiquette courbe, puis face + contre-étiquette
+- [ ] Hôte : "Ajouter ce qu'on attend de ce vin" → texte visible chez l'invité après le code
+- [ ] Mode avion → message "Pas de connexion", le reste du formulaire reste utilisable
+- [ ] Clé fausse → "La clé d'API est refusée"
+- [ ] "Retirer la clé" → les boutons IA disparaissent
+- [ ] La sauvegarde exportée ne contient pas la clé
+
 ### Parcours Mémoire
 
 - [ ] Accueil → "Mémoriser un vin" → enregistrer à vide → message de validation
@@ -68,4 +116,10 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 
 Parcours Aveugle complet (rouge), autocomplétion cépages et appellation, photo compressée, comparaison et indices, modification de fiche avec recalcul, parcours Mémoire et validation, journal avec filtres et vignette, aller-retour export → effacement → import, reprise de brouillon.
 
-**Non vérifié** : tout ce qui dépend d'un vrai iPhone (appareil photo, installation, zones sûres, clavier, feuille de partage à l'export) et le mode hors ligne.
+Même jour, après ajout des niveaux et de la dégustation à plusieurs : création d'une invitation (validations, QR code, code masqué, bouteille absente du lien en clair), invité Débutant de bout en bout (choix multiples, mauvais code refusé, bon code, comparaison, texte de partage, réouverture du lien sans doublon), niveau Expert.
+
+Même jour, après ajout de la pédagogie et de l'assistant : leurres plausibles, indices (climat, style, deux cépages écartés), mot de l'hôte chiffré et révélé, fiche "Pour comprendre" (confirmation, écart, cépage inconnu, fiche Mémoire). Assistant IA testé **avec un faux serveur** (`window.fetch` remplacé) : enregistrement de la clé, lecture d'étiquette sans écraser un champ saisi, profil attendu joint à l'invitation et affiché chez l'invité.
+
+**Assistant IA jamais testé contre la vraie API** : la clé d'essai a répondu "credit balance is too low". La qualité de lecture sur de vraies étiquettes et le coût réel restent à mesurer.
+
+**Non vérifié** : le scan réel du QR code entre deux téléphones, la feuille de partage, et tout ce qui dépend d'un vrai iPhone (appareil photo, installation, zones sûres, clavier, feuille de partage à l'export) et le mode hors ligne.

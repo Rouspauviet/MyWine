@@ -7,7 +7,7 @@
 
 ## Ce qu'est MyWine
 
-Une **webapp installable (PWA)** de dégustation de vin, **mono-utilisateur**, pensée pour l'iPhone.
+Une **webapp installable (PWA)** de dégustation de vin, **un journal par appareil**, pensée pour l'iPhone.
 
 Pas de compte, pas de serveur : toutes les données (fiches et photos) restent dans le navigateur de l'appareil. La sauvegarde se fait par export d'un fichier.
 
@@ -15,6 +15,7 @@ Deux objectifs :
 
 1. **Remplir un formulaire pendant une dégustation à l'aveugle**, puis comparer ses hypothèses à la réalité.
 2. **Garder un souvenir des bouteilles bues** : étiquette en photo, prix, lieu d'achat, note, occasion.
+3. **Faire deviner une bouteille à ses invités**, chacun sur son téléphone et à son niveau.
 
 ---
 
@@ -34,6 +35,29 @@ Contrainte clé : **aucune info réelle (étiquette, nom) n'est affichée ni dem
 
 Le formulaire change selon le type de vin supposé : c'est le principe des [grammaires de dégustation](../10_Product_UX/Tasting_Grammars.md).
 
+### Dégustation à plusieurs
+
+> "J'ai acheté cette bouteille, je veux la faire deviner à mes invités."
+
+```
+Hôte   : Accueil → bouteille → QR code d'invitation → code de révélation
+Invité : lien → niveau → wizard → code → comparaison → fiche
+```
+
+C'est un mode Aveugle dont la vérité vient de l'hôte. Aucun serveur : la bouteille voyage chiffrée dans le lien, et le code de révélation la déchiffre. Détail → [Group.md](../10_Product_UX/Flows/Group.md).
+
+### Comprendre, pas seulement comparer
+
+Après la révélation, une fiche "Pour comprendre" donne le profil typique du cépage et de la région et le rapproche de ce qui a été perçu. Elle s'appuie sur une base de connaissances intégrée, sans réseau.
+
+### Assistant IA (optionnel)
+
+Avec sa propre clé d'API Claude, l'utilisateur peut remplir une fiche depuis la photo de l'étiquette, et l'hôte peut joindre à son invitation un court texte sur ce qu'on attend du vin. Sans clé, l'app fonctionne entièrement.
+
+### Niveaux
+
+Débutant, Amateur, Expert : chaque dégustateur choisit le sien. Le niveau adapte le nombre de questions et leur forme (choix à cocher pour le débutant), jamais un jugement.
+
 ### Mode Mémoire
 
 > "Je viens de boire ce vin, je veux m'en souvenir rapidement."
@@ -50,6 +74,9 @@ Accueil → Fiche rapide (photo, identité, prix, impression) → Journal
 |---|---|
 | **Fiche** (`record`) | Une bouteille au journal, issue du mode Aveugle ou Mémoire |
 | **Brouillon** | Dégustation à l'aveugle en cours (`status: 'draft'`), reprenable depuis l'accueil |
+| **Invitation** | Lien (ou QR code) produit par l'hôte : bouteille chiffrée + propositions de choix multiples |
+| **Code de révélation** | 4 lettres annoncées par l'hôte ; déchiffre la bouteille chez les invités |
+| **Niveau** | Débutant / Amateur / Expert — adapte le formulaire à l'aveugle |
 | **Réalité** | Les vraies informations de la bouteille, saisies à la Révélation ou en Mémoire |
 | **Hypothèses** | Ce que l'utilisateur a deviné à l'aveugle (cépages, pays, région, millésime…) |
 | **Cuvée** | Nom du vin (ex : "La Bergerie des Centenaires") |
@@ -86,13 +113,18 @@ Aucun backend. L'hébergement ne sert que des fichiers statiques.
 | `web/src/data/wineData.js` | Vocabulaire de dégustation par type de vin |
 | `web/src/utils/comparison.js` | Comparaison hypothèses ↔ réalité + indices |
 | `web/src/utils/backup.js` | Export / import complet |
+| `web/src/utils/session.js` | Dégustation à plusieurs : chiffrement de l'invitation, choix multiples |
+| `web/src/data/levels.js` | Niveaux, cépages courants par couleur |
+| `web/src/data/wineKnowledge.js` | Profils typiques des cépages, repères par région et pays |
+| `web/src/utils/pedagogy.js` | Fiche "Pour comprendre" |
+| `web/src/utils/ai.js` | Assistant IA optionnel (clé locale, lecture d'étiquette, profil attendu) |
 | `web/src/styles/tokens.css` | Source de vérité visuelle |
 
 ---
 
 ## Principes non négociables
 
-1. **Données locales** — rien ne quitte l'appareil.
+1. **Données locales** — rien ne passe par un serveur. À plusieurs, la bouteille voyage dans un lien chiffré que l'hôte partage lui-même. Seul l'assistant IA, s'il est activé et déclenché, envoie une photo ou une fiche à Anthropic.
 2. **Deux modes = deux intentions** — ne jamais mélanger Aveugle et Mémoire.
 3. **Anti-révélation** — en mode Aveugle, aucune info réelle avant l'écran Révélation.
 4. **Tokens everywhere** — toutes les valeurs visuelles viennent de `tokens.css`.

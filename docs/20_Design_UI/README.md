@@ -5,9 +5,7 @@ Tokens visuels et composants.
 | Document | Contenu |
 |---|---|
 | [Design_System_v2.md](Design_System_v2.md) | ← **Référence active** · Philosophie visuelle, tokens, règles composants |
-| [Component_Kit.md](Component_Kit.md) | Specs par composant (objectif, composition, tokens, états, Do/Don't) |
-
-**Design System v1** (historique, ne pas modifier) : [`_archive/Design_System_MyWine_v1.md`](../_archive/Design_System_MyWine_v1.md)
+| [Component_Kit.md](Component_Kit.md) | Les composants de la webapp : rôle, emplacement, règles |
 
 ## Implémentation web
 

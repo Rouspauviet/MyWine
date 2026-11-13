@@ -1,13 +1,15 @@
-// Révélation — fin de la dégustation à l'aveugle : on découvre et on saisit la vraie bouteille
+// Révélation — fin de la dégustation à l'aveugle : on découvre la vraie bouteille
+// Solo : on la saisit soi-même. À plusieurs (invité) : on la déchiffre avec le code annoncé par l'hôte.
 // C'est le premier écran du parcours Aveugle où des informations réelles apparaissent.
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Eye, BookOpen } from 'lucide-react'
+import { Eye, BookOpen, KeyRound } from 'lucide-react'
 import { Screen, Header, Body, Footer, ConfirmModal, Loading } from '../components/Layout'
 import { BottleForm } from '../components/Forms'
 import * as db from '../db/db'
 import { computeComparison } from '../utils/comparison'
 import { usePhotoDraft } from '../utils/photos'
+import { revealInvitation, normalizeCode } from '../utils/session'
 
 export default function Reveal() {
   const navigate = useNavigate()
@@ -15,6 +17,7 @@ export default function Reveal() {
   const [rec, setRec] = useState(undefined)
   const [phase, setPhase] = useState('choice') // 'choice' = moment de vérité | 'form' = saisie
   const [reality, setReality] = useState(db.emptyReality())
+  const [code, setCode] = useState('')
   const [confirmUnknown, setConfirmUnknown] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -30,13 +33,14 @@ export default function Reveal() {
 
   if (!rec) return <Loading />
 
-  const finish = async (finalReality, withPhotos) => {
+  const finish = async (finalReality, withPhotos, extra = {}) => {
     setSaving(true)
     setError(null)
     try {
       const thumb = withPhotos ? await photoDraft.commit(id) : null
       await db.saveRecord({
         ...rec,
+        ...extra,
         status: 'done',
         reality: finalReality,
         comparison: computeComparison(rec, finalReality),
@@ -49,6 +53,56 @@ export default function Reveal() {
     }
   }
 
+  // ── Invité d'une dégustation à plusieurs : saisie du code de révélation ──────
+  if (rec.session?.role === 'guest') {
+    const hostName = rec.session.hostName
+    const unlock = async () => {
+      setSaving(true)
+      setError(null)
+      const truth = await revealInvitation(rec.session, code)
+      if (!truth) {
+        setError('Ce code ne correspond pas. Vérifie les 4 lettres avec ' + hostName + '.')
+        setSaving(false)
+        return
+      }
+      const { note, ai, ...bottle } = truth
+      finish({ ...db.emptyReality(), ...bottle }, false, { session: { ...rec.session, hostNote: note ?? '', aiProfile: ai ?? '' } })
+    }
+
+    return (
+      <Screen>
+        <Body className="centered">
+          <div className="hero">
+            <Eye size={32} className="hero-icon" />
+            <h1 className="hero-title">Le moment de vérité</h1>
+            <p className="hero-text">{`Tu as terminé ta dégustation.\nDemande le code de révélation à ${hostName}.`}</p>
+          </div>
+          <input
+            className="input code-input"
+            value={code}
+            onChange={e => setCode(normalizeCode(e.target.value).slice(0, 4))}
+            placeholder="ABCD"
+            aria-label="Code de révélation"
+            autoCapitalize="characters"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck={false}
+            enterKeyHint="done"
+            onKeyDown={e => { if (e.key === 'Enter' && code.length === 4) unlock() }}
+          />
+          {error && <p className="banner error">{error}</p>}
+        </Body>
+        <Footer className="column bare">
+          <button className="btn btn-primary btn-large block" disabled={saving || code.length < 4} onClick={unlock}>
+            <KeyRound size={22} /> {saving ? 'Ouverture…' : 'Révéler la bouteille'}
+          </button>
+          <button className="link-btn" onClick={() => navigate(`/tasting/${id}`)}>Revenir à mes notes</button>
+        </Footer>
+      </Screen>
+    )
+  }
+
+  // ── Solo ────────────────────────────────────────────────────────────────────
   if (phase === 'choice') {
     return (
       <Screen>

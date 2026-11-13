@@ -1,5 +1,7 @@
 // Formulaires partagés — photos, identité de la bouteille, impression personnelle
-import { Camera, X } from 'lucide-react'
+import { useState } from 'react'
+import { Camera, X, Sparkles } from 'lucide-react'
+import { hasApiKey, readLabel, blobToImage, AiError } from '../utils/ai'
 import { Field, TextField, ChipGroup, TagInput, SuggestInput, RatingStars, Switch } from './Inputs'
 import { Card } from './Layout'
 import { WINE_TYPES, COUNTRIES, PAIRING_SUGGESTIONS } from '../data/wineData'
@@ -58,6 +60,47 @@ export function PhotoPicker({ draft }) {
   )
 }
 
+// Lecture de l'étiquette par l'assistant IA — visible seulement si une clé est configurée et qu'il y a une photo.
+// Ne remplit que les champs encore vides : ce que l'utilisateur a saisi n'est jamais écrasé.
+function LabelReader({ value, onChange, photoDraft }) {
+  const [state, setState] = useState({ busy: false, message: null, kind: null })
+  if (!hasApiKey() || photoDraft.photos.length === 0) return null
+
+  const run = async () => {
+    setState({ busy: true, message: null, kind: null })
+    try {
+      const images = await Promise.all(photoDraft.photos.slice(0, 2).map(p => blobToImage(p.blob)))
+      const { reality: found } = await readLabel(images)
+      const next = { ...value }
+      let filled = 0
+      for (const [key, val] of Object.entries(found)) {
+        const empty = Array.isArray(next[key]) ? next[key].length === 0 : !next[key]
+        const useful = Array.isArray(val) ? val.length > 0 : !!val
+        if (empty && useful) { next[key] = val; filled++ }
+      }
+      onChange(next)
+      setState({
+        busy: false,
+        kind: filled ? 'success' : null,
+        message: filled
+          ? `${filled} champ${filled > 1 ? 's' : ''} rempli${filled > 1 ? 's' : ''} depuis la photo. Vérifie-les : l'assistant peut se tromper.`
+          : 'L\'assistant n\'a rien trouvé de plus sur cette photo.',
+      })
+    } catch (err) {
+      setState({ busy: false, kind: 'error', message: err instanceof AiError ? err.message : `Lecture impossible : ${err.message}` })
+    }
+  }
+
+  return (
+    <>
+      <button type="button" className="btn btn-secondary block" disabled={state.busy || photoDraft.busy} onClick={run}>
+        <Sparkles size={18} /> {state.busy ? 'Lecture de l\'étiquette…' : 'Remplir depuis la photo'}
+      </button>
+      {state.message && <p className={`banner ${state.kind ?? ''}`}>{state.message}</p>}
+    </>
+  )
+}
+
 // Identité réelle de la bouteille — utilisée à la Révélation, en Mémoire et en modification
 export function BottleForm({ value, onChange, photoDraft }) {
   const set = (key, val) => onChange({ ...value, [key]: val })
@@ -74,6 +117,7 @@ export function BottleForm({ value, onChange, photoDraft }) {
       <Field label="Photos" optional>
         <PhotoPicker draft={photoDraft} />
       </Field>
+      <LabelReader value={value} onChange={onChange} photoDraft={photoDraft} />
 
       <Field label="Type">
         <ChipGroup options={WINE_TYPES} value={value.type} onChange={v => set('type', v)} dots />

@@ -1,9 +1,10 @@
 # Design System v2 — MyWine
 
-> ⚠️ **Document écrit pour l'ancienne app native (React Native).** Les principes restent valables ; les mentions de scan/OCR, de `tokens.js`, de `StyleSheet` et des écrans `.jsx` de `mobile/` sont obsolètes. Implémentation actuelle : `web/src/` — voir [docs/README.md](../README.md).
-
 > Tout ce document est exprimé en règles, pas en opinions.
-> Aucune valeur ne peut être contournée dans un composant — tout passe par `tokens.js`.
+> Aucune valeur ne peut être contournée dans un composant — tout passe par `web/src/styles/tokens.css`.
+>
+> **Noms des tokens** : ce document les écrit `surfaceAlt`, `spacing[4]`, `radius.lg`, `fontSize.sm`.
+> Dans le code ce sont des variables CSS : `--surface-alt`, `--s-4`, `--r-lg`, `--f-sm`.
 
 ---
 
@@ -55,7 +56,7 @@ surfaceSunken:  #F2EDE6   ← légèrement plus foncé que bg — pour les zones
 - `bg` : fond de l'écran entier. Jamais utilisé comme fond d'une card.
 - `surface` : card, section, modal, footer fixe. Créé un léger soulèvement sur `bg`.
 - `surfaceAlt` : headers de section (intérieur d'une card), zone d'info neutre, header de navigation.
-- `surfaceSunken` : fond des inputs TextInput. Donne la sensation que le champ est "en creux" dans la surface.
+- `surfaceSunken` : fond des inputs champ de saisie. Donne la sensation que le champ est "en creux" dans la surface.
 
 ### 2.2 Texte
 
@@ -139,24 +140,27 @@ Deux systèmes selon le contexte, jamais mélangés dans le même écran :
 
 ### 2.6 Types de vin — représentation
 
-Les types de vin (rouge, blanc, rosé, effervescent, mutuel) sont représentés par :
-- **Pastille couleur** : cercle de 10–12px, couleur définie ci-dessous
-- **Label texte** : `fontSize.sm`, `textSecondary`, sentence case
+Les types de vin sont représentés par :
+- **Pastille couleur** : cercle de 12px, couleur définie ci-dessous
+- **Label texte** : toujours présent à côté de la pastille, ou porté par le contexte (titre de la fiche)
 
 ```
-Rouge :        #8B2C2C   ← bordeaux/brique (distinct de primary)
-Blanc :        #C8A84B   ← doré paille
-Rosé :         #D4748A   ← rose pâle-moyen
-Effervescent : #8B9BAD   ← bleu-gris argenté
+Rouge :      #8B2C2C   ← bordeaux/brique (distinct de primary)
+Blanc :      #C8A84B   ← doré paille
+Rosé :       #D4748A   ← rose pâle-moyen
+Pétillant :  #8B9BAD   ← bleu-gris argenté
+Orange :     #C77B3A   ← ambre cuivré
+Clairet :    #B8485A   ← rouge rosé
+Autre :      #9A8A7E   ← taupe neutre
 ```
 
 **Règles absolues :**
 - Jamais d'emoji pour représenter un type de vin
 - Jamais une couleur de type utilisée comme fond d'une zone > 48px
-- La pastille est un indicateur, pas un identifiant unique — le label texte doit toujours l'accompagner
+- La pastille est un indicateur, pas un identifiant unique
 - Sur fond `surfaceAlt` ou `surface`, la pastille est posée sans bordure
 
-### 2.6 Overlay
+### 2.7 Overlay
 
 ```
 overlay:         rgba(28, 21, 18, 0.55)   ← noir chaud, pas noir pur
@@ -168,18 +172,13 @@ overlay:         rgba(28, 21, 18, 0.55)   ← noir chaud, pas noir pur
 
 ### 3.1 Famille de fontes
 
-**Règle générale :** Le système utilise deux registres typographiques.
+Police système sans-serif uniquement (`--font`). La distinction entre interface (labels, boutons, navigation) et contenu (nom du vin, valeurs saisies, impressions) se fait par le poids et la taille, pas par la famille.
 
-| Registre | Usage | Famille |
-|---|---|---|
-| **Interface** | Labels, CTAs, navigation, badges | Police système sans-serif (par défaut) |
-| **Contenu** | Nom du vin, valeurs saisies, impressions libres | À envisager Phase 6 : une serif (Lora ou équivalent via expo-font) |
+Piste non retenue pour l'instant : une serif réservée au contenu (titre d'une fiche, impression libre). Si elle est ajoutée un jour, les labels d'interface restent en sans-serif.
 
-**Au MVP (Phase 4–5) :** Police système uniquement. La distinction interface/contenu se fait par le poids et la taille, pas par la famille.
+Les champs de saisie utilisent `--f-input` (16px) et non `fontSize.base` (15px) : en dessous de 16px, Safari sur iPhone zoome à la mise au point.
 
-**Règle Phase 6 optionnelle :** Si expo-font est ajouté, la serif s'applique uniquement aux éléments "data" (titre d'une fiche, valeur de cuvée affichée, impression libre). Les labels UI restent en sans-serif.
-
-### 3.2 Échelle de taille (inchangée, usage redéfini)
+### 3.2 Échelle de taille
 
 ```
 xs:   11px  → caption : dates, badges courts, indicateurs numériques
@@ -202,7 +201,7 @@ bold:     700  → display uniquement (home appName, hero title Sleep/Reveal)
 
 **Règle :** `bold` est réservé aux titres de taille `2xl` et `3xl`. Au-delà, `semibold` suffit.
 
-### 3.4 Règles de casse (reformulation complète)
+### 3.4 Règles de casse
 
 **UPPERCASE est interdit sauf dans ces 4 cas précis :**
 1. Badges comparaison (ex : "JUSTE", "PROCHE", "RATÉ") — ≤ 4 mots, `xs`
@@ -300,56 +299,33 @@ Rappel de l'échelle actuelle (conservée) :
 
 ```
 sm:   4px    → badges inline, chips, tags, très petits éléments
-md:   6px    → inputs TextInput, champs de saisie
+md:   6px    → inputs champ de saisie, champs de saisie
 lg:   10px   → cards, sections (conteneurs de contenu)
 xl:   14px   → modals, bottom sheets
 full: 999    → pills (badges de comparaison), séparateurs ronds
 ```
 
-**Changements par rapport à v1 :**
-- `sm` : 6 → 4 (badges moins mous)
-- `md` : 8 → 6 (inputs moins rebondis)
-- `lg` : 12 → 10 (cards légèrement plus angulaires)
-- `xl` : 16 → 14 (modals plus sérieuses)
+**Intention :** des angles nets. Des badges qui ne font pas mous, des champs qui ne rebondissent pas, des cartes légèrement angulaires.
 
 **Règle :** Les CTAs primaires et secondaires utilisent `radius.lg` (10px), pas `radius.xl`. Un bouton de 56px de haut avec radius 14px crée un effet "pilule mobile" générique.
 
 ### 5.2 Ombres
 
-```js
-shadow.sm: {
-  shadowColor: '#1C1512',     // ← noir chaud (sépia)
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.06,
-  shadowRadius: 3,
-  elevation: 1,
-}
-shadow.md: {
-  shadowColor: '#1C1512',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.09,
-  shadowRadius: 8,
-  elevation: 3,
-}
-shadow.lg: {
-  shadowColor: '#1C1512',
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.13,
-  shadowRadius: 16,
-  elevation: 6,
-}
+```css
+--shadow-sm: 0 1px 3px rgba(28, 21, 18, 0.06);   /* teinte chaude (sépia), jamais noir pur */
+--shadow-md: 0 2px 8px rgba(28, 21, 18, 0.09);
+--shadow-lg: 0 4px 16px rgba(28, 21, 18, 0.13);
 ```
 
 **Règles d'usage des ombres :**
 
 | Usage | Ombre |
 |---|---|
-| Cards dans un scroll (journal, entry, comparison) | `shadow.sm` |
-| Modal / bottom sheet | `shadow.lg` |
-| Dropdown autocomplete (TagInput) | `shadow.md` |
+| Cartes du journal | `shadow.sm` |
+| Fenêtre de confirmation | `shadow.lg` |
 | CTAs primaires | **Aucune ombre** |
-| Sections dans une card | **Aucune ombre** |
-| Footer fixe | Bordure seule (`borderTopWidth: 1`) |
+| Cartes de formulaire, sections dans une carte | **Aucune ombre** |
+| Footer fixe | Bordure haute seule |
 
 **Règle fondamentale :** Une ombre sur un CTA dit "je flotte au-dessus de l'interface". Le bouton doit avoir du poids, pas de la flottaison. La couleur et la masse visuelle suffisent.
 
@@ -357,17 +333,11 @@ shadow.lg: {
 
 ## 6. États interactifs
 
-### 6.1 Press / activeOpacity
+### 6.1 Appui
 
-```
-CTA primaire :     activeOpacity: 0.82
-CTA secondaire :   activeOpacity: 0.75
-Lien tertaire :    activeOpacity: 0.60
-Chip / tag :       activeOpacity: 0.70
-Card (journal) :   activeOpacity: 0.85  ← moins de compression, plus physique
-```
+Un élément pressé s'assombrit légèrement : `opacity: 0.8` sur `:active`, pour tous les boutons. Pas de changement d'échelle, pas de rebond.
 
-**Règle :** `activeOpacity` plus bas = feedback plus physique. On ne "survole" pas une carte en papier, on l'appuie.
+**Règle :** on ne "survole" pas une carte en papier, on l'appuie. L'app est pensée pour le toucher : aucun état `:hover` ne porte d'information.
 
 ### 6.2 Disabled
 
@@ -407,49 +377,32 @@ Pas de `ring` de focus possible en RN sans librairie. Règle : le focus est sign
 // label : primary (bordeaux)
 ```
 
-**Changement v1 → v2 :** `borderWidth` passe de `1.5` à `1`. L'état actif se lit par la couleur, pas l'épaisseur.
+**Règle :** bordure de 1px dans tous les états. L'état actif se lit par la couleur, pas par l'épaisseur.
 
 ### 6.5 Animations
 
 **Principe général : aucune animation décorative ou "satisfaisante".**
-Une animation n'est autorisée que si elle communique un changement d'état utilitaire que l'utilisateur doit percevoir.
+Une animation n'est autorisée que si elle communique un changement d'état que l'utilisateur doit percevoir.
 
-#### Cas autorisés — transitions d'état utilitaires
+#### Cas autorisés
 
-| Interaction | Animation | Durée | Easing |
-|---|---|---|---|
-| Ouverture d'un hint (icône `?`) | `LayoutAnimation.easeInEaseOut` | 150ms | ease-in-out |
-| Fermeture d'un hint | idem | 120ms | ease-in-out |
-| Ouverture section "Avancé" | `LayoutAnimation.easeInEaseOut` | 180ms | ease-in-out |
-| Fermeture section "Avancé" | idem | 150ms | ease-in-out |
+| Interaction | Animation | Durée max |
+|---|---|---|
+| Appui sur un bouton | Transition d'opacité | 150ms |
+| Bascule d'un interrupteur | Glissement du curseur, changement de fond | 150ms |
+| Avancée de la barre de progression du wizard | Transition de largeur | 200ms |
 
-**Implémentation RN :**
-```js
-import { LayoutAnimation, Platform, UIManager } from 'react-native'
-
-// Android nécessite l'activation explicite
-if (Platform.OS === 'android') {
-  UIManager.setLayoutAnimationEnabledExperimental?.(true)
-}
-
-// Avant le setState qui modifie la hauteur
-LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-```
+L'ouverture d'une aide `?` ou de la section avancée est instantanée.
 
 #### Cas interdits (liste exhaustive)
 
-- Spring / bounce sur tout élément
-- Scale au press des CTAs ou chips
-- Fade-in au montage d'un écran ou d'un composant
-- Animations de "célébration" (résultat de comparaison, sauvegarde)
-- Transitions entre étapes du wizard (le Stack navigator gère la navigation, pas les steps)
-- Tout `Animated.timing` > 200ms
+- Rebond ou effet ressort sur tout élément
+- Changement d'échelle à l'appui
+- Fondu à l'apparition d'un écran ou d'un composant
+- Animations de "célébration" (résultat de comparaison, sauvegarde, révélation)
+- Transitions entre écrans ou entre étapes du wizard
+- Toute transition de plus de 200ms
 - Séquences d'animations enchaînées
-
-#### Règle pour les transitions de navigation
-
-Les transitions de navigation (Stack) restent en `animation: 'slide_from_right'` natif.
-Aucune modification de ces animations n'est autorisée dans les composants.
 
 ---
 
@@ -484,7 +437,7 @@ Exceptions documentées :
 - Fond `surface`
 - `borderTopWidth: 1`, `borderTopColor: border`
 - Padding `spacing[4]` sur les côtés
-- CTA principal : `radius.lg`, `backgroundColor: primary`, `activeOpacity: 0.82`
+- CTA principal : `radius.lg`, fond `primary`
 - Retour : `borderWidth: 1`, `borderColor: border`, `radius.lg`, texte `textSecondary`
 
 ### 7.3 Les sections dans une card
@@ -526,54 +479,17 @@ Les emojis sont interdits dans les en-têtes de section.
 
 ---
 
-## 8. Référence rapide — tokens.js v2 (valeurs à implémenter)
+## 8. Référence des valeurs
 
-```js
-// Colors
-bg:              '#F8F5F0'
-surface:         '#FDFCF9'
-surfaceAlt:      '#EDE8E0'
-surfaceSunken:   '#F2EDE6'
-border:          '#DDD5CB'
-borderStrong:    '#C4B8AE'
-text:            '#1C1512'
-textSecondary:   '#6E5E52'
-textDisabled:    '#B5A898'
-textOnPrimary:   '#FDFCF9'
-primary:         '#6B2D3E'
-primaryMid:      '#8F3E52'
-primarySubtle:   '#F5EAEC'
-primaryBorder:   '#D9B0B8'
-error:           '#8B1A2A'
-errorSubtle:     '#F5E6E8'
-success:         '#2E6B4F'
-successSubtle:   '#E8F2EB'
-match:           '#2E6B4F'
-matchSubtle:     '#E8F2EB'
-close:           '#8C5A1A'
-closeSubtle:     '#F5EAD8'
-miss:            '#6E5E52'         // = textSecondary
-overlay:         'rgba(28, 21, 18, 0.55)'
+Les valeurs exactes vivent dans `web/src/styles/tokens.css`, qui fait foi. Ce document en donne le sens et les règles d'usage ; il ne les recopie pas.
 
-// Radius
-sm:   4
-md:   6
-lg:   10
-xl:   14
-full: 999
-
-// Shadows → shadowColor devient '#1C1512' partout
-
-// Spacing → inchangé
-```
+Tokens propres à la version web : `--f-input` (taille des champs), `--wine-*` (pastilles de type), `--miss-subtle` (fond du badge "À revoir"), `--backdrop` (fond hors application sur grand écran), `--app-max`, `--tap`, `--thumb`, `--photo` (dimensions).
 
 ---
 
----
+## 9. Iconographie
 
-## 8. Iconographie
-
-### 8.1 Tailles standard
+### 9.1 Tailles standard
 
 | Taille | Usage |
 |---|---|
@@ -583,12 +499,12 @@ full: 999
 
 Les tailles 28px, 32px, 48px sont **interdites** en dehors des contextes hero (Sleep, Reveal) où elles signalent un moment de seuil. Ces contextes sont documentés explicitement dans [Component_Kit.md](Component_Kit.md).
 
-### 8.2 Stroke width
+### 9.2 Stroke width
 
 La librairie Lucide utilise un stroke de `2` par défaut.
 Règle : ne jamais modifier le `strokeWidth`. L'uniformité est une propriété systémique.
 
-### 8.3 Couleur par défaut
+### 9.3 Couleur par défaut
 
 ```
 Icône de navigation / label secondaire :  textSecondary (#6E5E52)
@@ -599,7 +515,7 @@ Icône d'état d'erreur :                   error (#8B1A2A)
 
 **Règle :** `primary` est utilisé pour une icône **uniquement si** elle représente une action déjà engagée (hint actif, chip sélectionné, favori coché). Une icône de navigation au repos est toujours `textSecondary`.
 
-### 8.4 Icônes interdites
+### 9.4 Icônes interdites
 
 - Icônes **illustratives** (remplaçant une image ou une illustration)
 - Icônes **décoratives** (présentes uniquement pour l'esthétique)
@@ -608,9 +524,9 @@ Icône d'état d'erreur :                   error (#8B1A2A)
 
 ---
 
-## 9. Contraste & accessibilité
+## 10. Contraste & accessibilité
 
-### 9.1 Paires à risque
+### 10.1 Paires à risque
 
 Ratios estimés pour la palette v2 (WCAG 2.1 — AA normal text : 4.5:1 ; large text 18px+ bold : 3:1).
 
@@ -627,10 +543,10 @@ Ratios estimés pour la palette v2 (WCAG 2.1 — AA normal text : 4.5:1 ; large 
 | `match` (#2E6B4F) / `matchSubtle` (#E8F2EB) | ~5.1:1 | **Faible** | Badge JUSTE |
 | `miss` (#6E5E52) / `missSubtle` (#EDE8E0) | ~4.6:1 | **Moyen** (xs) | Badge À REVOIR |
 
-### 9.2 Corrections
+### 10.2 Corrections
 
 **Cas `textDisabled` sur fonds clairs (risque élevé)**
-Problème : utilisé pour les placeholders des TextInput. À 2.4:1, un placeholder est illisible pour des utilisateurs avec déficit visuel.
+Problème : utilisé pour les placeholders des champ de saisie. À 2.4:1, un placeholder est illisible pour des utilisateurs avec déficit visuel.
 
 - **Option A :** Utiliser `#8C7B6E` (taupe foncé) pour les placeholders — ratio ~4.2:1. Trade-off : perd l'effet "discret", peut être confondu avec une valeur saisie.
 - **Option B (retenue) :** Garder `textDisabled` pour les états réellement désactivés, et définir `textPlaceholder: '#9A8A7E'` (~3.2:1) pour les placeholders. Différence sémantique claire. Trade-off : un token de plus.
@@ -641,76 +557,42 @@ Problème : `close` (#8C5A1A) sur `closeSubtle` (#F5EAD8) à 11px uppercase = ~4
 - **Option A :** Assombrir `close` → `#7A4E17` → ratio ~5.0:1. Trade-off : la teinte ocre devient plus sombre, moins "chaud".
 - **Option B (retenue) :** Utiliser `fontWeight.semibold` sur tous les textes de badge. Le poids renforce la lisibilité perçue sans modifier la couleur. Trade-off : solution perceptuelle, pas mathématique.
 
-### 9.3 Ajout au token `textPlaceholder`
+### 10.3 Token `textPlaceholder`
 
 ```
 textPlaceholder: '#9A8A7E'   ← taupe neutre — placeholders uniquement
 ```
 `textDisabled` (#B5A898) reste pour les états disabled (label, icône, bouton inactif).
 
-### 9.4 Règles React Native — accessibilité
+### 10.4 Règles d'accessibilité
 
 **1. Zones pressables ≥ 44×44px**
-Toute zone `TouchableOpacity` doit avoir une surface minimale de 44×44px.
-Si l'élément visuel est plus petit (icône 16px, badge), utiliser `hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}`.
+Tout bouton fait au moins `--tap` (44px) de côté, même si son icône est plus petite : c'est le bouton qui porte la taille, pas l'icône.
 
-```js
-// Correct
-<TouchableOpacity hitSlop={12} onPress={...}>
-  <ArrowLeft size={20} />
-</TouchableOpacity>
-
-// Interdit
-<TouchableOpacity style={{ width: 20, height: 20 }} onPress={...}>
-  <ArrowLeft size={20} />
-</TouchableOpacity>
-```
-
-**2. Icônes cliquables — accessibilityLabel obligatoire**
-Toute icône interactive doit avoir `accessibilityLabel` et `accessibilityRole`.
-
-```js
-<TouchableOpacity
-  accessibilityLabel="Retour"
-  accessibilityRole="button"
-  onPress={goBack}
->
-  <ArrowLeft size={20} />
-</TouchableOpacity>
-```
+**2. Boutons sans texte : `aria-label` obligatoire**
+Retour, Modifier, Supprimer, Retirer une photo, Paramètres : chaque bouton réduit à une icône porte un libellé lisible par un lecteur d'écran.
 
 **3. Ne jamais transmettre une information uniquement par la couleur**
-Les badges de comparaison (JUSTE / PROCHE / À REVOIR) communiquent par texte **ET** couleur.
-Si un badge n'a pas de label lisible, il est invalide. La couleur seule ne suffit pas.
+Les badges de comparaison (JUSTE / PROCHE / À REVOIR) communiquent par texte **et** couleur. Un choix sélectionné change de fond, de bordure **et** de graisse.
 
-**4. Focus input = borderColor primary**
-```js
-// Géré via onFocus / onBlur sur chaque TextInput
-const [focused, setFocused] = useState(false)
+**4. Le focus est visible**
+Un champ en cours de saisie prend une bordure `primaryMid` et un fond `surface`. Au clavier, tout élément focalisé affiche un contour (`:focus-visible`).
 
-<TextInput
-  style={[styles.input, focused && styles.inputFocused]}
-  onFocus={() => setFocused(true)}
-  onBlur={() => setFocused(false)}
-/>
-
-// styles
-input:        { borderColor: tokens.colors.border }
-inputFocused: { borderColor: tokens.colors.primary }
-```
+**5. Les états sont annoncés**
+Chips et cartes de niveau exposent leur état (`aria-pressed`, `aria-checked`), l'interrupteur son rôle (`role="switch"`), la fenêtre de confirmation le sien (`role="dialog"`).
 
 ---
 
-## 10. Dark mode — principes
+## 11. Dark mode — principes
 
-> Valeurs exactes hors scope Phase 4–5. Cette section définit les contraintes de conception pour la Phase 6.
+> Non implémenté (voir la roadmap). Cette section fixe les contraintes de conception pour le jour où il le sera.
 
-### 10.1 Intention
+### 11.1 Intention
 
 Le dark mode de MyWine n'est pas une "inversion" du light mode.
 Il évoque la **pénombre d'une cave** : surfaces sombres et chaudes, texte clair mais jamais blanc pur, contrastes lisibles mais jamais crus.
 
-### 10.2 Règles de composition
+### 11.2 Règles de composition
 
 **Ce que le dark mode ne fait pas :**
 - Inverser `#F8F5F0` → `#070A05` (inversion froide)
@@ -725,16 +607,15 @@ Il évoque la **pénombre d'une cave** : surfaces sombres et chaudes, texte clai
 - L'accent `primary` (bordeaux) est légèrement éclairci pour rester lisible sur fond sombre
 - Les bordures sont quasi invisibles (très proches de la surface)
 
-### 10.3 Contrainte d'implémentation
+### 11.3 Contrainte d'implémentation
 
-Le dark mode sera implémenté via un doublement des tokens (`colorsDark`) et le hook `useColorScheme()` de React Native.
-Aucune valeur de couleur ne sera hardcodée dans les composants — le switch light/dark doit être possible par un seul changement de référence token.
+Le dark mode redéfinira les variables de `tokens.css` sous `@media (prefers-color-scheme: dark)`. Comme aucun composant ne contient de couleur en dur, rien d'autre ne doit changer.
 
 ---
 
-## 11. États UI
+## 12. États UI
 
-### 11.1 Empty state
+### 12.1 Empty state
 
 **Règle de composition :**
 - Texte court : 1 titre (max 8 mots) + 1 corps explicatif (max 20 mots)
@@ -754,23 +635,17 @@ Recherche sans résultat :
   (pas de CTA — l'utilisateur sait quoi faire)
 ```
 
-### 11.2 Loading state
+### 12.2 Loading state
 
-Uniquement pertinent pour l'OCR Phase 5. Règle de composition :
-- Indicateur natif (`ActivityIndicator`) sobrement dimensionné
-- Message textuel court, présent tense
-- Jamais de barre de progression indéterminée avec animation décorative
+Les lectures en base locale sont quasi instantanées : un simple texte "Chargement…" centré, sans indicateur animé.
 
-**Exemple de copy :**
-```
-Analyse de l'étiquette en cours…
-```
+Pendant une action plus longue, le bouton qui l'a lancée est désactivé et son libellé dit ce qui se passe, au présent : "Sauvegarde…", "Ajout…", "Création…", "Ouverture…". Jamais de barre de progression indéterminée.
 
-### 11.3 Error state
+### 12.3 Error state
 
 **Règle de composition :**
 - Message clair et non dramatique : expliquer ce qui s'est passé, proposer une action
-- Couleur `error` uniquement pour le texte ou l'icône, jamais comme fond de surface
+- Couleur `error` pour le texte, sur fond `errorSubtle` ; jamais `error` en aplat sur une zone de contenu
 - Pas de symbole d'alerte rouge clignotant
 
 **Exemple de copy :**
@@ -786,13 +661,11 @@ Fiche introuvable :
 
 ---
 
-## 12. Référence aux documents liés
+## 13. Documents liés
 
-- **[UI_Audit.md](UI_Audit.md)** — diagnostic visuel initial, problèmes priorisés
-- **[Component_Kit.md](Component_Kit.md)** — spécifications par composant, directement actionnables
-- **`tokens.js`** — source de vérité unique pour toutes les valeurs
+- **[Component_Kit.md](Component_Kit.md)** — les composants de la webapp et leurs règles
+- **`web/src/styles/tokens.css`** — source de vérité unique pour toutes les valeurs
 
 ---
 
-*Amendements appliqués : contraste & accessibilité, iconographie, animations (nuancées), badges (vocabulaire), types de vin, dark mode, états UI.*
-*Version : Design System v2.1*
+*Design System v2 — adapté à la webapp le 2026-11-13.*

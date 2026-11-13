@@ -27,10 +27,12 @@ Qu'est-ce qui a été décidé ?
 | Fichier | Résumé |
 |---|---|
 | [2026-11-13-pivot-webapp.md](2026-11-13-pivot-webapp.md) | Pivot vers une webapp PWA à données locales ; abandon de l'app native et de l'OCR ✅ |
+| [2026-11-13-degustation-a-plusieurs.md](2026-11-13-degustation-a-plusieurs.md) | Trois niveaux de dégustateur ; dégustation à plusieurs sans serveur (lien chiffré + code) ; pas de score ✅ |
+| [2026-11-13-assistant-ia-optionnel.md](2026-11-13-assistant-ia-optionnel.md) | Fiche "Pour comprendre", leurres plausibles, indices, mot de l'hôte ; assistant IA optionnel avec la clé de l'utilisateur ✅ |
 
 ## Décisions fondatrices UX (février 2026)
 
-Détail → [`_archive/decisions-fevrier-2026.md`](../_archive/decisions-fevrier-2026.md). Elles ont été écrites pour l'app native ; voici ce qu'il en reste dans la webapp :
+Prises pour la première version de l'app, avant le pivot. Voici ce qu'il en reste dans la webapp :
 
 | Décision | Statut dans la webapp |
 |---|---|

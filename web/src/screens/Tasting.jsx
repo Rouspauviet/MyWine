@@ -20,6 +20,9 @@ import {
   CLIMATE_OPTIONS, SOIL_OPTIONS, COUNTRIES, STYLE_OPTIONS, PAIRING_SUGGESTIONS,
 } from '../data/wineData'
 import { GRAPE_VARIETIES_SORTED } from '../data/grapeVarieties'
+import { commonGrapesFor, DEFAULT_LEVEL } from '../data/levels'
+import { vintageRanges, buildClues } from '../utils/session'
+import { Lightbulb } from 'lucide-react'
 
 const STEPS = [
   { label: 'Perception', subtitle: 'Ce que tu vois et sens' },
@@ -109,6 +112,12 @@ export default function Tasting() {
     navigate('/', { replace: true })
   }
 
+  const level = rec.level ?? DEFAULT_LEVEL
+  const mcq = rec.session?.mcq ?? null
+  // Indices de la dégustation à plusieurs : ceux déjà demandés restent affichés
+  const clues = buildClues(rec.session, level)
+  const shownClues = clues.slice(0, rec.cluesUsed ?? 0)
+  const removedGrapes = shownClues.flatMap(c => c.removeGrapes ?? [])
   const structureData = rec.structure?.v === 2 ? (rec.structure.data ?? {}) : {}
   const onStructureChange = (data) => update({ structure: { v: 2, wineType: rec.wineType, data } })
 
@@ -116,7 +125,7 @@ export default function Tasting() {
   if (step === 0) {
     return (
       <Screen>
-        <Header title="Dégustation à l'aveugle" onBack={goBack} />
+        <Header title="Dégustation à l'aveugle" label={rec.session ? `Organisée par ${rec.session.hostName}` : undefined} onBack={goBack} />
         <Body>
           <div>
             <h2 className="step-title">Quel type de vin ?</h2>
@@ -161,10 +170,13 @@ export default function Tasting() {
       <Header title={info.label} label={`Étape ${step} / ${TOTAL_STEPS}`} onBack={goBack} progress={step / TOTAL_STEPS} />
       <Body innerRef={bodyRef}>
         <p className="step-subtitle">{info.subtitle}</p>
-        {step === 1 && <StepPerception wineType={rec.wineType} value={rec.perception} onChange={section('perception')} />}
-        {step === 2 && <StepStructure wineType={rec.wineType} data={structureData} onChange={onStructureChange} />}
-        {step === 3 && <StepHypotheses value={rec.hypotheses} onChange={section('hypotheses')} />}
-        {step === 4 && <StepStyle value={rec.style} onChange={section('style')} />}
+        {step === 1 && <StepPerception wineType={rec.wineType} level={level} value={rec.perception} onChange={section('perception')} />}
+        {step === 2 && <StepStructure wineType={rec.wineType} level={level} data={structureData} onChange={onStructureChange} />}
+        {step === 3 && clues.length > 0 && (
+          <ClueBox clues={clues} shown={shownClues.length} onAsk={() => update(r => ({ cluesUsed: (r.cluesUsed ?? 0) + 1 }))} />
+        )}
+        {step === 3 && <StepHypotheses wineType={rec.wineType} level={level} mcq={mcq} removedGrapes={removedGrapes} value={rec.hypotheses} onChange={section('hypotheses')} />}
+        {step === 4 && <StepStyle level={level} value={rec.style} onChange={section('style')} />}
       </Body>
       <Footer>
         <button className="btn btn-ghost" onClick={() => setConfirmAbandon(true)}>Abandonner</button>
@@ -187,23 +199,26 @@ export default function Tasting() {
 
 // ─── Étape 1 — Perception (selon le type) ────────────────────────────────────
 
-function StepPerception({ wineType, value, onChange }) {
+function StepPerception({ wineType, level, value, onChange }) {
   const set = (key, val) => onChange(prev => ({ ...prev, [key]: val }))
   const robeOptions = asOptions(ROBE_OPTIONS_BY_TYPE[wineType])
   const aromaOptions = asOptions(AROMA_FAMILIES_BY_TYPE[wineType])
+  const beginner = level === 'debutant'
 
   return (
     <>
       {robeOptions.length > 0 && (
-        <Field label="Robe" optional>
+        <Field label={beginner ? 'Sa couleur' : 'Robe'} optional>
           <ChipGroup options={robeOptions} value={value.robe} onChange={v => set('robe', v)} multi />
         </Field>
       )}
-      <Field label={`Intensité aromatique — ${value.aromaIntensity}/5`}>
-        <Slider value={value.aromaIntensity} onChange={v => set('aromaIntensity', v)} minLabel="Discret" maxLabel="Expressif" />
-      </Field>
+      {!beginner && (
+        <Field label={`Intensité aromatique — ${value.aromaIntensity}/5`}>
+          <Slider value={value.aromaIntensity} onChange={v => set('aromaIntensity', v)} minLabel="Discret" maxLabel="Expressif" />
+        </Field>
+      )}
       {aromaOptions.length > 0 && (
-        <Field label="Familles aromatiques" optional>
+        <Field label={beginner ? 'Ce que tu sens' : 'Familles aromatiques'} optional>
           <ChipGroup options={aromaOptions} value={value.aromaFamilies} onChange={v => set('aromaFamilies', v)} multi />
         </Field>
       )}
@@ -213,114 +228,140 @@ function StepPerception({ wineType, value, onChange }) {
 }
 
 // ─── Étape 2 — Structure (une grammaire par type) ────────────────────────────
+// Chaque champ : key, label, options · hint (aide) · multi · optional · showIf(data) · beginner (gardé au niveau Débutant)
 
-function StepStructure({ wineType, data, onChange }) {
+const FINISH_HINT = 'Combien de temps le goût reste en bouche après avoir avalé.'
+
+const STRUCTURE_FIELDS = {
+  rouge: [
+    { key: 'taninIntensity', label: 'Tanins', options: TANNIN_INTENSITY, beginner: true, hint: 'Sensation de sécheresse / prise sur les gencives. Très marqués = bouche asséchée.' },
+    { key: 'taninTexture', label: 'Texture des tanins', options: TANNIN_TEXTURE, multi: true, optional: true, showIf: d => d.taninIntensity && d.taninIntensity !== 't1' },
+    { key: 'fruitMaturity', label: 'Maturité du fruit', options: FRUIT_MATURITY, optional: true },
+    { key: 'body', label: 'Corps', options: BODY_3, beginner: true, hint: 'Corps ample = sensation de volume et de densité en bouche.' },
+    { key: 'acidity', label: 'Acidité', options: ACIDITY_RED, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true, beginner: true, hint: FINISH_HINT },
+  ],
+  blanc: [
+    { key: 'acidity', label: 'Acidité', options: ACIDITY_5, beginner: true, hint: 'Tranchante = salivation nette, tension forte. Plate = impression molle, manque de fraîcheur.' },
+    { key: 'texture', label: 'Texture / Gras', options: TEXTURE_WHITE, beginner: true, hint: "Onctueuse = richesse qui contrebalance l'acidité. Légère et sèche = vin tendu, nerveux." },
+    { key: 'minerality', label: 'Minéralité', options: MINERALITY, hint: "Craie, silex, iode — impression de minéral humide ou de pierre. Marqueur d'origine fort." },
+    { key: 'mineralityType', label: 'Type de minéralité', options: MINERALITY_TYPE, multi: true, optional: true, showIf: d => d.minerality && d.minerality !== 'absente' },
+    { key: 'boise', label: 'Boisé', options: OAK, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true, beginner: true, hint: FINISH_HINT },
+  ],
+  rose: [
+    { key: 'vivacity', label: 'Vivacité / Fraîcheur', options: VIVACITY, beginner: true, hint: 'Vif = le vin fait saliver et rafraîchit. Plat = il paraît mou.' },
+    { key: 'body', label: 'Corps', options: BODY_3, optional: true },
+    { key: 'perceivedSweetness', label: 'Sucrosité perçue', options: PERCEIVED_SWEETNESS, beginner: true, hint: 'Sec = aucune impression de sucre.' },
+    { key: 'lightStructure', label: 'Structure légère', options: LIGHT_STRUCTURE, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true },
+  ],
+  petillant: [
+    { key: 'bubbleQuality', label: 'Qualité des bulles', options: BUBBLE_QUALITY, beginner: true, hint: 'Très fines et persistantes = signe de qualité (méthode traditionnelle). Grossières = méthode cuve.' },
+    { key: 'perceivedDosage', label: 'Dosage perçu', options: PERCEIVED_DOSAGE, beginner: true, hint: "Difficile à deviner à l'aveugle, mais l'exercice est pertinent. Brut nature = très sec, minéral." },
+    { key: 'sparklingRegister', label: 'Registre aromatique', options: SPARKLING_REGISTER, optional: true },
+    { key: 'vivacity', label: 'Vivacité', options: VIVACITY, optional: true },
+    { key: 'body', label: 'Corps sous-jacent', options: BODY_3, optional: true },
+  ],
+  orange: [
+    { key: 'phenolicIntensity', label: 'Texture phénolique', options: PHENOLIC_INTENSITY, beginner: true, hint: "Tanin de peau, différent d'un rouge. Grippage type peau d'orange ou thé — pas de sécheresse agressive." },
+    { key: 'phenolicType', label: 'Type de texture', options: PHENOLIC_TYPE, multi: true, optional: true, showIf: d => d.phenolicIntensity && d.phenolicIntensity !== 'absente' },
+    { key: 'bitterness', label: 'Amers', options: BITTERNESS, beginner: true, hint: 'Amertume en fin de bouche, comme un zeste ou une amande.' },
+    { key: 'bitternessType', label: "Type d'amers", options: BITTERNESS_TYPE, multi: true, optional: true, showIf: d => d.bitterness && d.bitterness !== 'absents' },
+    { key: 'oxidativeRegister', label: 'Registre oxydatif', options: OXIDATIVE_REGISTER },
+    { key: 'residualAcidity', label: 'Acidité résiduelle', options: RESIDUAL_ACIDITY, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true },
+  ],
+}
+
+function StepStructure({ wineType, level, data, onChange }) {
   const set = (key, val) => onChange({ ...data, [key]: val })
-  const chips = (key, options, multi) => (
-    <ChipGroup options={options} value={data[key]} onChange={v => set(key, v)} multi={multi} />
-  )
+  const beginner = level === 'debutant'
+  const fields = STRUCTURE_FIELDS[wineType]
 
-  switch (wineType) {
-    case 'rouge':
-      return (
-        <>
-          <Field label="Tanins" hint="Sensation de sécheresse / prise sur les gencives. Très marqués = bouche asséchée.">
-            {chips('taninIntensity', TANNIN_INTENSITY)}
-          </Field>
-          {data.taninIntensity && data.taninIntensity !== 't1' && (
-            <Field label="Texture des tanins" optional>{chips('taninTexture', TANNIN_TEXTURE, true)}</Field>
-          )}
-          <Field label="Maturité du fruit" optional>{chips('fruitMaturity', FRUIT_MATURITY)}</Field>
-          <Field label="Corps" hint="Corps ample = sensation de volume et de densité en bouche.">{chips('body', BODY_3)}</Field>
-          <Field label="Acidité" optional>{chips('acidity', ACIDITY_RED)}</Field>
-          <Field label="Longueur" optional>{chips('finish', FINISH_3)}</Field>
-        </>
-      )
-
-    case 'blanc':
-      return (
-        <>
-          <Field label="Acidité" hint="Tranchante = salivation nette, tension forte. Plate = impression molle, manque de fraîcheur.">
-            {chips('acidity', ACIDITY_5)}
-          </Field>
-          <Field label="Texture / Gras" hint="Onctueuse = richesse qui contrebalance l'acidité. Légère et sèche = vin tendu, nerveux.">
-            {chips('texture', TEXTURE_WHITE)}
-          </Field>
-          <Field label="Minéralité" hint="Craie, silex, iode — impression de minéral humide ou de pierre. Marqueur d'origine fort.">
-            {chips('minerality', MINERALITY)}
-          </Field>
-          {data.minerality && data.minerality !== 'absente' && (
-            <Field label="Type de minéralité" optional>{chips('mineralityType', MINERALITY_TYPE, true)}</Field>
-          )}
-          <Field label="Boisé" optional>{chips('boise', OAK)}</Field>
-          <Field label="Longueur" optional>{chips('finish', FINISH_3)}</Field>
-        </>
-      )
-
-    case 'rose':
-      return (
-        <>
-          <Field label="Vivacité / Fraîcheur">{chips('vivacity', VIVACITY)}</Field>
-          <Field label="Corps" optional>{chips('body', BODY_3)}</Field>
-          <Field label="Sucrosité perçue">{chips('perceivedSweetness', PERCEIVED_SWEETNESS)}</Field>
-          <Field label="Structure légère" optional>{chips('lightStructure', LIGHT_STRUCTURE)}</Field>
-          <Field label="Longueur" optional>{chips('finish', FINISH_3)}</Field>
-        </>
-      )
-
-    case 'petillant':
-      return (
-        <>
-          <Field label="Qualité des bulles" hint="Très fines et persistantes = signe de qualité (méthode traditionnelle). Grossières = méthode cuve.">
-            {chips('bubbleQuality', BUBBLE_QUALITY)}
-          </Field>
-          <Field label="Dosage perçu" hint="Difficile à deviner à l'aveugle, mais l'exercice est pertinent. Brut nature = très sec, minéral.">
-            {chips('perceivedDosage', PERCEIVED_DOSAGE)}
-          </Field>
-          <Field label="Registre aromatique" optional>{chips('sparklingRegister', SPARKLING_REGISTER)}</Field>
-          <Field label="Vivacité" optional>{chips('vivacity', VIVACITY)}</Field>
-          <Field label="Corps sous-jacent" optional>{chips('body', BODY_3)}</Field>
-        </>
-      )
-
-    case 'orange':
-      return (
-        <>
-          <Field label="Texture phénolique" hint="Tanin de peau, différent d'un rouge. Grippage type peau d'orange ou thé — pas de sécheresse agressive.">
-            {chips('phenolicIntensity', PHENOLIC_INTENSITY)}
-          </Field>
-          {data.phenolicIntensity && data.phenolicIntensity !== 'absente' && (
-            <Field label="Type de texture" optional>{chips('phenolicType', PHENOLIC_TYPE, true)}</Field>
-          )}
-          <Field label="Amers">{chips('bitterness', BITTERNESS)}</Field>
-          {data.bitterness && data.bitterness !== 'absents' && (
-            <Field label="Type d'amers" optional>{chips('bitternessType', BITTERNESS_TYPE, true)}</Field>
-          )}
-          <Field label="Registre oxydatif">{chips('oxidativeRegister', OXIDATIVE_REGISTER)}</Field>
-          <Field label="Acidité résiduelle" optional>{chips('residualAcidity', RESIDUAL_ACIDITY)}</Field>
-          <Field label="Longueur" optional>{chips('finish', FINISH_3)}</Field>
-        </>
-      )
-
-    // Clairet, Autre : pas de grammaire dédiée → saisie libre
-    default:
-      return (
-        <>
-          <p className="banner">Pas de grille dédiée pour ce type de vin : décris librement ce que tu ressens en bouche.</p>
-          <Field label="Corps" optional>{chips('body', BODY_3)}</Field>
-          <Field label="Longueur" optional>{chips('finish', FINISH_3)}</Field>
-          <TextField label="Notes libres — bouche" optional multiline value={data.paletteFree} onChange={v => set('paletteFree', v)} placeholder="Texture, structure, impressions…" />
-        </>
-      )
+  // Clairet, Autre : pas de grammaire dédiée → saisie libre
+  if (!fields) {
+    return (
+      <>
+        <p className="banner">Pas de grille dédiée pour ce type de vin : décris librement ce que tu ressens en bouche.</p>
+        <Field label="Corps" optional><ChipGroup options={BODY_3} value={data.body} onChange={v => set('body', v)} /></Field>
+        <Field label="Longueur" optional><ChipGroup options={FINISH_3} value={data.finish} onChange={v => set('finish', v)} /></Field>
+        <TextField label="Notes libres — bouche" optional multiline value={data.paletteFree} onChange={v => set('paletteFree', v)} placeholder="Texture, structure, impressions…" />
+      </>
+    )
   }
+
+  return fields
+    .filter(f => (!beginner || f.beginner) && (!f.showIf || f.showIf(data)))
+    .map(f => (
+      // Débutant : les aides sont affichées d'office
+      <Field key={f.key} label={f.label} optional={f.optional} hint={f.hint} hintOpen={beginner}>
+        <ChipGroup options={f.options} value={data[f.key]} onChange={v => set(f.key, v)} multi={f.multi} />
+      </Field>
+    ))
 }
 
 // ─── Étape 3 — Hypothèses ────────────────────────────────────────────────────
 
-function StepHypotheses({ value, onChange }) {
+// Indices à la demande : l'invité choisit d'être aidé, et le nombre d'indices figure dans son résultat
+function ClueBox({ clues, shown, onAsk }) {
+  const left = clues.length - shown
+  return (
+    <div className="clue-box">
+      {clues.slice(0, shown).map((clue, i) => (
+        <p key={i} className="insight"><Lightbulb size={16} /><span>{clue.text}</span></p>
+      ))}
+      {left > 0 && (
+        <button type="button" className="btn btn-ghost block" onClick={onAsk}>
+          <Lightbulb size={18} /> {shown === 0 ? 'Demander un indice' : 'Un autre indice'} ({left} {left > 1 ? 'restants' : 'restant'})
+        </button>
+      )}
+    </div>
+  )
+}
+
+function StepHypotheses({ wineType, level, mcq, removedGrapes, value, onChange }) {
+  if (level === 'debutant') return <BeginnerHypotheses wineType={wineType} mcq={mcq} removedGrapes={removedGrapes} value={value} onChange={onChange} />
+  return <FullHypotheses expert={level === 'expert'} value={value} onChange={onChange} />
+}
+
+// Débutant : des choix à cocher. En dégustation à plusieurs, les propositions viennent de l'invitation
+// (bonne réponse + leurres) ; en solo, ce sont les cépages et pays les plus courants.
+function BeginnerHypotheses({ wineType, mcq, removedGrapes = [], value, onChange }) {
+  const set = (patch) => onChange(prev => ({ ...prev, ...patch }))
+  const grapeOptions = asOptions((mcq?.grape ?? commonGrapesFor(wineType)).filter(g => !removedGrapes.includes(g)))
+  const placeKey = mcq?.region ? 'region' : 'country'
+  const placeOptions = asOptions(mcq?.region ?? mcq?.country ?? COUNTRIES)
+  const ranges = vintageRanges()
+  const hasChoices = !!(mcq?.grape || mcq?.region || mcq?.country)
+
+  return (
+    <>
+      {hasChoices && <p className="banner">Parmi les propositions de cépage et d'origine, une seule est la bonne. Fie-toi à ce que tu as senti.</p>}
+      <Field label="Quel cépage ?" optional hint="Le cépage est la variété de raisin. C'est lui qui donne l'essentiel du goût." hintOpen>
+        <ChipGroup options={grapeOptions} value={value.grapes?.[0] ?? null} onChange={v => set({ grapes: v ? [v] : [] })} />
+      </Field>
+      <Field label={placeKey === 'region' ? 'Quelle région ?' : 'Quel pays ?'} optional>
+        <ChipGroup options={placeOptions} value={value[placeKey] || null} onChange={v => set({ [placeKey]: v ?? '' })} />
+      </Field>
+      <Field label="Quel âge ?" optional hint="Un vin jeune a des arômes de fruit frais. Avec l'âge viennent le sous-bois, le cuir, les fruits secs.">
+        <ChipGroup
+          options={ranges.map(r => ({ value: r.label, label: r.label }))}
+          value={value.vintageRange?.label ?? null}
+          onChange={label => set({ vintageRange: ranges.find(r => r.label === label) ?? null, vintage: '' })}
+        />
+      </Field>
+      <Field label={`Tu es sûr de toi ? — ${value.confidence}/5`} optional>
+        <Slider value={value.confidence} onChange={v => set({ confidence: v })} minLabel="Pas du tout" maxLabel="Certain" />
+      </Field>
+    </>
+  )
+}
+
+function FullHypotheses({ expert, value, onChange }) {
   const set = (key, val) => onChange(prev => ({ ...prev, [key]: val }))
   const hasAdvanced = !!(value.appellation || value.producer || value.vintage || value.climate || value.soil)
-  const [showAdvanced, setShowAdvanced] = useState(hasAdvanced)
+  const [showAdvanced, setShowAdvanced] = useState(expert || hasAdvanced)
 
   return (
     <>
@@ -337,19 +378,15 @@ function StepHypotheses({ value, onChange }) {
         <SuggestInput value={value.region} onChange={v => set('region', v)} getSuggestions={suggestRegions} onPick={v => set('region', v)} placeholder="Ex : Bourgogne, Rioja…" />
       </Field>
 
-      <button type="button" className="collapse-btn" onClick={() => setShowAdvanced(v => !v)} aria-expanded={showAdvanced}>
-        Tu veux pousser l'exercice ?
-        {showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-      </button>
+      {!expert && (
+        <button type="button" className="collapse-btn" onClick={() => setShowAdvanced(v => !v)} aria-expanded={showAdvanced}>
+          Tu veux pousser l'exercice ?
+          {showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+      )}
 
       {showAdvanced && (
         <>
-          <Field label="Climat perçu" optional>
-            <ChipGroup options={CLIMATE_OPTIONS} value={value.climate} onChange={v => set('climate', v)} />
-          </Field>
-          <Field label="Sol" optional>
-            <ChipGroup options={SOIL_OPTIONS} value={value.soil} onChange={v => set('soil', v)} />
-          </Field>
           <Field label="Appellation" optional>
             <AppellationInput
               value={value.appellation}
@@ -358,8 +395,14 @@ function StepHypotheses({ value, onChange }) {
               placeholder="Ex : Pommard, Barolo…"
             />
           </Field>
+          <TextField label="Millésime" optional value={value.vintage} onChange={v => onChange(prev => ({ ...prev, vintage: v.replace(/\D/g, '').slice(0, 4), vintageRange: null }))} inputMode="numeric" placeholder="Ex : 2019" />
           <TextField label="Producteur" optional value={value.producer} onChange={v => set('producer', v)} placeholder="Ex : Domaine de la Romanée-Conti…" />
-          <TextField label="Millésime" optional value={value.vintage} onChange={v => set('vintage', v.replace(/\D/g, '').slice(0, 4))} inputMode="numeric" placeholder="Ex : 2019" />
+          <Field label="Climat perçu" optional>
+            <ChipGroup options={CLIMATE_OPTIONS} value={value.climate} onChange={v => set('climate', v)} />
+          </Field>
+          <Field label="Sol" optional>
+            <ChipGroup options={SOIL_OPTIONS} value={value.soil} onChange={v => set('soil', v)} />
+          </Field>
         </>
       )}
     </>
@@ -368,22 +411,29 @@ function StepHypotheses({ value, onChange }) {
 
 // ─── Étape 4 — Style ─────────────────────────────────────────────────────────
 
-function StepStyle({ value, onChange }) {
+function StepStyle({ level, value, onChange }) {
   const set = (key, val) => onChange(prev => ({ ...prev, [key]: val }))
+  const beginner = level === 'debutant'
   return (
     <>
-      <Field label="Style" optional>
-        <ChipGroup options={STYLE_OPTIONS} value={value.category} onChange={v => set('category', v)} />
-      </Field>
-      <Field label="Note" optional>
+      {!beginner && (
+        <Field label="Style" optional>
+          <ChipGroup options={STYLE_OPTIONS} value={value.category} onChange={v => set('category', v)} />
+        </Field>
+      )}
+      <Field label={beginner ? 'Tu as aimé ?' : 'Note'} optional>
         <RatingStars value={value.rating} onChange={v => set('rating', v)} />
       </Field>
       <Switch label="Coup de cœur" value={value.favorite} onChange={v => set('favorite', v)} />
-      <Field label="Accords" optional>
-        <TagInput tags={value.pairings} onChange={v => set('pairings', v)} suggestions={PAIRING_SUGGESTIONS} placeholder="Ex : Fromages, Viandes rouges…" />
-      </Field>
-      <TextField label="Impression globale" optional multiline value={value.overallImpression} onChange={v => set('overallImpression', v)} placeholder="En une phrase…" />
-      <TextField label="Occasion" optional value={value.context} onChange={v => set('context', v)} placeholder="Avec qui, où, à quelle occasion…" />
+      {!beginner && (
+        <Field label="Accords" optional>
+          <TagInput tags={value.pairings} onChange={v => set('pairings', v)} suggestions={PAIRING_SUGGESTIONS} placeholder="Ex : Fromages, Viandes rouges…" />
+        </Field>
+      )}
+      <TextField label={beginner ? 'Ton impression, en une phrase' : 'Impression globale'} optional multiline value={value.overallImpression} onChange={v => set('overallImpression', v)} placeholder="En une phrase…" />
+      {!beginner && (
+        <TextField label="Occasion" optional value={value.context} onChange={v => set('context', v)} placeholder="Avec qui, où, à quelle occasion…" />
+      )}
     </>
   )
 }

@@ -4,6 +4,7 @@
 
 import { openDB } from 'idb'
 import { generateId, today } from '../utils/text'
+import { DEFAULT_LEVEL } from '../data/levels'
 
 const dbPromise = openDB('mywine', 1, {
   upgrade(db) {
@@ -38,6 +39,8 @@ export function newRecord(mode) {
     createdAt: now,
     updatedAt: now,
     tastedAt: today(),
+    level: DEFAULT_LEVEL,   // 'debutant' | 'amateur' | 'expert' — adapte le formulaire à l'aveugle
+    session: null,          // dégustation à plusieurs : { role: 'host' | 'guest', id, hostName, … }
     // Mode Aveugle uniquement
     step: 0,
     wineType: null,
@@ -45,9 +48,10 @@ export function newRecord(mode) {
     structure: {},
     hypotheses: {
       grapes: [], confidence: 3, country: '', region: '',
-      appellation: '', vintage: '', producer: '', climate: null, soil: null,
+      appellation: '', vintage: '', vintageRange: null, producer: '', climate: null, soil: null,
     },
     comparison: {},
+    cluesUsed: 0,           // indices demandés pendant une dégustation à plusieurs
     // Commun aux deux modes
     style: emptyStyle(),
     reality: emptyReality(),
@@ -87,6 +91,12 @@ export async function listRecords() {
 }
 
 // Dégustations à l'aveugle interrompues, la plus récente d'abord
+// Fiche (brouillon ou terminée) déjà rattachée à une dégustation à plusieurs
+export async function findBySession(sessionId, role) {
+  const all = await (await dbPromise).getAll('records')
+  return all.find(r => r.session?.id === sessionId && r.session?.role === role) ?? null
+}
+
 export async function listDrafts() {
   const all = await (await dbPromise).getAllFromIndex('records', 'status', 'draft')
   return all.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''))

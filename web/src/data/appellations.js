@@ -24,12 +24,5 @@ export function searchAppellations(query, max = 6) {
   return [...starts, ...contains].slice(0, max)
 }
 
-// Appellation correspondant exactement au texte saisi (pour déduire la région)
-export function findAppellation(name) {
-  const q = normalize(name)
-  if (!q) return null
-  return LIST.find(a => a.keys.includes(q)) ?? null
-}
-
 export const REGIONS = [...new Set(LIST.map(a => a.region).filter(Boolean))]
   .sort((a, b) => a.localeCompare(b, 'fr'))

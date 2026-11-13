@@ -38,7 +38,6 @@ export const PAIRING_SUGGESTIONS = [
   'Fromages', 'Charcuterie', 'Végétarien', 'Desserts', 'Apéritif',
 ]
 
-export const RATING_LABELS = ['', 'Bof', 'Bien', 'Très bien', 'Excellent', 'Parfait']
 
 // ─── Types de vin ─────────────────────────────────────────────────────────────
 // simplified:true → pas de grammaire dédiée : étape Structure en saisie libre

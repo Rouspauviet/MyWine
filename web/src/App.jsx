@@ -9,6 +9,9 @@ import RecordEdit from './screens/RecordEdit'
 import Journal from './screens/Journal'
 import Entry from './screens/Entry'
 import Settings from './screens/Settings'
+import HostNew from './screens/HostNew'
+import HostSession from './screens/HostSession'
+import Join from './screens/Join'
 
 export default function App() {
   return (
@@ -20,6 +23,10 @@ export default function App() {
         <Route path="/tasting/:id" element={<Tasting />} />
         <Route path="/reveal/:id" element={<Reveal />} />
         <Route path="/comparison/:id" element={<Comparison />} />
+        {/* Dégustation à plusieurs : l'hôte crée l'invitation, les invités arrivent par /join */}
+        <Route path="/host/new" element={<HostNew />} />
+        <Route path="/host/:id" element={<HostSession />} />
+        <Route path="/join/:token" element={<Join />} />
         {/* Mode Mémoire */}
         <Route path="/memory/new" element={<RecordEdit />} />
         {/* Journal */}

@@ -1,6 +1,6 @@
 // Accueil — deux intentions (Aveugle / Mémoire) + journal
 import { useNavigate } from 'react-router-dom'
-import { Eye, Bookmark, BookOpen, Settings, Play } from 'lucide-react'
+import { Eye, Bookmark, BookOpen, Settings, Play, Users } from 'lucide-react'
 import { Screen, Body, Footer, useAsync } from '../components/Layout'
 import * as db from '../db/db'
 import { WINE_TYPES } from '../data/wineData'
@@ -46,7 +46,7 @@ export default function Home() {
               <span className="resume-text">
                 <span className="resume-title">Reprendre la dégustation en cours</span>
                 <span className="resume-sub">
-                  {labelOf(WINE_TYPES, draft.wineType) ?? 'Type à choisir'} · étape {Math.max(draft.step, 1)}/4 · {formatDate(draft.updatedAt)}
+                  {draft.session ? `Chez ${draft.session.hostName} · ` : ''}{labelOf(WINE_TYPES, draft.wineType) ?? 'Type à choisir'} · étape {Math.max(draft.step, 1)}/4 · {formatDate(draft.updatedAt)}
                 </span>
               </span>
             </button>
@@ -65,6 +65,9 @@ export default function Home() {
       <Footer className="column bare">
         <button className="btn btn-primary btn-large block" onClick={() => navigate('/sleep')}>
           <Eye size={22} /> Dégustation à l'aveugle
+        </button>
+        <button className="btn btn-secondary block" onClick={() => navigate('/host/new')}>
+          <Users size={20} /> Dégustation à plusieurs
         </button>
         <button className="btn btn-secondary block" onClick={() => navigate('/memory/new')}>
           <Bookmark size={20} /> Mémoriser un vin

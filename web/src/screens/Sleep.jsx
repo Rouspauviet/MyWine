@@ -1,15 +1,20 @@
-// Écran "En sommeil" — rituel de transition avant la dégustation à l'aveugle
+// Écran "En sommeil" — rituel de transition avant la dégustation à l'aveugle (solo)
 // Le brouillon n'est créé qu'au clic sur "Commencer" (pas de brouillon orphelin).
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { EyeOff, Play } from 'lucide-react'
 import { Screen, Body, Footer } from '../components/Layout'
+import LevelPicker from '../components/LevelPicker'
 import * as db from '../db/db'
+import { getPreferredLevel, setPreferredLevel } from '../data/levels'
 
 export default function Sleep() {
   const navigate = useNavigate()
+  const [level, setLevel] = useState(getPreferredLevel())
 
   const start = async () => {
-    const record = await db.saveRecord(db.newRecord('blind'))
+    setPreferredLevel(level)
+    const record = await db.saveRecord({ ...db.newRecord('blind'), level })
     navigate(`/tasting/${record.id}`, { replace: true })
   }
 
@@ -24,6 +29,7 @@ export default function Sleep() {
           </p>
           <p className="hero-note">○ Tu révèleras les vraies infos à la fin</p>
         </div>
+        <LevelPicker value={level} onChange={setLevel} />
       </Body>
       <Footer className="column bare">
         <button className="btn btn-primary btn-large block" onClick={start}>
