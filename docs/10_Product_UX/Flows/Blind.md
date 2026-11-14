@@ -46,13 +46,14 @@ Le tableau décrit le niveau **Amateur**. Débutant : moins de champs et hypoth�
 
 | Étape | Contenu |
 |---|---|
-| 1 · Perception | Robe (chips selon le type) · intensité aromatique 1–5 · familles aromatiques (selon le type) · notes libres |
-| 2 · Structure | Une grammaire par type : tanins (rouge), tension (blanc), fraîcheur (rosé), effervescence (pétillant), phénolique (orange). Aides `?` à la demande. Champs conditionnels (ex : texture des tanins seulement si tanins présents). |
+| 1 · Perception | Robe sur un **nuancier** de pastilles colorées · intensité aromatique 1–5 · familles aromatiques sur une **roue des arômes** à toucher · notes libres |
+| 2 · Structure | Une grammaire par type : tanins (rouge), tension (blanc), fraîcheur (rosé), effervescence (pétillant), phénolique (orange). Les échelles ordonnées (tanins, acidité, corps, longueur…) se saisissent sur une **jauge**, les choix non ordonnés restent des pastilles. Aides `?` à la demande. Champs conditionnels (ex : texture des tanins seulement si tanins présents). |
 | 3 · Hypothèses | Cépage(s) avec autocomplétion · confiance 1–5 · pays · région. Section dépliable "Tu veux pousser l'exercice ?" : climat, sol, appellation, producteur, millésime. |
 | 4 · Style | Style · note · coup de cœur · accords · impression globale · occasion |
 
 Comportements :
 
+- **Saisie sensorielle** : on désigne ce qu'on voit et sent plutôt que de choisir un mot. Les valeurs enregistrées sont inchangées — décision [`2026-11-14`](../../60_Decisions/2026-11-14-experience-visuelle.md).
 - **Tout est optionnel** : on peut avancer sans rien remplir.
 - **Autosave** : chaque modification est enregistrée (délai 400 ms) et à chaque changement d'étape. Fermer l'app ne perd rien.
 - "Abandonner" demande confirmation et **supprime** le brouillon. Pour faire une pause, on quitte simplement l'écran.
@@ -71,13 +72,16 @@ Comportements :
 
 **État B — La réalité.** Formulaire bouteille partagé avec le mode Mémoire : photos, type, cuvée, producteur, appellation (autocomplétion → région et pays déduits), région, pays, millésime, alcool, cépages, prix, lieu d'achat, vignerons.
 
-"Comparer et enregistrer" → calcule la comparaison, passe la fiche en `status: 'done'`, ouvre la comparaison.
+"Comparer et enregistrer" → calcule la comparaison, passe la fiche en `status: 'done'`, ouvre la comparaison sur la mise en scène.
+
+**État C — La mise en scène.** Les réponses se dévoilent une à une, de la plus large à la plus précise (type, pays, région, appellation, cépage, millésime, producteur), puis la bouteille (nom, photo). Chaque carte rappelle l'hypothèse puis montre la réalité et son badge. On avance au toucher ; "Tout révéler" saute la séquence. Elle ne joue qu'une fois : rouvrir la comparaison ou la fiche montre directement le résultat. Vaut aussi pour l'invité d'une dégustation à plusieurs, après le code.
 
 ## 6. Comparaison `/comparison/:id`
 
 - Résumé : "3 justes · 1 proche · 1 à revoir" + confiance annoncée.
 - Tableau côte à côte **Mes hypothèses | badge | La réalité** pour : type, cépages, pays, région, appellation, millésime, producteur.
-- Carte "Pour comprendre" : profil typique du cépage et de la région, et rapprochement avec la perception. Une perception identique au profil est confirmée ("Des tanins marqués : c'est typique du cépage Syrah"), une perception opposée est expliquée sans jugement, une perception voisine n'est pas commentée.
+- Carte "D'où il vient" : carte de France avec la région de la bouteille et, si elle diffère, la région supposée reliée par un trait. Absente pour un vin étranger ou une région hors de la base.
+- Carte "Pour comprendre" : en tête, **le profil comparé** — une glissière par axe (tanins, corps, acidité) avec un repère "Toi" et un repère "Typique du cépage", puis les arômes typiques, ceux qui ont été sentis mis en avant (rouges et blancs dont le cépage est dans la base). Suivent le profil typique du cépage et de la région, et rapprochement avec la perception. Une perception identique au profil est confirmée ("Des tanins marqués : c'est typique du cépage Syrah"), une perception opposée est expliquée sans jugement, une perception voisine n'est pas commentée.
 - Carte "À retenir" : jusqu'à 2 indices déduits de la structure perçue, plus climat et sol perçus.
 
 Règles de comparaison (`web/src/utils/comparison.js`) :
@@ -91,6 +95,18 @@ Règles de comparaison (`web/src/utils/comparison.js`) :
 | Millésime en tranche (Débutant) | la réalité est dans la tranche | à 2 ans de la tranche | sinon |
 
 Un champ n'est comparé que si l'hypothèse **et** la réalité sont renseignées. Pas de score global chiffré.
+
+"Partager mon résultat" (en solo comme à plusieurs) envoie une **image** : nom du vin, réponses et verdicts, niveau. Si le téléphone ne sait pas partager une image, le résumé texte est envoyé.
+
+## 6 bis. Mon palais `/palate`
+
+Ouvert depuis l'accueil et le journal. Un portrait calculé à l'affichage, sans score ni classement :
+
+- **Ce que je bois** : répartition par type, cépages les plus goûtés.
+- **Mon tour de France** : la carte, un point par région goûtée, plus gros avec le nombre de bouteilles ; toucher une région donne son détail et un lien vers ses bouteilles. Vins étrangers listés par pays.
+- **Ce que j'aime** : cépages et régions les mieux notés (à partir de deux vins notés).
+- **Ce que je reconnais à l'aveugle** : juste / proche / à revoir, champ par champ.
+- **Mes penchants** : "Tu perçois souvent les tanins plus marqués que le profil typique" — affiché à partir de trois dégustations et d'un écart moyen d'un demi-niveau.
 
 ## 7. Fiche `/entry/:id`
 

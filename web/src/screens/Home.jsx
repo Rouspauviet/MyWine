@@ -1,6 +1,6 @@
 // Accueil — deux intentions (Aveugle / Mémoire) + journal
 import { useNavigate } from 'react-router-dom'
-import { Eye, Bookmark, BookOpen, Settings, Play, Users } from 'lucide-react'
+import { Eye, Bookmark, BookOpen, Settings, Play, Users, ChartNoAxesColumn } from 'lucide-react'
 import { Screen, Body, Footer, useAsync } from '../components/Layout'
 import * as db from '../db/db'
 import { WINE_TYPES } from '../data/wineData'
@@ -76,8 +76,8 @@ export default function Home() {
           <button className="link-btn" onClick={() => navigate('/journal')}>
             <BookOpen size={14} /> Mon journal
           </button>
-          <button className="link-btn" onClick={() => navigate('/settings')}>
-            <Settings size={14} /> Paramètres
+          <button className="link-btn" onClick={() => navigate('/palate')}>
+            <ChartNoAxesColumn size={14} /> Mon palais
           </button>
         </div>
         <p className="muted">v{__APP_VERSION__}</p>

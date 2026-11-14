@@ -46,7 +46,8 @@ export default function Reveal() {
         comparison: computeComparison(rec, finalReality),
         thumb,
       })
-      navigate(`/comparison/${id}`, { replace: true })
+      // `reveal` : la comparaison s'ouvre sur la mise en scène, réponse après réponse
+      navigate(`/comparison/${id}`, { replace: true, state: { reveal: true } })
     } catch (err) {
       setError(`Impossible de sauvegarder : ${err.message}`)
       setSaving(false)

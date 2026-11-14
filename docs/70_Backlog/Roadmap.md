@@ -35,6 +35,11 @@
 - Partage de l'assistant avec un ami (lien chiffré + code), sans serveur
 - Assistant IA optionnel avec la clé de l'utilisateur : lecture d'étiquette automatique, préparation de la dégustation (pistes d'attention par niveau, indices, leurres, profil attendu)
 
+## Expérience visuelle v3 — sur la branche `v3-visuel` 🚧
+
+- Révélation mise en scène, profil comparé, carte de France, "Mon palais", saisie sensorielle, résultat en image
+- À valider sur iPhone avant fusion dans `main` ; la 2.5 reste en ligne d'ici là
+
 ## Prochain chantier — validation en conditions réelles ⏳
 
 | Priorité | Tâche |
@@ -49,7 +54,8 @@
 
 | Priorité | Idée | Note |
 |---|---|---|
-| P1 | Statistiques | Taux juste/proche par champ, cépages et régions les plus goûtés, dépense moyenne, progression dans le temps |
+| P2 | Statistiques, suite | "Mon palais" couvre types, cépages, régions, reconnaissance à l'aveugle et penchants. Restent : dépense moyenne, progression dans le temps |
+| P2 | Carte hors de France | La carte ne couvre que les régions françaises |
 | P1 | Filtres journal avancés | Type, région, note minimale, fourchette de prix, tri |
 | P2 | Mode sombre | Doubler les tokens dans `tokens.css` (`prefers-color-scheme`) |
 | P2 | Grammaire dédiée Clairet / vins doux / mutés | Aujourd'hui en saisie libre |

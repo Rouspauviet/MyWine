@@ -29,6 +29,17 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 - [ ] Au moins un indice dans "À retenir" (ex : rouge, tanins marqués + corps ample)
 - [ ] "Je ne connais pas la bouteille" → fiche enregistrée, "Comparaison impossible"
 
+### Expérience visuelle (branche `v3-visuel`)
+
+- [ ] Perception : nuancier (plusieurs robes possibles), roue des arômes (toucher une part la colore, le centre compte les familles)
+- [ ] Structure : jauges pour tanins, corps, acidité, longueur ; retoucher le niveau choisi l'efface ; texture des tanins et maturité restent en pastilles
+- [ ] Une fiche créée avant la v3 s'ouvre et se modifie sans perte
+- [ ] Après "Comparer et enregistrer" (ou le code, à plusieurs) : réponses dévoilées une à une, puis la bouteille et sa photo ; "Tout révéler" saute ; rouvrir la comparaison ne rejoue pas
+- [ ] Comparaison : carte "D'où il vient" (région réelle, hypothèse, trait), profil comparé en tête de "Pour comprendre"
+- [ ] "Partager mon résultat" : la feuille de partage propose une image ; en solo aussi
+- [ ] Accueil et journal → "Mon palais" : types, cépages, carte (toucher une région), préférences, reconnaissance à l'aveugle, penchants ; journal vide → message d'attente
+- [ ] Réglage "Réduire les animations" de l'iPhone : la révélation s'ouvre sans animation
+
 ### Niveaux
 
 - [ ] Sommeil : quatre niveaux, le dernier choisi est présélectionné la fois suivante
@@ -154,6 +165,8 @@ Une photo de cette taille compte environ 3 300 tokens. Même jour, préparation 
 
 2026-11-14, rejoindre depuis l'app : écran de choix, collage d'un lien et arrivée vérifiés en format mobile ; décodage d'un QR code d'invitation de 760 caractères vérifié sur une image de synthèse. Le lecteur n'a pas pu être essayé avec une vraie caméra.
 
-**Reste à valider** : lecteur de QR code sur iPhone (app installée et Safari), étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
+2026-11-14, expérience visuelle (branche `v3-visuel`) : sur six dégustations de test, vérifiés en format mobile la mise en scène de la révélation, la carte, le profil comparé, "Mon palais" (dont un penchant détecté), le nuancier, la roue des arômes, les jauges et l'image de partage générée. Non vérifiés : la feuille de partage d'image, le toucher sur la roue et les animations sur un vrai iPhone.
+
+**Reste à valider** : toute l'expérience visuelle sur iPhone, lecteur de QR code sur iPhone (app installée et Safari), étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
 
 **Non vérifié** : le scan réel du QR code entre deux téléphones, la feuille de partage, et tout ce qui dépend d'un vrai iPhone (appareil photo, installation, zones sûres, clavier, feuille de partage à l'export) et le mode hors ligne.

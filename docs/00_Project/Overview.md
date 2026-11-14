@@ -50,6 +50,10 @@ C'est un mode Aveugle dont la vérité vient de l'hôte. Aucun serveur : la bout
 
 Après la révélation, une fiche "Pour comprendre" donne le profil typique du cépage et de la région et le rapproche de ce qui a été perçu. Elle s'appuie sur une base de connaissances intégrée, sans réseau.
 
+### Voir plutôt que lire (v3, branche `v3-visuel`)
+
+La révélation se dévoile réponse après réponse, la comparaison montre une carte et un profil comparé, "Mon palais" dresse le portrait de ce qu'on boit, aime et reconnaît, et la dégustation se saisit sur un nuancier, une roue des arômes et des jauges. Détail → [décision](../60_Decisions/2026-11-14-experience-visuelle.md).
+
 ### Assistant IA (optionnel)
 
 Avec sa propre clé d'API Claude, l'utilisateur peut remplir une fiche depuis la photo de l'étiquette, et l'hôte peut joindre à son invitation un court texte sur ce qu'on attend du vin. Sans clé, l'app fonctionne entièrement.

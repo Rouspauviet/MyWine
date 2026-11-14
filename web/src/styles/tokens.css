@@ -51,6 +51,47 @@
   --wine-autre:      #9A8A7E;
 
   --overlay:         rgba(28, 21, 18, 0.55);
+  --shade:           rgba(28, 21, 18, 0.12);  /* ombre intérieure d'une pastille de robe */
+
+  /* ── Robes (nuancier de la saisie sensorielle) ── */
+  --robe-rubis-clair:    #C2475A;
+  --robe-rubis:          #9E1F35;
+  --robe-grenat:         #7A1428;
+  --robe-pourpre:        #5A1640;
+  --robe-tuile:          #A0522D;
+  --robe-brun:           #6B3A22;
+  --robe-jaune-pale:     #F3EBB8;
+  --robe-jaune-citrin:   #EADB7A;
+  --robe-jaune-dore:     #E0BE4F;
+  --robe-or:             #D2A32C;
+  --robe-ambre:          #C4822A;
+  --robe-rose-pale:      #F6D5CB;
+  --robe-rose-saumon:    #F0A98F;
+  --robe-rose-framboise: #E0647D;
+  --robe-rose-fonce:     #C84465;
+  --robe-orange:         #E59055;
+  --robe-cristallin:     #F5F1DC;
+  --robe-cuivre:         #C97B3B;
+  --robe-tuile-orange:   #B8642E;
+  --robe-ocre:           #B98A3A;
+  --robe-brun-orange:    #8F5426;
+  --robe-rouge-rose:     #C2334F;
+  --robe-grenat-pale:    #A8475A;
+
+  /* ── Familles aromatiques (roue des arômes) — assez sombres pour porter un texte clair ── */
+  --aroma-fruits-rouges: #B23A48;
+  --aroma-fruits-noirs:  #4E2A4F;
+  --aroma-fruits-blancs: #7F8438;
+  --aroma-agrumes:       #A87A0A;
+  --aroma-exotique:      #B85F2A;
+  --aroma-floral:        #A4508B;
+  --aroma-vegetal:       #4F7A4A;
+  --aroma-epices:        #8C4A2F;
+  --aroma-boise:         #7A5C3E;
+  --aroma-terre:         #5E5346;
+  --aroma-mineral:       #5B7083;
+  --aroma-patisserie:    #9C6F27;
+  --aroma-evolue:        #6E4B3A;
 
   /* ── Espacements ── */
   --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px; --s-5: 20px;
@@ -76,4 +117,14 @@
   --tap: 44px;        /* cible tactile minimale */
   --thumb: 64px;      /* vignette du journal */
   --photo: 132px;     /* photo dans un formulaire */
+  --swatch: 40px;     /* pastille du nuancier */
+  --wheel-max: 340px; /* roue des arômes */
+  --map-max: 340px;   /* carte de France */
+  --gauge: 56px;      /* hauteur d'une jauge */
+  --mark: 18px;       /* repère d'une glissière */
+  --bar: 10px;        /* épaisseur d'une barre de graphique */
+  --bar-name: 112px;  /* colonne des noms dans un classement */
+  --stroke: 2px;      /* trait des graphiques */
+  --reveal-photo: 180px;
+  --t-reveal: 420ms;  /* ouverture d'une carte de révélation */
 }

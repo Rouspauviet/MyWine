@@ -1,7 +1,7 @@
 // Journal — toutes les fiches (Aveugle + Mémoire), recherche et filtres
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Search, X, Heart, Wine } from 'lucide-react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Search, X, Heart, Wine, ChartNoAxesColumn } from 'lucide-react'
 import { Screen, Header, Body, useAsync } from '../components/Layout'
 import { ChipGroup } from '../components/Inputs'
 import * as db from '../db/db'
@@ -34,14 +34,20 @@ function matchesFilter(record, filter) {
 export default function Journal() {
   const navigate = useNavigate()
   const { data: records } = useAsync(() => db.listRecords(), [])
-  const [search, setSearch] = useState('')
+  // `?q=` : recherche demandée depuis "Mon palais" (bouteilles d'une région)
+  const [params] = useSearchParams()
+  const [search, setSearch] = useState(params.get('q') ?? '')
   const [filter, setFilter] = useState(null)
 
   const filtered = (records ?? []).filter(r => matchesSearch(r, search) && matchesFilter(r, filter))
 
   return (
     <Screen>
-      <Header title="Journal" label={records ? `${records.length} ${records.length > 1 ? 'vins' : 'vin'}` : undefined} onBack={() => navigate('/', { replace: true })} />
+      <Header title="Journal" label={records ? `${records.length} ${records.length > 1 ? 'vins' : 'vin'}` : undefined} onBack={() => navigate('/', { replace: true })}
+        actions={records?.length > 0 && (
+          <button className="icon-btn" onClick={() => navigate('/palate')} aria-label="Mon palais"><ChartNoAxesColumn size={20} /></button>
+        )}
+      />
 
       {records?.length > 0 && (
         <div className="toolbar">

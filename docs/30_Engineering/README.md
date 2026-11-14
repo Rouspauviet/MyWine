@@ -75,6 +75,7 @@ src/
 | `/join/:token` | Join — arrivée de l'invité, choix du niveau | À plusieurs |
 | `/memory/new` | RecordEdit (création) | Mémoire |
 | `/journal` | Journal | commun |
+| `/palate` | Palate — "Mon palais" : portrait calculé à partir du journal | commun |
 | `/entry/:id` | Entry — fiche complète | commun |
 | `/entry/:id/edit` | RecordEdit (modification) | commun |
 | `/settings` | Settings — export, import, effacement, assistant IA et son partage | — |
@@ -110,6 +111,22 @@ Le niveau (`record.level`) est lu par `Tasting.jsx` : `STRUCTURE_FIELDS` marque 
 - `session.js` → `buildClueData()` / `buildClues()` : l'invitation ne transporte que des codes (`c` climat, `s` style, `i` initiale, `x` positions de deux leurres) ; les phrases sont reconstruites chez l'invité.
 
 Ajouter un cépage : une entrée dans `GRAPES`, avec des familles aromatiques **prises dans `AROMA_FAMILIES_BY_TYPE`** de `wineData.js` (sinon le rapprochement des arômes ne fonctionne pas).
+
+## Expérience visuelle
+
+Aucune bibliothèque de graphiques : tout est en SVG ou en HTML/CSS écrits dans l'app. Décision [`2026-11-14`](../60_Decisions/2026-11-14-experience-visuelle.md).
+
+| Fichier | Rôle |
+|---|---|
+| `components/RevealSequence.jsx` | Mise en scène de la révélation. Jouée quand la Comparaison est ouverte avec `state: { reveal: true }` (posé par `Reveal.jsx`), puis l'état est retiré |
+| `utils/profile.js` | `buildProfile(record)` : perception face au profil typique du cépage principal (`axes`, `aromas`, `extra`) ; `null` si la comparaison n'a pas de sens |
+| `components/Charts.jsx` | `ProfileChart` (glissières), `StackBar` (barre empilée), `BarList` (classement) |
+| `data/franceMap.js`, `components/FranceMap.jsx` | Contour de France simplifié et position des quatorze régions, calculés à partir de coordonnées approximatives. Deux usages : `real` / `guess` (Comparaison) ou `counts` (Mon palais) |
+| `utils/palate.js`, `screens/Palate.jsx` | `buildPalate(records)` : ce que je bois, aime, reconnais, et mes penchants. Rien n'est stocké |
+| `data/sensory.js`, `components/Sensory.jsx` | `RobePicker`, `AromaWheel`, `Gauge`. Chaque robe et chaque famille aromatique renvoie à un token `--robe-*` ou `--aroma-*`. Un champ de `STRUCTURE_FIELDS` marqué `scale: true` passe par la jauge |
+| `utils/shareCard.js` | `buildShareImage()` : image 1080 × 1350 dessinée sur un canvas, couleurs lues dans les tokens |
+
+Les valeurs enregistrées par la saisie sensorielle sont les mêmes libellés qu'avant : aucune migration.
 
 ## Assistant IA (optionnel)
 

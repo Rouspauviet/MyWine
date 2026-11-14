@@ -112,7 +112,7 @@ Pas de formulaire bouteille : un champ "code de révélation". Code faux → mes
 
 ### 4. Comparaison
 
-Identique au mode Aveugle, **sans score ni classement**, avec en plus le mot de l'hôte et la fiche "Pour comprendre" (profil typique du cépage et de la région, rapproché de ce que l'invité a perçu, plus le texte de l'assistant si l'hôte en a joint un). Bouton "Partager mon résultat" : résumé texte à envoyer dans la messagerie du groupe, par exemple :
+Identique au mode Aveugle (mise en scène de la révélation comprise, juste après le code), **sans score ni classement**, avec en plus le mot de l'hôte et la fiche "Pour comprendre" (profil typique du cépage et de la région, rapproché de ce que l'invité a perçu, plus le texte de l'assistant si l'hôte en a joint un). Bouton "Partager mon résultat" : une image à envoyer dans la messagerie du groupe ; à défaut, ce résumé texte :
 
 ```
 Ma dégustation à l'aveugle — Les Vignes de Test

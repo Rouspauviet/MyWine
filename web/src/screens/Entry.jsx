@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Pencil, Trash2, Heart, Users } from 'lucide-react'
 import { Screen, Header, Body, Card, InfoRow, ConfirmModal, Loading, useAsync } from '../components/Layout'
 import { RATING_LABELS } from '../components/Inputs'
-import { ComparisonTable, Insights, summarize, ShareResultButton, HostNote, Lesson } from './Comparison'
+import { ComparisonTable, Insights, summarize, ShareResultButton, HostNote, Lesson, OriginMap } from './Comparison'
 import { LEVELS } from '../data/levels'
 import * as db from '../db/db'
 import { usePhotoUrls } from '../utils/photos'
@@ -169,7 +169,8 @@ export default function Entry() {
               </section>
             )}
             <ComparisonTable record={record} />
-            {record.session && summary && <ShareResultButton record={record} />}
+            {summary && <ShareResultButton record={record} />}
+            <OriginMap record={record} />
             <Lesson record={record} />
             <Insights record={record} />
 
@@ -188,6 +189,7 @@ export default function Entry() {
         )}
 
         {/* Souvenir sans dégustation à l'aveugle : la fiche pédagogique seule */}
+        {!isBlind && <OriginMap record={record} />}
         {!isBlind && <Lesson record={record} />}
       </Body>
 

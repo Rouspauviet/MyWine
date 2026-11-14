@@ -24,6 +24,7 @@ import { commonGrapesFor, DEFAULT_LEVEL } from '../data/levels'
 import { vintageRanges, buildClues, focusFor } from '../utils/session'
 import { reason } from '../utils/reasoning'
 import { GuidedGrape, ReasoningHelp } from '../components/Reasoning'
+import { RobePicker, AromaWheel, Gauge } from '../components/Sensory'
 import { Lightbulb, Sparkles } from 'lucide-react'
 
 const STEPS = [
@@ -218,8 +219,8 @@ export default function Tasting() {
 
 function StepPerception({ wineType, level, value, onChange }) {
   const set = (key, val) => onChange(prev => ({ ...prev, [key]: val }))
-  const robeOptions = asOptions(ROBE_OPTIONS_BY_TYPE[wineType])
-  const aromaOptions = asOptions(AROMA_FAMILIES_BY_TYPE[wineType])
+  const robeOptions = ROBE_OPTIONS_BY_TYPE[wineType] ?? []
+  const aromaOptions = AROMA_FAMILIES_BY_TYPE[wineType] ?? []
   const beginner = level === 'debutant'
 
   return (
@@ -227,7 +228,7 @@ function StepPerception({ wineType, level, value, onChange }) {
       {robeOptions.length > 0 && (
         <Field label={beginner ? 'Sa couleur' : 'Robe'} optional hintOpen={beginner}
           hint={beginner ? 'Penche le verre au-dessus de quelque chose de blanc et regarde le bord du vin.' : undefined}>
-          <ChipGroup options={robeOptions} value={value.robe} onChange={v => set('robe', v)} multi />
+          <RobePicker options={robeOptions} value={value.robe} onChange={v => set('robe', v)} />
         </Field>
       )}
       {!beginner && (
@@ -238,7 +239,7 @@ function StepPerception({ wineType, level, value, onChange }) {
       {aromaOptions.length > 0 && (
         <Field label={beginner ? 'Ce que tu sens' : 'Familles aromatiques'} optional hintOpen={beginner}
           hint={beginner ? 'Fais tourner le vin dans le verre, puis sens. Coche tout ce qui te vient, sans chercher le mot juste.' : undefined}>
-          <ChipGroup options={aromaOptions} value={value.aromaFamilies} onChange={v => set('aromaFamilies', v)} multi />
+          <AromaWheel options={aromaOptions} value={value.aromaFamilies} onChange={v => set('aromaFamilies', v)} />
         </Field>
       )}
       <TextField label="Autres notes" optional multiline value={value.notes} onChange={v => set('notes', v)} placeholder="Notes libres, impressions…" />
@@ -248,48 +249,49 @@ function StepPerception({ wineType, level, value, onChange }) {
 
 // ─── Étape 2 — Structure (une grammaire par type) ────────────────────────────
 // Chaque champ : key, label, options · hint (aide) · multi · optional · showIf(data) · beginner (gardé au niveau Débutant)
+// scale : les options vont du plus faible au plus fort → saisie par une jauge plutôt que par des pastilles
 
 const FINISH_HINT = 'Combien de temps le goût reste en bouche après avoir avalé.'
 
 const STRUCTURE_FIELDS = {
   rouge: [
-    { key: 'taninIntensity', label: 'Tanins', options: TANNIN_INTENSITY, beginner: true, hint: 'Sensation de sécheresse / prise sur les gencives. Très marqués = bouche asséchée.' },
+    { key: 'taninIntensity', label: 'Tanins', options: TANNIN_INTENSITY, scale: true, beginner: true, hint: 'Sensation de sécheresse / prise sur les gencives. Très marqués = bouche asséchée.' },
     { key: 'taninTexture', label: 'Texture des tanins', options: TANNIN_TEXTURE, multi: true, optional: true, showIf: d => d.taninIntensity && d.taninIntensity !== 't1' },
     { key: 'fruitMaturity', label: 'Maturité du fruit', options: FRUIT_MATURITY, optional: true },
-    { key: 'body', label: 'Corps', options: BODY_3, beginner: true, hint: 'Corps ample = sensation de volume et de densité en bouche.' },
-    { key: 'acidity', label: 'Acidité', options: ACIDITY_RED, optional: true },
-    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true, beginner: true, hint: FINISH_HINT },
+    { key: 'body', label: 'Corps', options: BODY_3, scale: true, beginner: true, hint: 'Corps ample = sensation de volume et de densité en bouche.' },
+    { key: 'acidity', label: 'Acidité', options: ACIDITY_RED, scale: true, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, scale: true, optional: true, beginner: true, hint: FINISH_HINT },
   ],
   blanc: [
-    { key: 'acidity', label: 'Acidité', options: ACIDITY_5, beginner: true, hint: 'Tranchante = salivation nette, tension forte. Plate = impression molle, manque de fraîcheur.' },
-    { key: 'texture', label: 'Texture / Gras', options: TEXTURE_WHITE, beginner: true, hint: "Onctueuse = richesse qui contrebalance l'acidité. Légère et sèche = vin tendu, nerveux." },
-    { key: 'minerality', label: 'Minéralité', options: MINERALITY, hint: "Craie, silex, iode — impression de minéral humide ou de pierre. Marqueur d'origine fort." },
+    { key: 'acidity', label: 'Acidité', options: ACIDITY_5, scale: true, beginner: true, hint: 'Tranchante = salivation nette, tension forte. Plate = impression molle, manque de fraîcheur.' },
+    { key: 'texture', label: 'Texture / Gras', options: TEXTURE_WHITE, scale: true, beginner: true, hint: "Onctueuse = richesse qui contrebalance l'acidité. Légère et sèche = vin tendu, nerveux." },
+    { key: 'minerality', label: 'Minéralité', options: MINERALITY, scale: true, hint: "Craie, silex, iode — impression de minéral humide ou de pierre. Marqueur d'origine fort." },
     { key: 'mineralityType', label: 'Type de minéralité', options: MINERALITY_TYPE, multi: true, optional: true, showIf: d => d.minerality && d.minerality !== 'absente' },
-    { key: 'boise', label: 'Boisé', options: OAK, optional: true },
-    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true, beginner: true, hint: FINISH_HINT },
+    { key: 'boise', label: 'Boisé', options: OAK, scale: true, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, scale: true, optional: true, beginner: true, hint: FINISH_HINT },
   ],
   rose: [
-    { key: 'vivacity', label: 'Vivacité / Fraîcheur', options: VIVACITY, beginner: true, hint: 'Vif = le vin fait saliver et rafraîchit. Plat = il paraît mou.' },
-    { key: 'body', label: 'Corps', options: BODY_3, optional: true },
-    { key: 'perceivedSweetness', label: 'Sucrosité perçue', options: PERCEIVED_SWEETNESS, beginner: true, hint: 'Sec = aucune impression de sucre.' },
-    { key: 'lightStructure', label: 'Structure légère', options: LIGHT_STRUCTURE, optional: true },
-    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true },
+    { key: 'vivacity', label: 'Vivacité / Fraîcheur', options: VIVACITY, scale: true, beginner: true, hint: 'Vif = le vin fait saliver et rafraîchit. Plat = il paraît mou.' },
+    { key: 'body', label: 'Corps', options: BODY_3, scale: true, optional: true },
+    { key: 'perceivedSweetness', label: 'Sucrosité perçue', options: PERCEIVED_SWEETNESS, scale: true, beginner: true, hint: 'Sec = aucune impression de sucre.' },
+    { key: 'lightStructure', label: 'Structure légère', options: LIGHT_STRUCTURE, scale: true, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, scale: true, optional: true },
   ],
   petillant: [
     { key: 'bubbleQuality', label: 'Qualité des bulles', options: BUBBLE_QUALITY, beginner: true, hint: 'Très fines et persistantes = signe de qualité (méthode traditionnelle). Grossières = méthode cuve.' },
-    { key: 'perceivedDosage', label: 'Dosage perçu', options: PERCEIVED_DOSAGE, beginner: true, hint: "Difficile à deviner à l'aveugle, mais l'exercice est pertinent. Brut nature = très sec, minéral." },
+    { key: 'perceivedDosage', label: 'Dosage perçu', options: PERCEIVED_DOSAGE, scale: true, beginner: true, hint: "Difficile à deviner à l'aveugle, mais l'exercice est pertinent. Brut nature = très sec, minéral." },
     { key: 'sparklingRegister', label: 'Registre aromatique', options: SPARKLING_REGISTER, optional: true },
-    { key: 'vivacity', label: 'Vivacité', options: VIVACITY, optional: true },
-    { key: 'body', label: 'Corps sous-jacent', options: BODY_3, optional: true },
+    { key: 'vivacity', label: 'Vivacité', options: VIVACITY, scale: true, optional: true },
+    { key: 'body', label: 'Corps sous-jacent', options: BODY_3, scale: true, optional: true },
   ],
   orange: [
-    { key: 'phenolicIntensity', label: 'Texture phénolique', options: PHENOLIC_INTENSITY, beginner: true, hint: "Tanin de peau, différent d'un rouge. Grippage type peau d'orange ou thé — pas de sécheresse agressive." },
+    { key: 'phenolicIntensity', label: 'Texture phénolique', options: PHENOLIC_INTENSITY, scale: true, beginner: true, hint: "Tanin de peau, différent d'un rouge. Grippage type peau d'orange ou thé — pas de sécheresse agressive." },
     { key: 'phenolicType', label: 'Type de texture', options: PHENOLIC_TYPE, multi: true, optional: true, showIf: d => d.phenolicIntensity && d.phenolicIntensity !== 'absente' },
-    { key: 'bitterness', label: 'Amers', options: BITTERNESS, beginner: true, hint: 'Amertume en fin de bouche, comme un zeste ou une amande.' },
+    { key: 'bitterness', label: 'Amers', options: BITTERNESS, scale: true, beginner: true, hint: 'Amertume en fin de bouche, comme un zeste ou une amande.' },
     { key: 'bitternessType', label: "Type d'amers", options: BITTERNESS_TYPE, multi: true, optional: true, showIf: d => d.bitterness && d.bitterness !== 'absents' },
-    { key: 'oxidativeRegister', label: 'Registre oxydatif', options: OXIDATIVE_REGISTER },
-    { key: 'residualAcidity', label: 'Acidité résiduelle', options: RESIDUAL_ACIDITY, optional: true },
-    { key: 'finish', label: 'Longueur', options: FINISH_3, optional: true },
+    { key: 'oxidativeRegister', label: 'Registre oxydatif', options: OXIDATIVE_REGISTER, scale: true },
+    { key: 'residualAcidity', label: 'Acidité résiduelle', options: RESIDUAL_ACIDITY, scale: true, optional: true },
+    { key: 'finish', label: 'Longueur', options: FINISH_3, scale: true, optional: true },
   ],
 }
 
@@ -303,8 +305,8 @@ function StepStructure({ wineType, level, data, onChange }) {
     return (
       <>
         <p className="banner">Pas de grille dédiée pour ce type de vin : décris librement ce que tu ressens en bouche.</p>
-        <Field label="Corps" optional><ChipGroup options={BODY_3} value={data.body} onChange={v => set('body', v)} /></Field>
-        <Field label="Longueur" optional><ChipGroup options={FINISH_3} value={data.finish} onChange={v => set('finish', v)} /></Field>
+        <Field label="Corps" optional><Gauge options={BODY_3} value={data.body} onChange={v => set('body', v)} /></Field>
+        <Field label="Longueur" optional><Gauge options={FINISH_3} value={data.finish} onChange={v => set('finish', v)} /></Field>
         <TextField label="Notes libres — bouche" optional multiline value={data.paletteFree} onChange={v => set('paletteFree', v)} placeholder="Texture, structure, impressions…" />
       </>
     )
@@ -315,7 +317,9 @@ function StepStructure({ wineType, level, data, onChange }) {
     .map(f => (
       // Débutant : les aides sont affichées d'office
       <Field key={f.key} label={f.label} optional={f.optional} hint={f.hint} hintOpen={beginner}>
-        <ChipGroup options={f.options} value={data[f.key]} onChange={v => set(f.key, v)} multi={f.multi} />
+        {f.scale
+          ? <Gauge options={f.options} value={data[f.key]} onChange={v => set(f.key, v)} />
+          : <ChipGroup options={f.options} value={data[f.key]} onChange={v => set(f.key, v)} multi={f.multi} />}
       </Field>
     ))
 }

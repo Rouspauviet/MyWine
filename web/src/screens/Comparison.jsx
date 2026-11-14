@@ -1,5 +1,5 @@
 // Comparaison — hypothèses vs réalité, côte à côte
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { FileText, Lightbulb, Share2, Check, GraduationCap } from 'lucide-react'
 import { buildLesson } from '../utils/pedagogy'
@@ -7,8 +7,15 @@ import { Screen, Header, Body, Footer, Card, Loading, useAsync } from '../compon
 import * as db from '../db/db'
 import { matchBadge } from '../utils/comparison'
 import { WINE_TYPES, CLIMATE_OPTIONS, SOIL_OPTIONS } from '../data/wineData'
-import { labelOf, hasReality, recordTitle } from '../utils/text'
+import { labelOf, hasReality, recordTitle, normalize } from '../utils/text'
 import { LEVELS } from '../data/levels'
+import { buildProfile } from '../utils/profile'
+import { ProfileChart } from '../components/Charts'
+import FranceMap from '../components/FranceMap'
+import RevealSequence from '../components/RevealSequence'
+import { MAP_REGIONS } from '../data/franceMap'
+import { usePhotoUrls } from '../utils/photos'
+import { buildShareImage } from '../utils/shareCard'
 
 // L'aide utilisée pendant la dégustation, dite sans jugement : "2 indices, aide au raisonnement" (ou null)
 export function helpUsed(record) {
@@ -56,10 +63,23 @@ export function shareText(record) {
   ].filter(Boolean).join('\n')
 }
 
+// Partage du résultat : une image quand le téléphone sait en partager une, sinon le texte
 export function ShareResultButton({ record }) {
   const [copied, setCopied] = useState(false)
   const share = async () => {
     const text = shareText(record)
+    const matches = record.comparison?.matches || {}
+    try {
+      const blob = await buildShareImage(record, {
+        rows: COMPARISON_FIELDS.filter(f => matches[f.key]).map(f => ({ label: f.label, hypo: f.hypo(record), match: matches[f.key] })),
+        summary: summarize(matches),
+        footer: [labelOf(LEVELS, record.level) && `Niveau ${labelOf(LEVELS, record.level)}`, helpUsed(record)].filter(Boolean).join(' · '),
+      })
+      const file = blob && new File([blob], 'mywine-resultat.png', { type: 'image/png' })
+      if (file && navigator.canShare?.({ files: [file] })) return await navigator.share({ files: [file] })
+    } catch (err) {
+      if (err?.name === 'AbortError') return // partage annulé
+    }
     try {
       if (navigator.share) await navigator.share({ text })
       else { await navigator.clipboard.writeText(text); setCopied(true) }
@@ -87,9 +107,13 @@ export function HostNote({ record }) {
 export function Lesson({ record }) {
   const lesson = buildLesson(record) ?? { grapes: [], region: null, lines: [] }
   const aiProfile = record.session?.aiProfile
+  const profile = buildProfile(record)
+  // Le graphique montre déjà les points d'accord : en texte, on ne garde que l'explication des écarts
+  const lines = profile ? lesson.lines.filter(line => line.kind === 'gap') : lesson.lines
   if (!aiProfile && !lesson.grapes.length && !lesson.region) return null
   return (
     <Card title="Pour comprendre">
+      {profile && <ProfileChart profile={profile} />}
       {aiProfile && (
         <p className="lesson-text"><strong>Ce qu'on attend de ce vin.</strong> {aiProfile} <span className="ai-tag">rédigé par l'assistant IA</span></p>
       )}
@@ -99,13 +123,32 @@ export function Lesson({ record }) {
       {lesson.region && (
         <p className="lesson-text"><strong>{lesson.region.name}.</strong> {lesson.region.about}</p>
       )}
-      {lesson.lines.map((line, i) => (
+      {lines.map((line, i) => (
         <p key={i} className="insight">
           {line.kind === 'match' ? <Check size={16} /> : <GraduationCap size={16} />}
           <span>{line.text}</span>
         </p>
       ))}
       <p className="muted left">Repères généraux : chaque vin a le droit de s'en écarter.</p>
+    </Card>
+  )
+}
+
+// D'où vient le vin, et où le dégustateur le situait — seulement pour une région présente sur la carte
+export function OriginMap({ record }) {
+  const onMap = (name) => MAP_REGIONS.some(r => normalize(r.name) === normalize(name ?? ''))
+  const real = record.reality?.region
+  if (!onMap(real)) return null
+  const guess = record.mode === 'blind' ? (record.hypotheses?.region || null) : null
+  const right = guess && normalize(guess) === normalize(real)
+  return (
+    <Card title="D'où il vient">
+      <FranceMap real={real} guess={right ? null : guess} />
+      <div className="legend">
+        <span><span className="legend-mark real" /> La bouteille : {real}</span>
+        {guess && !right && <span><span className="legend-mark guess" /> Ton hypothèse : {guess}</span>}
+        {right && <span>Tu l'avais située au bon endroit.</span>}
+      </div>
     </Card>
   )
 }
@@ -164,6 +207,10 @@ export default function Comparison() {
   const navigate = useNavigate()
   const { id } = useParams()
   const { data: record } = useAsync(() => db.getRecord(id), [id])
+  const location = useLocation()
+  const photos = usePhotoUrls(id)
+  // La mise en scène ne joue qu'à la sortie de la Révélation, pas quand on rouvre la comparaison
+  const [revealing, setRevealing] = useState(!!location.state?.reveal)
 
   if (record === undefined) return <Loading />
   if (!record) {
@@ -177,6 +224,11 @@ export default function Comparison() {
 
   const known = hasReality(record.reality)
   const summary = summarize(record.comparison?.matches)
+
+  if (revealing && known) {
+    const done = () => { setRevealing(false); navigate(location.pathname, { replace: true }) }
+    return <RevealSequence record={record} fields={COMPARISON_FIELDS} photo={photos[0] ?? null} onDone={done} />
+  }
 
   return (
     <Screen>
@@ -194,11 +246,12 @@ export default function Comparison() {
         </section>
         <HostNote record={record} />
         <ComparisonTable record={record} />
+        <OriginMap record={record} />
         <Lesson record={record} />
         <Insights record={record} />
       </Body>
       <Footer className="column">
-        {record.session && known && <ShareResultButton record={record} />}
+        {known && summary && <ShareResultButton record={record} />}
         <button className="btn btn-primary block" onClick={() => navigate(`/entry/${id}`, { replace: true })}>
           <FileText size={18} /> Voir la fiche complète
         </button>
