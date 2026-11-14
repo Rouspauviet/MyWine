@@ -438,6 +438,11 @@ button.banner { text-align: left; width: 100%; }
 .level-desc.fit { color: var(--match); }
 .level-desc.fit svg { vertical-align: text-bottom; }
 
+/* Lecteur de QR code */
+.scanner { position: relative; width: 100%; aspect-ratio: 1; flex-shrink: 0; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--border); background: var(--surface-alt); }
+.scanner video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scanner-wait { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: var(--f-sm); color: var(--text-secondary); }
+
 .step-text { font-size: var(--f-sm); line-height: 1.5; color: var(--text-secondary); }
 .qr { display: block; width: 100%; max-width: calc(var(--photo) * 2.5); margin: 0 auto; border-radius: var(--r-md); }
 .reveal-code {

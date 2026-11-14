@@ -25,7 +25,7 @@ Accueil
 
 ## 2. Sommeil `/sleep`
 
-Rituel : "Avant de découvrir ce vin… L'étiquette est mise de côté."
+Rituel : "Avant de découvrir ce vin… Ne regarde pas l'étiquette." En solo, l'app ne connaît pas la bouteille : le texte s'adresse au dégustateur, il ne prétend pas qu'elle est cachée quelque part.
 
 - Choix du **niveau** (Débutant / Amateur / Confirmé / Expert) : il règle le degré d'aide à chaque étape — voir [Group.md](Group.md#les-quatre-niveaux). Le dernier niveau choisi est proposé par défaut.
 - "Commencer la dégustation" → **crée le brouillon** (`mode: 'blind'`, `status: 'draft'`) puis ouvre le wizard. Le brouillon n'est pas créé avant ce clic : pas de brouillon orphelin.
@@ -62,9 +62,10 @@ Comportements :
 
 *Dégustation à plusieurs : l'invité ne voit pas ces deux états mais un champ "code de révélation" — voir [Group.md](Group.md).*
 
-**État A — Le moment de vérité.** Trois actions :
+**État A — Le moment de vérité.** L'app ne sait rien de la bouteille : elle invite à aller la regarder et à la photographier, sans laisser croire qu'elle va la révéler elle-même. Quatre actions :
 
-- "Révéler la bouteille" → état B.
+- "Photographier l'étiquette" (bouton principal) → ouvre l'appareil photo, puis état B avec la photo déjà ajoutée (et la fiche remplie par l'assistant s'il est activé).
+- "Saisir la bouteille sans photo" → état B.
 - "Je ne connais pas la bouteille" → après confirmation, la fiche est enregistrée sans réalité (comparaison impossible, complétable plus tard).
 - "Revenir à mes notes" → retour au wizard.
 

@@ -68,6 +68,8 @@ src/
 | `/tasting/:id` | Tasting — type + wizard 4 étapes | Aveugle |
 | `/reveal/:id` | Reveal — moment de vérité + formulaire bouteille | Aveugle |
 | `/comparison/:id` | Comparison | Aveugle |
+| `/group` | Group — choix : faire deviner une bouteille ou rejoindre | À plusieurs |
+| `/join` | JoinScan — lecteur de QR code (`components/QrScanner.jsx`, `jsqr` chargé à la demande) ou lien collé | À plusieurs |
 | `/host/new` | HostNew — l'hôte saisit la bouteille | À plusieurs |
 | `/host/:id` | HostSession — QR code, lien, code de révélation | À plusieurs |
 | `/join/:token` | Join — arrivée de l'invité, choix du niveau | À plusieurs |

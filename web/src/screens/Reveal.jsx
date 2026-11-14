@@ -1,9 +1,9 @@
 // Révélation — fin de la dégustation à l'aveugle : on découvre la vraie bouteille
-// Solo : on la saisit soi-même. À plusieurs (invité) : on la déchiffre avec le code annoncé par l'hôte.
+// Solo : l'app ne la connaît pas, on va la regarder, on la photographie et on la saisit. À plusieurs (invité) : on la déchiffre avec le code annoncé par l'hôte.
 // C'est le premier écran du parcours Aveugle où des informations réelles apparaissent.
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Eye, BookOpen, KeyRound } from 'lucide-react'
+import { Eye, BookOpen, KeyRound, Camera } from 'lucide-react'
 import { Screen, Header, Body, Footer, ConfirmModal, Loading } from '../components/Layout'
 import { BottleForm } from '../components/Forms'
 import * as db from '../db/db'
@@ -110,14 +110,17 @@ export default function Reveal() {
           <div className="hero">
             <Eye size={32} className="hero-icon" />
             <h1 className="hero-title">Le moment de vérité</h1>
-            <p className="hero-text">{'Tu as terminé ta dégustation.\nRetourne la bouteille et découvre ce que tu as bu.'}</p>
+            <p className="hero-text">{'Tu as terminé ta dégustation.\nVa regarder la bouteille et prends son étiquette en photo : elle rejoindra ton journal.'}</p>
           </div>
           {error && <p className="banner error">{error}</p>}
         </Body>
         <Footer className="column bare">
-          <button className="btn btn-primary btn-large block" onClick={() => setPhase('form')}>
-            <Eye size={22} /> Révéler la bouteille
-          </button>
+          {/* Un label autour du champ fichier : ouvre l'appareil photo au toucher, y compris sur iPhone */}
+          <label className="btn btn-primary btn-large block">
+            <Camera size={22} /> Photographier l'étiquette
+            <input type="file" accept="image/*" hidden onChange={e => { photoDraft.add(e.target.files); setPhase('form') }} />
+          </label>
+          <button className="link-btn" onClick={() => setPhase('form')}>Saisir la bouteille sans photo</button>
           <button className="link-btn" disabled={saving} onClick={() => setConfirmUnknown(true)}>
             Je ne connais pas la bouteille
           </button>

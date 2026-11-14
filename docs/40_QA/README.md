@@ -22,6 +22,7 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 - [ ] **Anti-révélation** : aucun champ réel (nom, photo, prix) avant l'écran Révélation
 - [ ] Fermer l'onglet à l'étape 3, rouvrir → carte "Reprendre" sur l'accueil → retour à l'étape 3 avec les données
 - [ ] "Abandonner" → confirmation → brouillon supprimé, plus de carte "Reprendre"
+- [ ] Révélation en solo : "Photographier l'étiquette" ouvre l'appareil photo, puis le formulaire avec la photo ; annuler la prise de vue laisse sur le moment de vérité
 - [ ] Révélation : choisir une appellation suggérée remplit région et pays
 - [ ] Révélation → "Comparer et enregistrer" → résumé, badges Juste / Proche / À revoir cohérents
 - [ ] Millésime à ± 2 ans → "Proche"
@@ -42,6 +43,11 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 - [ ] Tranche d'âge contenant le vrai millésime → "Juste" ; à 2 ans près → "Proche"
 
 ### Dégustation à plusieurs (site en HTTPS, idéalement deux téléphones)
+
+- [ ] Accueil → "Dégustation à plusieurs" → choix "Faire deviner" / "Rejoindre"
+- [ ] App installée → "Rejoindre" : l'appareil photo s'ouvre dans la page, le QR code de l'hôte mène à l'écran d'arrivée, la fiche finit dans le journal de l'app
+- [ ] "Rejoindre" : lien collé → "Ouvrir l'invitation" ; texte quelconque → message ; appareil photo refusé → message, collage possible
+- [ ] Écran d'arrivée dans Safari : ligne "Tu as déjà MyWine sur ton écran d'accueil ?" ; absente dans l'app installée
 
 - [ ] Hôte : prénom obligatoire, puis au moins nom / producteur / appellation
 - [ ] Invitation : QR code affiché, code de révélation masqué par défaut
@@ -146,6 +152,8 @@ Une photo de cette taille compte environ 3 300 tokens. Même jour, préparation 
 
 2026-11-14, guidage par niveau (étape 1) : raisonnement vérifié sur trois profils (rouge léger → Pinot Noir et Gamay, rouge puissant → Syrah, Mourvèdre, Malbec, blanc vif → Sauvignon), écran Hypothèses vérifié aux quatre niveaux en format mobile, en solo et à plusieurs ; 300 tirages de leurres sur un assemblage Syrah / Grenache noir / Mourvèdre / Cabernet-Sauvignon sans aucun cépage de la bouteille.
 
-**Reste à valider** : étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
+2026-11-14, rejoindre depuis l'app : écran de choix, collage d'un lien et arrivée vérifiés en format mobile ; décodage d'un QR code d'invitation de 760 caractères vérifié sur une image de synthèse. Le lecteur n'a pas pu être essayé avec une vraie caméra.
+
+**Reste à valider** : lecteur de QR code sur iPhone (app installée et Safari), étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
 
 **Non vérifié** : le scan réel du QR code entre deux téléphones, la feuille de partage, et tout ce qui dépend d'un vrai iPhone (appareil photo, installation, zones sûres, clavier, feuille de partage à l'export) et le mode hors ligne.

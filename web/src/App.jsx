@@ -12,6 +12,8 @@ import Settings from './screens/Settings'
 import HostNew from './screens/HostNew'
 import HostSession from './screens/HostSession'
 import Join from './screens/Join'
+import Group from './screens/Group'
+import JoinScan from './screens/JoinScan'
 import AssistantJoin from './screens/AssistantJoin'
 
 export default function App() {
@@ -24,7 +26,10 @@ export default function App() {
         <Route path="/tasting/:id" element={<Tasting />} />
         <Route path="/reveal/:id" element={<Reveal />} />
         <Route path="/comparison/:id" element={<Comparison />} />
-        {/* Dégustation à plusieurs : l'hôte crée l'invitation, les invités arrivent par /join */}
+        {/* Dégustation à plusieurs : l'hôte crée l'invitation, les invités arrivent par /join/:token
+            (lien ou QR code ouverts dans le navigateur, ou scannés depuis l'app sur /join) */}
+        <Route path="/group" element={<Group />} />
+        <Route path="/join" element={<JoinScan />} />
         <Route path="/host/new" element={<HostNew />} />
         <Route path="/host/:id" element={<HostSession />} />
         <Route path="/join/:token" element={<Join />} />

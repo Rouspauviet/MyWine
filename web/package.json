@@ -1,7 +1,7 @@
 {
   "name": "mywine-web",
   "private": true,
-  "version": "2.4.0",
+  "version": "2.5.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
     "idb": "^8.0.4",
+    "jsqr": "^1.4.0",
     "lucide-react": "^1.72.0",
     "qrcode": "^1.5.4",
     "react": "^19.3.1",

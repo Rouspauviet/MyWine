@@ -9,6 +9,11 @@ import * as db from '../db/db'
 import { readInvitation, isSessionSupported } from '../utils/session'
 import { getPreferredLevel, setPreferredLevel } from '../data/levels'
 
+// Vrai quand l'app tourne depuis l'écran d'accueil (iPhone : navigator.standalone)
+function isInstalledApp() {
+  return !!navigator.standalone || !!window.matchMedia?.('(display-mode: standalone)').matches
+}
+
 export default function Join() {
   const navigate = useNavigate()
   const { token } = useParams()
@@ -90,6 +95,10 @@ export default function Join() {
         <button className="btn btn-primary btn-large block" onClick={start}>
           <Play size={22} /> Commencer la dégustation
         </button>
+        {/* Dans le navigateur, la fiche n'ira pas dans le journal de l'app installée : on le dit avant de commencer */}
+        {!isInstalledApp() && (
+          <p className="muted">Tu as déjà MyWine sur ton écran d'accueil ? Ouvre plutôt l'app, puis Dégustation à plusieurs → Rejoindre : ta fiche ira dans ton journal.</p>
+        )}
       </Footer>
     </Screen>
   )

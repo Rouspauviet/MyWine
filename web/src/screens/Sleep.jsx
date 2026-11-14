@@ -25,9 +25,9 @@ export default function Sleep() {
           <EyeOff size={32} className="hero-icon" />
           <h1 className="hero-title">Avant de découvrir ce vin…</h1>
           <p className="hero-text">
-            {'L\'étiquette est mise de côté.\nPrends quelques minutes pour explorer ce vin par tes propres sens et faire tes hypothèses.'}
+            {'Ne regarde pas l\'étiquette.\nPrends quelques minutes pour explorer ce vin par tes propres sens et faire tes hypothèses.'}
           </p>
-          <p className="hero-note">○ Tu révèleras les vraies infos à la fin</p>
+          <p className="hero-note">○ Tu regarderas la bouteille à la fin</p>
         </div>
         <LevelPicker value={level} onChange={setLevel} />
       </Body>

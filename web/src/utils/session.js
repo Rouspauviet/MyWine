@@ -263,6 +263,14 @@ export function invitationLink(token) {
   return `${location.origin}${location.pathname}#/join/${token}`
 }
 
+// Retrouve le jeton dans un lien d'invitation scanné ou collé (null si ce n'en est pas un)
+export function joinTokenFromLink(text) {
+  const value = String(text ?? '').trim()
+  const at = value.indexOf('#/join/')
+  if (at < 0) return null
+  return value.slice(at + '#/join/'.length).split(/[\s?&]/)[0] || null
+}
+
 // Côté invité : lit la partie en clair de l'invitation (null si le lien est abîmé)
 export async function readInvitation(token) {
   try {

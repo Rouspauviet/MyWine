@@ -66,7 +66,7 @@ export default function Home() {
         <button className="btn btn-primary btn-large block" onClick={() => navigate('/sleep')}>
           <Eye size={22} /> Dégustation à l'aveugle
         </button>
-        <button className="btn btn-secondary block" onClick={() => navigate('/host/new')}>
+        <button className="btn btn-secondary block" onClick={() => navigate('/group')}>
           <Users size={20} /> Dégustation à plusieurs
         </button>
         <button className="btn btn-secondary block" onClick={() => navigate('/memory/new')}>

@@ -28,6 +28,7 @@ Qu'est-ce qui a été décidé ?
 |---|---|
 | [2026-11-13-pivot-webapp.md](2026-11-13-pivot-webapp.md) | Pivot vers une webapp PWA à données locales ; abandon de l'app native et de l'OCR ✅ |
 | [2026-11-13-degustation-a-plusieurs.md](2026-11-13-degustation-a-plusieurs.md) | Trois niveaux de dégustateur ; dégustation à plusieurs sans serveur (lien chiffré + code) ; pas de score ✅ |
+| [2026-11-14-rejoindre-depuis-l-app.md](2026-11-14-rejoindre-depuis-l-app.md) | Écran de choix "Dégustation à plusieurs" ; lecteur de QR code intégré pour ranger la fiche dans le journal de l'app ✅ |
 | [2026-11-14-guidage-par-niveau.md](2026-11-14-guidage-par-niveau.md) | Quatre niveaux ; degré d'aide par écran ; raisonnement embarqué à partir des notes du joueur 🚧 |
 | [2026-11-14-partage-assistant.md](2026-11-14-partage-assistant.md) | Prêter son assistant à un ami : lien chiffré + code de 8 lettres ✅ |
 | [2026-11-13-assistant-ia-optionnel.md](2026-11-13-assistant-ia-optionnel.md) | Fiche "Pour comprendre", leurres plausibles, indices, mot de l'hôte ; assistant IA optionnel avec la clé de l'utilisateur ✅ |

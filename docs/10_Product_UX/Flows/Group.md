@@ -6,8 +6,9 @@
 > Intention de l'invité : "Je déguste à l'aveugle à mon niveau, puis je découvre ce que c'était."
 
 ```
-Hôte    : Accueil → /host/new (bouteille) → /host/:id (QR code, puis code de révélation)
+Hôte    : Accueil → /group → /host/new (bouteille) → /host/:id (QR code, puis code de révélation)
 Invité  : lien ou QR → /join/:token (niveau) → /tasting/:id → /reveal/:id (code) → /comparison/:id → fiche
+          avec l'app installée : Accueil → /group → /join (lecteur de QR code) → /join/:token → …
 ```
 
 Aucun serveur : la bouteille voyage **chiffrée dans le lien**. Chaque participant garde sa fiche dans son propre journal.
@@ -74,12 +75,20 @@ L'hôte ne déguste pas à l'aveugle : il connaît la bouteille.
 
 ## Côté invité
 
+### 0. Depuis l'app installée `/group` → `/join`
+
+Sur iPhone, un QR code scanné avec l'appareil photo s'ouvre dans Safari, dont le journal est séparé de celui de l'app installée. Celui qui a l'app passe donc par elle : "Dégustation à plusieurs" → "Rejoindre une dégustation" ouvre un lecteur de QR code, avec un champ pour coller le lien en secours. Sa fiche est alors rangée dans son journal. Décision [`2026-11-14`](../../60_Decisions/2026-11-14-rejoindre-depuis-l-app.md).
+
+- Appareil photo refusé ou indisponible : un message le dit, le collage du lien reste possible.
+- QR code ou lien qui n'est pas une invitation MyWine : message, la lecture continue.
+
 ### 1. Arrivée `/join/:token`
 
 "{Hôte} t'invite à déguster à l'aveugle" + choix du niveau + "Commencer la dégustation".
 
 - Rouvrir le même lien sur le même appareil reprend la dégustation en cours (ou ouvre la fiche si elle est terminée) : pas de doublon.
 - Lien abîmé → message clair, pas de plantage.
+- Ouvert dans un navigateur (pas dans l'app installée), l'écran rappelle sous le bouton qu'on peut passer par l'app pour ranger la fiche dans son journal.
 
 ### 2. Dégustation `/tasting/:id`
 
@@ -129,4 +138,4 @@ Ma dégustation à l'aveugle — Les Vignes de Test
 - Les photos de l'hôte ne sont pas transmises aux invités.
 - Modifier la bouteille après avoir créé l'invitation ne met pas à jour le lien déjà partagé.
 - Nécessite HTTPS : ne fonctionne pas sur l'adresse de test en Wi-Fi local.
-- Un invité qui scanne le QR code arrive dans Safari, pas dans l'app installée : sa fiche est rangée dans le stockage de Safari, que l'iPhone peut effacer après quelques semaines sans visite. S'il veut la garder, il exporte son journal ou installe l'app et l'y importe.
+- Un invité qui scanne le QR code avec l'appareil photo du téléphone arrive dans Safari, pas dans l'app installée (d'où le lecteur intégré, s'il a l'app) : sa fiche est rangée dans le stockage de Safari, que l'iPhone peut effacer après quelques semaines sans visite. S'il veut la garder, il exporte son journal ou installe l'app et l'y importe.
