@@ -2,8 +2,11 @@
 // Un portrait, pas un bulletin : ni score, ni niveau, ni comparaison avec d'autres.
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Lightbulb } from 'lucide-react'
-import { Screen, Header, Body, Card, Loading, useAsync } from '../components/Layout'
+import { Lightbulb, GraduationCap } from 'lucide-react'
+import { Screen, Header, Body, Footer, Card, Loading, useAsync } from '../components/Layout'
+import FlavorMap from '../components/FlavorMap'
+import { findGrape } from '../data/wineKnowledge'
+import { grapePath } from './Grape'
 import { StackBar, BarList } from '../components/Charts'
 import FranceMap from '../components/FranceMap'
 import * as db from '../db/db'
@@ -34,6 +37,8 @@ export default function Palate() {
   }
 
   const regionNames = Object.keys(palate.regionCounts)
+  // Une carte des saveurs par couleur goûtée
+  const tastedColors = ['rouge', 'blanc'].filter(color => Object.keys(palate.grapeCounts).some(name => findGrape(name)?.color === color))
   const liked = palate.likedGrapes.length > 0 || palate.likedRegions.length > 0
 
   return (
@@ -49,6 +54,18 @@ export default function Palate() {
             </>
           )}
         </Card>
+
+        {tastedColors.length > 0 && (
+          <Card title="Ma carte des saveurs">
+            {tastedColors.map(color => (
+              <div key={color} className="chart-block">
+                <p className="chart-title">{color === 'rouge' ? 'Mes rouges' : 'Mes blancs'}</p>
+                <FlavorMap color={color} counts={palate.grapeCounts} onPick={name => navigate(grapePath(name))} />
+              </div>
+            ))}
+            <p className="muted left">Plus le point est gros, plus tu as goûté ce cépage. Touche un cépage pour ouvrir sa fiche.</p>
+          </Card>
+        )}
 
         {(regionNames.length > 0 || palate.countries.length > 0) && (
           <Card title="Mon tour de France">
@@ -131,6 +148,11 @@ export default function Palate() {
           )}
         </Card>
       </Body>
+      <Footer>
+        <button className="btn btn-secondary grow" onClick={() => navigate('/quiz')}>
+          <GraduationCap size={18} /> M'entraîner à reconnaître les cépages
+        </button>
+      </Footer>
     </Screen>
   )
 }

@@ -598,3 +598,29 @@ button.banner { text-align: left; width: 100%; }
 .gauge-labels { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--s-2); font-size: var(--f-xs); color: var(--text-secondary); }
 .gauge-labels > span:last-child { text-align: right; }
 .gauge-value { font-size: var(--f-sm); font-weight: var(--w-semibold); color: var(--primary); }
+
+/* ── Carte des saveurs ── */
+.flavor { display: block; width: 100%; max-width: var(--map-max); margin: 0 auto; height: auto; }
+.flavor-frame { fill: var(--surface-sunken); stroke: var(--border); stroke-width: 1; }
+.flavor-axis { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 4; }
+.flavor-end { font-size: var(--f-xs); fill: var(--text-secondary); letter-spacing: 0.04em; text-transform: uppercase; }
+.flavor-dot { fill: var(--border-strong); }
+.flavor-name { font-size: var(--f-xs); fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-sunken); stroke-width: 3; stroke-linejoin: round; }
+.flavor-grape.idle .flavor-name { fill: var(--text-disabled); }
+.flavor-grape.near .flavor-dot { fill: var(--close); }
+.flavor-grape.near .flavor-name { fill: var(--close); font-weight: var(--w-semibold); }
+.flavor-grape.visited .flavor-dot { fill: var(--primary-mid); fill-opacity: 0.75; }
+.flavor-grape.visited .flavor-name { fill: var(--text); font-weight: var(--w-semibold); }
+.flavor-grape.real .flavor-dot { fill: var(--primary); }
+.flavor-grape.real .flavor-name { fill: var(--primary); font-weight: var(--w-bold); }
+.flavor-you circle { fill: var(--match); stroke: var(--surface); stroke-width: var(--stroke); }
+.flavor-you text { font-size: var(--f-xs); font-weight: var(--w-bold); fill: var(--match); paint-order: stroke; stroke: var(--surface-sunken); stroke-width: 3; }
+.legend-mark.you-map { background: var(--match); }
+
+/* ── Liens dans le texte, réponses de l'entraînement ── */
+.text-link { display: inline; padding: 0; color: var(--primary); text-decoration: underline; text-underline-offset: 2px; font: inherit; }
+.text-link.strong { font-weight: var(--w-semibold); }
+.level-card.right { background: var(--match-subtle); border-color: var(--match); }
+.level-card.right .level-label { color: var(--match); }
+.level-card.wrong { background: var(--miss-subtle); border-color: var(--border-strong); }
+.level-card:disabled { cursor: default; }

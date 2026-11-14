@@ -65,7 +65,7 @@ Version dans `web/package.json`, affichée en bas des paramètres.
 | Version | Date | Contenu |
 |---|---|---|
 | 2.0.0 | 2026-11-13 | Réécriture en webapp : parcours Aveugle et Mémoire, photos, prix, fiche modifiable, sauvegarde complète |
-| 3.0.0 | 2026-11-14 | **Branche `v3-visuel`, non publiée.** Révélation mise en scène, profil comparé, carte de France, écran "Mon palais", saisie sensorielle (nuancier, roue des arômes, jauges), résultat partagé en image |
+| 3.0.0 | 2026-11-14 | **Branche `v3-visuel`, non publiée.** Révélation mise en scène, profil comparé, carte de France, écran "Mon palais", saisie sensorielle (nuancier, roue des arômes, jauges), résultat partagé en image ; carte des saveurs, fiche cépage, base de cépages sur cinq crans, arômes précis, repère du Débutant, entraînement |
 | 2.5.0 | 2026-11-14 | Rejoindre une dégustation depuis l'app (lecteur de QR code, lien à coller) ; aveugle en solo : textes du Sommeil et de la Révélation revus, photo de l'étiquette proposée d'emblée |
 | 2.4.0 | 2026-11-14 | Niveau Confirmé ; Débutant guidé en trois marches à partir de ses notes ; "Aide-moi à raisonner" pour l'Amateur ; leurres de cépage corrigés pour les assemblages |
 | 2.3.0 | 2026-11-14 | Partage de l'assistant avec un ami : lien chiffré et code de 8 lettres |

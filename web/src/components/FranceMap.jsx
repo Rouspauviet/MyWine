@@ -11,7 +11,8 @@ const DOT_MAX = 15
 
 const same = (a, b) => !!a && !!b && normalize(a) === normalize(b)
 
-export default function FranceMap({ real, guess, counts, selected, onPick }) {
+// `marked` : simple liste de régions à mettre en avant (fiche cépage)
+export default function FranceMap({ real, guess, counts, marked, selected, onPick }) {
   const find = (name) => MAP_REGIONS.find(r => same(r.name, name)) ?? null
   const realPoint = find(real)
   const guessPoint = find(guess)
@@ -22,10 +23,12 @@ export default function FranceMap({ real, guess, counts, selected, onPick }) {
       const n = counts[region.name] ?? 0
       return n ? Math.min(DOT + DOT_STEP * Math.sqrt(n), DOT_MAX) : DOT
     }
+    if (marked?.some(name => same(name, region.name))) return DOT_ACTIVE
     return region === realPoint || region === guessPoint ? DOT_ACTIVE : DOT
   }
   const kindOf = (region) => {
     if (counts) return (counts[region.name] ?? 0) > 0 ? (same(region.name, selected) ? 'real' : 'visited') : 'idle'
+    if (marked?.some(name => same(name, region.name))) return 'visited'
     if (region === realPoint) return 'real'
     if (region === guessPoint) return 'guess'
     return 'idle'
@@ -35,6 +38,7 @@ export default function FranceMap({ real, guess, counts, selected, onPick }) {
     real && `Région de la bouteille : ${real}`,
     guess && `Ton hypothèse : ${guess}`,
     counts && `Régions goûtées : ${Object.keys(counts).join(', ') || 'aucune'}`,
+    marked && `Régions : ${marked.join(', ')}`,
   ].filter(Boolean).join('. ')
 
   return (

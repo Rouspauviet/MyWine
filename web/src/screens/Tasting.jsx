@@ -25,6 +25,8 @@ import { vintageRanges, buildClues, focusFor } from '../utils/session'
 import { reason } from '../utils/reasoning'
 import { GuidedGrape, ReasoningHelp } from '../components/Reasoning'
 import { RobePicker, AromaWheel, Gauge } from '../components/Sensory'
+import { AROMA_DETAILS } from '../data/grapeProfiles'
+import { recordTitle } from '../utils/text'
 import { Lightbulb, Sparkles } from 'lucide-react'
 
 const STEPS = [
@@ -44,6 +46,10 @@ export default function Tasting() {
   const [confirmAbandon, setConfirmAbandon] = useState(false)
   const bodyRef = useRef(null)
   const dirty = useRef(false)
+  const [history, setHistory] = useState([])
+
+  // Dégustations à l'aveugle déjà terminées : elles servent de repère au Débutant ("plus léger que…")
+  useEffect(() => { db.listRecords().then(all => setHistory(all.filter(r => r.mode === 'blind' && r.status === 'done'))) }, [])
 
   useEffect(() => {
     db.getRecord(id).then(r => {
@@ -177,7 +183,7 @@ export default function Tasting() {
         {/* Piste d'attention préparée par l'assistant de l'hôte : affichée pendant qu'on regarde et qu'on goûte */}
         {focus && step <= 2 && <p className="banner focus"><Sparkles size={14} /> {focus}</p>}
         {step === 1 && <StepPerception wineType={rec.wineType} level={level} value={rec.perception} onChange={section('perception')} />}
-        {step === 2 && <StepStructure wineType={rec.wineType} level={level} data={structureData} onChange={onStructureChange} />}
+        {step === 2 && <StepStructure wineType={rec.wineType} level={level} data={structureData} onChange={onStructureChange} history={history} />}
         {/* Indices à la demande : pour tous sauf l'Expert, qui déguste sans aide */}
         {step === 3 && clues.length > 0 && level !== 'expert' && (
           <ClueBox clues={clues} shown={shownClues.length} onAsk={() => update(r => ({ cluesUsed: (r.cluesUsed ?? 0) + 1 }))} />
@@ -222,6 +228,15 @@ function StepPerception({ wineType, level, value, onChange }) {
   const robeOptions = ROBE_OPTIONS_BY_TYPE[wineType] ?? []
   const aromaOptions = AROMA_FAMILIES_BY_TYPE[wineType] ?? []
   const beginner = level === 'debutant'
+  // Arômes précis : proposés au Confirmé et à l'Expert, sous les familles qu'ils ont touchées
+  const precise = level === 'confirme' || level === 'expert'
+  const details = precise ? (value.aromaFamilies ?? []).flatMap(family => AROMA_DETAILS[family] ?? []) : []
+  // Retirer une famille retire aussi ses arômes précis
+  const setFamilies = (families) => onChange(prev => ({
+    ...prev,
+    aromaFamilies: families,
+    aromaNotes: (prev.aromaNotes ?? []).filter(note => families.some(family => (AROMA_DETAILS[family] ?? []).includes(note))),
+  }))
 
   return (
     <>
@@ -239,7 +254,12 @@ function StepPerception({ wineType, level, value, onChange }) {
       {aromaOptions.length > 0 && (
         <Field label={beginner ? 'Ce que tu sens' : 'Familles aromatiques'} optional hintOpen={beginner}
           hint={beginner ? 'Fais tourner le vin dans le verre, puis sens. Coche tout ce qui te vient, sans chercher le mot juste.' : undefined}>
-          <AromaWheel options={aromaOptions} value={value.aromaFamilies} onChange={v => set('aromaFamilies', v)} />
+          <AromaWheel options={aromaOptions} value={value.aromaFamilies} onChange={setFamilies} />
+        </Field>
+      )}
+      {details.length > 0 && (
+        <Field label="Plus précisément" optional>
+          <ChipGroup options={asOptions([...new Set(details)])} value={value.aromaNotes ?? []} onChange={v => set('aromaNotes', v)} multi />
         </Field>
       )}
       <TextField label="Autres notes" optional multiline value={value.notes} onChange={v => set('notes', v)} placeholder="Notes libres, impressions…" />
@@ -295,7 +315,36 @@ const STRUCTURE_FIELDS = {
   ],
 }
 
-function StepStructure({ wineType, level, data, onChange }) {
+// Comparer plutôt que décrire : on situe mieux un vin par rapport à un autre que dans l'absolu.
+// Le Débutant peut placer le corps du vin par rapport à sa dernière dégustation du même type.
+const COMPARE_FIELD = { rouge: { key: 'body', options: BODY_3, words: ['Plus léger', 'Pareil', 'Plus ample'] }, blanc: { key: 'texture', options: TEXTURE_WHITE, words: ['Plus léger', 'Pareil', 'Plus rond'] } }
+
+function CompareHint({ wineType, data, onChange, history }) {
+  const field = COMPARE_FIELD[wineType]
+  const reference = field && history.find(r => r.wineType === wineType && r.reality?.type === wineType && r.structure?.data?.[field.key] && recordTitle(r) !== 'Vin inconnu')
+  if (!reference) return null
+  const refIndex = field.options.findIndex(o => o.value === reference.structure.data[field.key])
+  const index = field.options.findIndex(o => o.value === data[field.key])
+  const current = index < 0 ? null : Math.sign(index - refIndex)
+  const pick = (direction) => {
+    const target = Math.min(Math.max(refIndex + direction, 0), field.options.length - 1)
+    onChange({ ...data, [field.key]: current === direction ? null : field.options[target].value })
+  }
+  return (
+    <Field label={`Par rapport à ${recordTitle(reference)}`} optional hintOpen
+      hint={`Ton dernier ${wineType} goûté à l'aveugle : tu l'avais trouvé ${field.options[refIndex].label.toLowerCase()}. Celui-ci te paraît :`}>
+      <div className="chips">
+        {[-1, 0, 1].map((direction, i) => (
+          <button type="button" key={direction} className={`chip ${current === direction ? 'active' : ''}`} aria-pressed={current === direction} onClick={() => pick(direction)}>
+            {field.words[i]}
+          </button>
+        ))}
+      </div>
+    </Field>
+  )
+}
+
+function StepStructure({ wineType, level, data, onChange, history = [] }) {
   const set = (key, val) => onChange({ ...data, [key]: val })
   const beginner = level === 'debutant'
   const fields = STRUCTURE_FIELDS[wineType]
@@ -312,7 +361,7 @@ function StepStructure({ wineType, level, data, onChange }) {
     )
   }
 
-  return fields
+  const shown = fields
     .filter(f => (!beginner || f.beginner) && (!f.showIf || f.showIf(data)))
     .map(f => (
       // Débutant : les aides sont affichées d'office
@@ -322,6 +371,12 @@ function StepStructure({ wineType, level, data, onChange }) {
           : <ChipGroup options={f.options} value={data[f.key]} onChange={v => set(f.key, v)} multi={f.multi} />}
       </Field>
     ))
+  return (
+    <>
+      {beginner && <CompareHint wineType={wineType} data={data} onChange={onChange} history={history} />}
+      {shown}
+    </>
+  )
 }
 
 // ─── Étape 3 — Hypothèses ────────────────────────────────────────────────────

@@ -51,7 +51,7 @@ const REGION_POINTS = {
   'Rhône':      { at: [44.7, 4.8],   side: 'left' },
   'Languedoc':  { at: [43.55, 3.2],  side: 'left', dy: -6 },
   'Roussillon': { at: [42.7, 2.7],   side: 'left', dy: 6 },
-  'Provence':   { at: [43.5, 6.0],   side: 'left', dy: -9 },
+  'Provence':   { at: [43.5, 6.0],   side: 'right', dy: 10 },
   'Corse':      { at: [42.15, 9.1],  side: 'left' },
 }
 

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Pencil, Trash2, Heart, Users } from 'lucide-react'
 import { Screen, Header, Body, Card, InfoRow, ConfirmModal, Loading, useAsync } from '../components/Layout'
 import { RATING_LABELS } from '../components/Inputs'
-import { ComparisonTable, Insights, summarize, ShareResultButton, HostNote, Lesson, OriginMap } from './Comparison'
+import { ComparisonTable, Insights, summarize, ShareResultButton, HostNote, Lesson, OriginMap, FlavorCard } from './Comparison'
 import { LEVELS } from '../data/levels'
 import * as db from '../db/db'
 import { usePhotoUrls } from '../utils/photos'
@@ -171,6 +171,7 @@ export default function Entry() {
             <ComparisonTable record={record} />
             {summary && <ShareResultButton record={record} />}
             <OriginMap record={record} />
+            <FlavorCard record={record} />
             <Lesson record={record} />
             <Insights record={record} />
 
@@ -182,6 +183,7 @@ export default function Entry() {
               <InfoRow label="Robe" value={perc.robe?.join(', ')} />
               <InfoRow label="Intensité" value={perc.aromaIntensity ? `${perc.aromaIntensity}/5` : null} />
               <InfoRow label="Arômes" value={perc.aromaFamilies?.join(', ')} />
+              <InfoRow label="Arômes précis" value={perc.aromaNotes?.join(', ')} />
               <InfoRow label="Notes" value={perc.notes} />
             </Card>
             <StructureCard structure={record.structure} />
@@ -190,6 +192,7 @@ export default function Entry() {
 
         {/* Souvenir sans dégustation à l'aveugle : la fiche pédagogique seule */}
         {!isBlind && <OriginMap record={record} />}
+        {!isBlind && <FlavorCard record={record} />}
         {!isBlind && <Lesson record={record} />}
       </Body>
 

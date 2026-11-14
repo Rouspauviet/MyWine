@@ -4,6 +4,7 @@
 // Rien ici ne lit la vraie bouteille : ce raisonnement ne peut donc rien révéler.
 // Ce sont des tendances : on propose des pistes, on ne corrige pas.
 import { GRAPES, findGrape } from '../data/wineKnowledge'
+import { perceivedOf, flavorPoint } from './profile'
 
 // ─── Lecture des notes sur des axes communs ──────────────────────────────────
 
@@ -119,7 +120,9 @@ export function reason(record) {
     ? GRAPES.filter(g => g.color === notes.color).map(g => fitGrape(g, notes)).sort((a, b) => b.score - a.score)
     : []
   const styles = [...new Set(candidates.slice(0, 3).map(c => c.grape.style))].slice(0, 2)
-  return { available: true, enough, color: notes.color, noted, climate: climateLean(notes), candidates, styles, fitOf }
+  // point : où ses notes le placent sur la carte des saveurs (null s'il manque la matière ou l'acidité)
+  const point = flavorPoint(perceivedOf(record), notes.color)
+  return { available: true, enough, color: notes.color, noted, climate: climateLean(notes), candidates, styles, fitOf, point }
 }
 
 // "A, B et C"

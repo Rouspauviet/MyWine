@@ -54,6 +54,9 @@ Le tableau décrit le niveau **Amateur**. Débutant : moins de champs et hypoth�
 Comportements :
 
 - **Saisie sensorielle** : on désigne ce qu'on voit et sent plutôt que de choisir un mot. Les valeurs enregistrées sont inchangées — décision [`2026-11-14`](../../60_Decisions/2026-11-14-experience-visuelle.md).
+- **Arômes précis** (Confirmé, Expert) : sous la roue, "Plus précisément" propose les arômes des familles touchées (cassis, mûre, poivre…).
+- **Repère du Débutant** : à l'étape Structure, "Par rapport à {son dernier vin du même type}" — plus léger, pareil, plus ample — règle la jauge du corps.
+- **Carte des saveurs** à l'étape Hypothèses (Débutant, et Amateur dans "Aide-moi à raisonner") : "Voici où tes notes te placent", parmi les cépages de la base.
 - **Tout est optionnel** : on peut avancer sans rien remplir.
 - **Autosave** : chaque modification est enregistrée (délai 400 ms) et à chaque changement d'étape. Fermer l'app ne perd rien.
 - "Abandonner" demande confirmation et **supprime** le brouillon. Pour faire une pause, on quitte simplement l'écran.
@@ -81,6 +84,7 @@ Comportements :
 - Résumé : "3 justes · 1 proche · 1 à revoir" + confiance annoncée.
 - Tableau côte à côte **Mes hypothèses | badge | La réalité** pour : type, cépages, pays, région, appellation, millésime, producteur.
 - Carte "D'où il vient" : carte de France avec la région de la bouteille et, si elle diffère, la région supposée reliée par un trait. Absente pour un vin étranger ou une région hors de la base.
+- Carte "Sur la carte des saveurs" : le cépage de la bouteille et l'endroit où la perception plaçait le vin. Toucher un cépage ouvre sa fiche (`/grape/:name`).
 - Carte "Pour comprendre" : en tête, **le profil comparé** — une glissière par axe (tanins, corps, acidité) avec un repère "Toi" et un repère "Typique du cépage", puis les arômes typiques, ceux qui ont été sentis mis en avant (rouges et blancs dont le cépage est dans la base). Suivent le profil typique du cépage et de la région, et rapprochement avec la perception. Une perception identique au profil est confirmée ("Des tanins marqués : c'est typique du cépage Syrah"), une perception opposée est expliquée sans jugement, une perception voisine n'est pas commentée.
 - Carte "À retenir" : jusqu'à 2 indices déduits de la structure perçue, plus climat et sol perçus.
 
@@ -104,9 +108,11 @@ Ouvert depuis l'accueil et le journal. Un portrait calculé à l'affichage, sans
 
 - **Ce que je bois** : répartition par type, cépages les plus goûtés.
 - **Mon tour de France** : la carte, un point par région goûtée, plus gros avec le nombre de bouteilles ; toucher une région donne son détail et un lien vers ses bouteilles. Vins étrangers listés par pays.
+- **Ma carte des saveurs** : les cépages goûtés, par couleur, plus gros avec le nombre de bouteilles.
 - **Ce que j'aime** : cépages et régions les mieux notés (à partir de deux vins notés).
 - **Ce que je reconnais à l'aveugle** : juste / proche / à revoir, champ par champ.
 - **Mes penchants** : "Tu perçois souvent les tanins plus marqués que le profil typique" — affiché à partir de trois dégustations et d'un écart moyen d'un demi-niveau.
+- En bas, "M'entraîner à reconnaître les cépages" ouvre l'entraînement (`/quiz`) : un profil, quatre propositions, l'explication. Sans score.
 
 ## 7. Fiche `/entry/:id`
 

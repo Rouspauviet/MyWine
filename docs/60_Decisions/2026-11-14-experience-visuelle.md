@@ -77,6 +77,48 @@ Six chantiers, sans toucher au modèle de données ni aux règles du projet (don
 
 - "Partager mon résultat" produit une image (nom du vin, réponses, niveau), en solo comme à plusieurs. Si le téléphone ne sait pas partager une image, le texte actuel est envoyé.
 
+### 7. Carte des saveurs
+
+> En tant que dégustateur, je veux voir à quels cépages ressemble ce que je perçois, pour raisonner avec les yeux.
+
+- Inspirée de la méthode du "napping" (article *Learning to Taste*, DTU et Vivino, 2023) : sur un plan, deux vins proches se ressemblent en bouche. Leurs données ne sont pas réutilisables (licence non commerciale, sans œuvre dérivée) : la carte est calculée avec la base de l'app.
+- Horizontal : la matière (tanins et corps pour un rouge, corps pour un blanc). Vertical : la fraîcheur (acidité). Une carte pour les rouges, une pour les blancs.
+- Pendant la dégustation (Débutant : avant le choix du cépage ; Amateur : dans "Aide-moi à raisonner") : "Voici où tes notes te placent". Elle ne montre que la base de connaissances, jamais la bouteille.
+- À la comparaison : le cépage de la bouteille et l'endroit où la perception plaçait le vin, reliés par un trait.
+- Dans "Mon palais" : les cépages goûtés, plus gros avec le nombre de bouteilles.
+
+### 8. Fiche cépage
+
+> En tant que curieux, je veux ouvrir la fiche d'un cépage pour savoir à quoi il ressemble, avec qui on le confond et où il pousse.
+
+- Écran `/grape/:name`, ouvert en touchant un cépage (comparaison, cartes des saveurs, entraînement).
+- Profil sur cinq crans, arômes précis, voisins sur la carte des saveurs, régions sur la carte de France, pays hors de France, et ses bouteilles dans le journal.
+- Forme inspirée des fiches de Winography ; aucun contenu repris, la base est rédigée pour l'app.
+
+### 9. Base de cépages affinée, arômes précis
+
+- Chaque cépage reçoit un profil de 1 à 5 (tanins, corps, acidité), quatre arômes précis, ses régions françaises et ses pays (`data/grapeProfiles.js`). Les profils à trois niveaux de `wineKnowledge.js` restent en place pour le raisonnement, les indices et les leurres.
+- Les échelles de saisie ne changent pas : une saisie à trois niveaux est placée à 1,5 · 3 · 4,5, et on compare par bande (faible, moyen, fort).
+- Confirmé et Expert : sous la roue, les arômes précis des familles touchées ("Plus précisément"). Nouveau champ `perception.aromaNotes`, absent des anciennes fiches.
+
+### 10. Comparer plutôt que décrire
+
+> En tant que débutant, je situe plus facilement un vin par rapport à un autre que sur une échelle.
+
+- À l'étape Structure, le Débutant peut placer le corps du vin par rapport à sa dernière dégustation à l'aveugle du même type : "Plus léger / Pareil / Plus ample". La réponse règle la jauge. Sans dégustation antérieure, rien ne s'affiche.
+
+### 11. Entraînement
+
+> Entre deux bouteilles, je veux m'exercer à reconnaître un cépage à son profil.
+
+- Écran `/quiz`, ouvert depuis "Mon palais" et les fiches cépage : un profil, quatre propositions dont les cépages qu'on confond avec lui, puis l'explication et le lien vers la fiche.
+- Ni score, ni série, ni compteur.
+
+### Écartés pour l'instant
+
+- La note libre lue par l'assistant : demande une clé chez chaque dégustateur.
+- La "nappe" (placer les vins d'une soirée les uns par rapport aux autres) : suppose la soirée à plusieurs bouteilles, qui est un chantier à part.
+
 ## Conséquences
 
 - Aucune dépendance ajoutée : graphiques, carte et roue sont en SVG écrits dans l'app, l'image de partage passe par un canvas.

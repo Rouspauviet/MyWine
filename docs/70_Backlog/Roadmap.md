@@ -38,6 +38,7 @@
 ## Expérience visuelle v3 — sur la branche `v3-visuel` 🚧
 
 - Révélation mise en scène, profil comparé, carte de France, "Mon palais", saisie sensorielle, résultat en image
+- Carte des saveurs, fiche cépage, base de cépages sur cinq crans, arômes précis, repère du Débutant, entraînement
 - À valider sur iPhone avant fusion dans `main` ; la 2.5 reste en ligne d'ici là
 
 ## Prochain chantier — validation en conditions réelles ⏳
@@ -55,6 +56,8 @@
 | Priorité | Idée | Note |
 |---|---|---|
 | P2 | Statistiques, suite | "Mon palais" couvre types, cépages, régions, reconnaissance à l'aveugle et penchants. Restent : dépense moyenne, progression dans le temps |
+| P2 | Note libre lue par l'assistant | Le dégustateur dicte, la grille se remplit. Demande une clé chez lui |
+| P2 | Nappe | Placer les vins d'une soirée les uns par rapport aux autres. Va avec la session multi-bouteilles |
 | P2 | Carte hors de France | La carte ne couvre que les régions françaises |
 | P1 | Filtres journal avancés | Type, région, note minimale, fourchette de prix, tri |
 | P2 | Mode sombre | Doubler les tokens dans `tokens.css` (`prefers-color-scheme`) |

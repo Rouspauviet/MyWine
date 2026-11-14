@@ -61,7 +61,7 @@ npm run build    # génère web/dist
 | Partage de l'assistant avec un ami (lien chiffré + code de 8 lettres) | ✅ À valider entre deux iPhone |
 | Assistant IA optionnel (lecture d'étiquette, profil attendu) | ✅ Testé contre la vraie API sur une étiquette simple ; étiquettes difficiles à valider |
 | Test sur iPhone à plusieurs (QR code, code de révélation, partage) | ⏳ **Prochain chantier** |
-| Expérience visuelle v3 — décision [`2026-11-14`](docs/60_Decisions/2026-11-14-experience-visuelle.md) | 🚧 Sur la branche `v3-visuel` (non publiée) : révélation mise en scène, profil comparé, carte, "Mon palais", saisie sensorielle, résultat en image. À valider sur iPhone avant fusion |
+| Expérience visuelle v3 — décision [`2026-11-14`](docs/60_Decisions/2026-11-14-experience-visuelle.md) | 🚧 Sur la branche `v3-visuel` (non publiée) : révélation mise en scène, profil comparé, cartes (France, saveurs), "Mon palais", fiche cépage, saisie sensorielle, entraînement, résultat en image. À valider sur iPhone avant fusion |
 | Mode sombre, suite des statistiques | Backlog — voir [Roadmap](docs/70_Backlog/Roadmap.md) |
 
 L'ancien code (`mobile/`, pipeline OCR) et tout l'historique d'avant le pivot sont conservés dans le dépôt privé `MyWine-archive`. Ce dépôt-ci repart d'un historique vierge.

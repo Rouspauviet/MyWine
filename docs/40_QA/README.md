@@ -38,6 +38,12 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 - [ ] Comparaison : carte "D'où il vient" (région réelle, hypothèse, trait), profil comparé en tête de "Pour comprendre"
 - [ ] "Partager mon résultat" : la feuille de partage propose une image ; en solo aussi
 - [ ] Accueil et journal → "Mon palais" : types, cépages, carte (toucher une région), préférences, reconnaissance à l'aveugle, penchants ; journal vide → message d'attente
+- [ ] Débutant, étape Hypothèses (rouge ou blanc, corps ou tanins et acidité notés) : carte des saveurs avec le point "Toi" ; Amateur : la carte dans "Aide-moi à raisonner"
+- [ ] Comparaison : carte des saveurs avec le cépage de la bouteille et la perception ; toucher un cépage ouvre sa fiche
+- [ ] Fiche cépage : profil, arômes, voisins, carte de France, bouteilles du journal ; cépage hors base → message
+- [ ] Confirmé : "Plus précisément" sous la roue ; retirer une famille retire ses arômes précis ; visibles sur la fiche
+- [ ] Débutant avec une dégustation antérieure du même type : "Par rapport à…" règle la jauge du corps
+- [ ] Entraînement : une réponse affiche la bonne, l'explication et "Un autre" ; aucun compteur
 - [ ] Réglage "Réduire les animations" de l'iPhone : la révélation s'ouvre sans animation
 
 ### Niveaux
@@ -166,6 +172,8 @@ Une photo de cette taille compte environ 3 300 tokens. Même jour, préparation 
 2026-11-14, rejoindre depuis l'app : écran de choix, collage d'un lien et arrivée vérifiés en format mobile ; décodage d'un QR code d'invitation de 760 caractères vérifié sur une image de synthèse. Le lecteur n'a pas pu être essayé avec une vraie caméra.
 
 2026-11-14, expérience visuelle (branche `v3-visuel`) : sur six dégustations de test, vérifiés en format mobile la mise en scène de la révélation, la carte, le profil comparé, "Mon palais" (dont un penchant détecté), le nuancier, la roue des arômes, les jauges et l'image de partage générée. Non vérifiés : la feuille de partage d'image, le toucher sur la roue et les animations sur un vrai iPhone.
+
+Même jour, second lot : carte des saveurs (comparaison, "Mon palais", étape Hypothèses), fiche cépage, entraînement, arômes précis et repère du Débutant vérifiés en format mobile sur des dégustations de test.
 
 **Reste à valider** : toute l'expérience visuelle sur iPhone, lecteur de QR code sur iPhone (app installée et Safari), étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
 

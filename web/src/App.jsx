@@ -15,6 +15,8 @@ import Join from './screens/Join'
 import Group from './screens/Group'
 import JoinScan from './screens/JoinScan'
 import Palate from './screens/Palate'
+import Grape from './screens/Grape'
+import Quiz from './screens/Quiz'
 import AssistantJoin from './screens/AssistantJoin'
 
 export default function App() {
@@ -39,6 +41,8 @@ export default function App() {
         {/* Journal */}
         <Route path="/journal" element={<Journal />} />
         <Route path="/palate" element={<Palate />} />
+        <Route path="/grape/:name" element={<Grape />} />
+        <Route path="/quiz" element={<Quiz />} />
         <Route path="/entry/:id" element={<Entry />} />
         <Route path="/entry/:id/edit" element={<RecordEdit />} />
         <Route path="/settings" element={<Settings />} />

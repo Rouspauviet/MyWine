@@ -3,36 +3,40 @@
 //   StackBar     : une barre empilée (juste / proche / à revoir, ou répartition par type)
 //   BarList      : classement en barres horizontales (cépages, régions…)
 import { Check } from 'lucide-react'
+import { SCALE_MAX } from '../utils/profile'
 
-const POSITIONS = 3 // les axes de la base ont trois niveaux
 
 // Une glissière : un repère "Typique" (anneau) et un repère "Toi" (plein). `you` peut être null.
-function AxisTrack({ label, ends, you, typical }) {
-  const at = (index) => `${(index / (POSITIONS - 1)) * 100}%`
-  const verdict = you === null ? 'non noté' : you === typical ? 'comme le profil typique' : you > typical ? 'plus que le profil typique' : 'moins que le profil typique'
+// `you` et `typical` vont de 1 à 5 ; `gap` dit si la perception rejoint le profil (0) ou s'en écarte
+function AxisTrack({ label, ends, you, typical, gap }) {
+  const at = (value) => `${((value - 1) / (SCALE_MAX - 1)) * 100}%`
+  const verdict = you === null ? `typique : ${typical} sur ${SCALE_MAX}` : gap === 0 ? 'comme le profil typique' : gap > 0 ? 'plus que le profil typique' : 'moins que le profil typique'
   return (
     <div className="track-row" role="img" aria-label={`${label} : ${verdict}`}>
       <span className="track-label">{label}</span>
       <div className="track">
         <span className="track-line" />
-        {Array.from({ length: POSITIONS }, (_, i) => <span key={i} className="track-stop" style={{ left: at(i) }} />)}
+        {Array.from({ length: SCALE_MAX }, (_, i) => <span key={i} className="track-stop" style={{ left: at(i + 1) }} />)}
         <span className="track-mark typical" style={{ left: at(typical) }} />
-        {you !== null && <span className={`track-mark you ${you === typical ? 'same' : ''}`} style={{ left: at(you) }} />}
+        {you !== null && <span className={`track-mark you ${gap === 0 ? 'same' : ''}`} style={{ left: at(you) }} />}
       </div>
       <div className="track-ends"><span>{ends[0]}</span><span>{ends[1]}</span></div>
     </div>
   )
 }
 
-export function ProfileChart({ profile }) {
+// Sans perception (fiche cépage, entraînement), seuls les repères typiques sont montrés
+export function ProfileChart({ profile, solo = false }) {
   return (
     <div className="profile">
-      <div className="legend">
-        <span><span className="legend-mark you" /> Toi</span>
-        <span><span className="legend-mark typical" /> Typique du cépage {profile.grape}</span>
-      </div>
+      {!solo && (
+        <div className="legend">
+          <span><span className="legend-mark you" /> Toi</span>
+          <span><span className="legend-mark typical" /> Typique du cépage {profile.grape}</span>
+        </div>
+      )}
       {profile.axes.map(({ key, ...axis }) => <AxisTrack key={key} {...axis} />)}
-      {profile.aromas.length > 0 && (
+      {profile.aromas?.length > 0 && (
         <div className="profile-aromas">
           <span className="track-label">Arômes typiques</span>
           <div className="chips">
@@ -42,7 +46,7 @@ export function ProfileChart({ profile }) {
               </span>
             ))}
           </div>
-          {profile.extra.length > 0 && <p className="muted left">Tu as aussi senti : {profile.extra.join(', ').toLowerCase()}.</p>}
+          {profile.extra?.length > 0 && <p className="muted left">Tu as aussi senti : {profile.extra.join(', ').toLowerCase()}.</p>}
         </div>
       )}
     </div>

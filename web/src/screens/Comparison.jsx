@@ -9,7 +9,9 @@ import { matchBadge } from '../utils/comparison'
 import { WINE_TYPES, CLIMATE_OPTIONS, SOIL_OPTIONS } from '../data/wineData'
 import { labelOf, hasReality, recordTitle, normalize } from '../utils/text'
 import { LEVELS } from '../data/levels'
-import { buildProfile } from '../utils/profile'
+import { buildProfile, mainGrapeOf, perceivedOf, flavorPoint } from '../utils/profile'
+import FlavorMap from '../components/FlavorMap'
+import { grapePath } from './Grape'
 import { ProfileChart } from '../components/Charts'
 import FranceMap from '../components/FranceMap'
 import RevealSequence from '../components/RevealSequence'
@@ -105,6 +107,7 @@ export function HostNote({ record }) {
 
 // Fiche pédagogique : le profil typique du cépage et de la région, rapproché de ce qui a été perçu
 export function Lesson({ record }) {
+  const navigate = useNavigate()
   const lesson = buildLesson(record) ?? { grapes: [], region: null, lines: [] }
   const aiProfile = record.session?.aiProfile
   const profile = buildProfile(record)
@@ -118,7 +121,9 @@ export function Lesson({ record }) {
         <p className="lesson-text"><strong>Ce qu'on attend de ce vin.</strong> {aiProfile} <span className="ai-tag">rédigé par l'assistant IA</span></p>
       )}
       {lesson.grapes.map(g => (
-        <p key={g.name} className="lesson-text"><strong>{g.name}.</strong> {g.about}</p>
+        <p key={g.name} className="lesson-text">
+          <button type="button" className="text-link strong" onClick={() => navigate(grapePath(g.name))}>{g.name}</button>. {g.about}
+        </p>
       ))}
       {lesson.region && (
         <p className="lesson-text"><strong>{lesson.region.name}.</strong> {lesson.region.about}</p>
@@ -149,6 +154,24 @@ export function OriginMap({ record }) {
         {guess && !right && <span><span className="legend-mark guess" /> Ton hypothèse : {guess}</span>}
         {right && <span>Tu l'avais située au bon endroit.</span>}
       </div>
+    </Card>
+  )
+}
+
+// La bouteille sur la carte des saveurs, et l'endroit où la perception du dégustateur le plaçait
+export function FlavorCard({ record }) {
+  const navigate = useNavigate()
+  const grape = mainGrapeOf(record)
+  if (!grape) return null
+  const you = record.mode === 'blind' && record.wineType === grape.color ? flavorPoint(perceivedOf(record), grape.color) : null
+  return (
+    <Card title="Sur la carte des saveurs">
+      <FlavorMap color={grape.color} real={grape.name} you={you} onPick={name => navigate(grapePath(name))} />
+      <div className="legend">
+        <span><span className="legend-mark real" /> Typique du cépage {grape.name}</span>
+        {you && <span><span className="legend-mark you-map" /> Ce que tu as perçu</span>}
+      </div>
+      <p className="muted left">Deux cépages proches sur la carte se ressemblent en bouche. Touche un cépage pour ouvrir sa fiche.</p>
     </Card>
   )
 }
@@ -247,6 +270,7 @@ export default function Comparison() {
         <HostNote record={record} />
         <ComparisonTable record={record} />
         <OriginMap record={record} />
+        <FlavorCard record={record} />
         <Lesson record={record} />
         <Insights record={record} />
       </Body>

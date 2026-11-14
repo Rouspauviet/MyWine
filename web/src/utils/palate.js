@@ -9,7 +9,7 @@ import { buildProfile, PROFILE_AXES } from './profile'
 const TOP = 5                 // longueur des classements
 const MIN_RATED = 2           // notes nécessaires pour parler d'un cépage ou d'une région "bien notés"
 const MIN_LEANING = 3         // dégustations nécessaires pour parler d'un penchant
-const LEANING_THRESHOLD = 0.5 // écart moyen (en niveaux) à partir duquel on le signale
+const LEANING_THRESHOLD = 0.5 // écart moyen (en bandes faible / moyen / fort) à partir duquel on le signale
 
 // Champs suivis à l'aveugle, dans l'ordre d'affichage
 export const BLIND_FIELDS = [
@@ -74,7 +74,7 @@ export function buildPalate(records) {
     if (Object.keys(matches).length) blindCount++
     for (const field of BLIND_FIELDS) if (matches[field.key]) blind[field.key][matches[field.key]]++
     const profile = buildProfile(record)
-    for (const axis of profile?.axes ?? []) if (axis.you !== null) gaps[axis.key].push(axis.you - axis.typical)
+    for (const axis of profile?.axes ?? []) if (axis.you !== null) gaps[axis.key].push(axis.gap)
   }
 
   const leanings = PROFILE_AXES
@@ -91,6 +91,8 @@ export function buildPalate(records) {
     favorites,
     types: WINE_TYPES.map(t => ({ key: t.value, label: t.label, value: typeCounts[t.value] ?? 0, tone: t.value })),
     grapes: grapes.top().slice(0, TOP),
+    // Tous les cépages goûtés, par nom de la base : pour la carte des saveurs
+    grapeCounts: Object.fromEntries(grapes.top().map(g => [g.name, g.value])),
     regionCounts: Object.fromEntries(regions.top().map(r => [r.name, r.value])),
     countries: countries.top(),
     likedGrapes: grapes.liked().slice(0, 3),

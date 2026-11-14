@@ -44,7 +44,7 @@ export function newRecord(mode) {
     // Mode Aveugle uniquement
     step: 0,
     wineType: null,
-    perception: { robe: [], aromaIntensity: 3, aromaFamilies: [], notes: '' },
+    perception: { robe: [], aromaIntensity: 3, aromaFamilies: [], aromaNotes: [], notes: '' }, // aromaNotes : arômes précis, absent des anciennes fiches
     structure: {},
     hypotheses: {
       grapes: [], confidence: 3, country: '', region: '',

@@ -7,6 +7,7 @@ import { Field, ChipGroup } from './Inputs'
 import { CLIMATE_OPTIONS } from '../data/wineData'
 import { STYLE_LABELS, findGrape } from '../data/wineKnowledge'
 import { listInWords } from '../utils/reasoning'
+import FlavorMap from './FlavorMap'
 
 const SOLO_CHOICES = 4 // en solo, nombre de cépages proposés d'abord (les plus compatibles avec les notes)
 
@@ -63,6 +64,12 @@ export function GuidedGrape({ reasoning, grapeOptions, fallbackGrapes, value, on
         hint={solo
           ? 'Le cépage est la variété de raisin. Voici ceux qui collent le mieux avec ce que tu as noté.'
           : 'Le cépage est la variété de raisin. Une seule proposition est la bonne : regarde laquelle colle le mieux avec ce que tu as noté.'}>
+        {reasoning.point && (
+          <>
+            <Insight>Voici où tes notes te placent. Les cépages proches de toi sont de bonnes pistes.</Insight>
+            <FlavorMap color={color} you={reasoning.point} near={names} />
+          </>
+        )}
         <div className="level-list" role="radiogroup" aria-label="Cépage">
           {names.map(name => (
             <GrapeChoice
@@ -103,6 +110,7 @@ export function ReasoningHelp({ reasoning, onUse }) {
             <>
               <Insight>Tu as noté {listInWords(reasoning.noted)}.</Insight>
               {reasoning.climate && <Insight>Côté origine, ça penche vers un climat {reasoning.climate.label}.</Insight>}
+              {reasoning.point && <FlavorMap color={reasoning.color} you={reasoning.point} near={top.map(c => c.grape.name)} />}
               {top.map(({ grape, fits, gaps }) => (
                 <Insight key={grape.name}>
                   <strong>{grape.name}</strong> — {fits.length ? `colle avec tes notes (${fits.join(', ')})` : 'profil proche de tes notes'}

@@ -39,6 +39,7 @@ Deux magasins :
     matches: { type, grapes, country, region, appellation, vintage, producer },   // 'exact' | 'close' | 'miss', clé absente si non comparable
     insights: [],                                                                  // 0 à 2 phrases
   },
+  // perception.aromaNotes: []      arômes précis (Confirmé, Expert) ; absent des anciennes fiches
   cluesUsed: 0,                    // indices demandés pendant une dégustation à plusieurs
   reasoningUsed: false,            // "Aide-moi à raisonner" ouverte (Amateur) ; absent des anciennes fiches
 
