@@ -8,10 +8,9 @@ on:
     paths: ['web/**', '.github/workflows/deploy.yml']
   workflow_dispatch:
 
+# Par défaut, lecture seule : seule la tâche de publication reçoit le droit d'écrire sur Pages.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -36,12 +35,12 @@ jobs:
       # ── Aperçu de la branche v3-visuel, publié dans le sous-dossier /v3/ ──────────
       # Sert à tester la v3 sur iPhone sans toucher à la version en ligne. Un échec ici
       # n'empêche pas la publication de main. À retirer quand la branche sera fusionnée.
-      # Pour rafraîchir l'aperçu après un push sur la branche : changer la ligne ci-dessous.
-      # Aperçu : 9e75e44
+      # L'aperçu est figé sur un commit précis de la branche, pas sur la branche elle-même :
+      # pour le rafraîchir, remplacer l'identifiant ci-dessous par celui du nouveau commit.
       - uses: actions/checkout@v4
         continue-on-error: true
         with:
-          ref: v3-visuel
+          ref: 9e75e448238d5af128c35d4d65ad9cfa0f7b5e49
           path: preview
       - name: Construire l'aperçu v3
         continue-on-error: true
@@ -55,6 +54,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
