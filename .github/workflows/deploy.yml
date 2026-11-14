@@ -32,6 +32,22 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
       - run: npm run build
+
+      # ── Aperçu de la branche v3-visuel, publié dans le sous-dossier /v3/ ──────────
+      # Sert à tester la v3 sur iPhone sans toucher à la version en ligne. Un échec ici
+      # n'empêche pas la publication de main. À retirer quand la branche sera fusionnée.
+      # Pour rafraîchir l'aperçu après un push sur la branche : changer la ligne ci-dessous.
+      # Aperçu : 9e75e44
+      - uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: v3-visuel
+          path: preview
+      - name: Construire l'aperçu v3
+        continue-on-error: true
+        working-directory: preview/web
+        run: npm ci && npm run build -- --outDir ../../web/dist/v3 --emptyOutDir
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web/dist
