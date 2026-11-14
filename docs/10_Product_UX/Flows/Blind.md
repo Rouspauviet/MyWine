@@ -27,7 +27,7 @@ Accueil
 
 Rituel : "Avant de découvrir ce vin… L'étiquette est mise de côté."
 
-- Choix du **niveau** (Débutant / Amateur / Expert) : il adapte les étapes du wizard — voir [Group.md](Group.md#les-trois-niveaux). Le dernier niveau choisi est proposé par défaut.
+- Choix du **niveau** (Débutant / Amateur / Confirmé / Expert) : il règle le degré d'aide à chaque étape — voir [Group.md](Group.md#les-quatre-niveaux). Le dernier niveau choisi est proposé par défaut.
 - "Commencer la dégustation" → **crée le brouillon** (`mode: 'blind'`, `status: 'draft'`) puis ouvre le wizard. Le brouillon n'est pas créé avant ce clic : pas de brouillon orphelin.
 - Lien "Tu connais déjà ce vin ? → Mémorise-le" → `/memory/new`.
 

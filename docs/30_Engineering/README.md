@@ -99,6 +99,8 @@ Le niveau (`record.level`) est lu par `Tasting.jsx` : `STRUCTURE_FIELDS` marque 
 
 ## Base de connaissances et pédagogie
 
+**Raisonnement embarqué** (`utils/reasoning.js`, `components/Reasoning.jsx`) : `reason(record)` lit les notes du joueur sur trois axes communs (tanins, corps, acidité) plus les familles aromatiques et la maturité du fruit, et renvoie `noted` (ses notes en mots), `climate` (frais / tempéré / chaud, avec les raisons), `candidates` (cépages de la couleur classés par compatibilité, avec `fits` et `gaps`), `styles` et `fitOf(nom)`. Il ne lit jamais `record.reality` ni l'invitation : c'est ce qui garantit qu'il ne révèle rien. Limité aux rouges et aux blancs (`available`), et il lui faut au moins deux signaux (`enough`). `grapeKey()` dans `wineKnowledge.js` donne l'identité d'un cépage quel que soit son nom ("Grenache noir", "Cabernet-Sauvignon") : à utiliser pour toute comparaison de cépages.
+
 `data/wineKnowledge.js` décrit une trentaine de cépages (couleur, tanins, corps, acidité, familles aromatiques, style, cépages qu'on confond avec lui) et les régions et pays (climat, voisins). Trois usages :
 
 - `utils/pedagogy.js` → `buildLesson(record)` : texte sur le cépage et la région, et lignes de rapprochement avec la perception. Calculé à l'affichage, rien n'est stocké.

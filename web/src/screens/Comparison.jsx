@@ -10,6 +10,14 @@ import { WINE_TYPES, CLIMATE_OPTIONS, SOIL_OPTIONS } from '../data/wineData'
 import { labelOf, hasReality, recordTitle } from '../utils/text'
 import { LEVELS } from '../data/levels'
 
+// L'aide utilisée pendant la dégustation, dite sans jugement : "2 indices, aide au raisonnement" (ou null)
+export function helpUsed(record) {
+  const parts = []
+  if (record.cluesUsed) parts.push(`${record.cluesUsed} indice${record.cluesUsed > 1 ? 's' : ''}`)
+  if (record.reasoningUsed) parts.push('aide au raisonnement')
+  return parts.join(', ') || null
+}
+
 // Champs comparés, dans l'ordre d'affichage
 export const COMPARISON_FIELDS = [
   { key: 'type',        label: 'Type',        hypo: r => labelOf(WINE_TYPES, r.wineType), real: r => labelOf(WINE_TYPES, r.reality.type) },
@@ -40,7 +48,7 @@ export function shareText(record) {
     .filter(f => matches[f.key])
     .map(f => `${SHARE_MARKS[matches[f.key]]} ${f.label} : ${f.hypo(record)}`)
   const level = labelOf(LEVELS, record.level)
-  const clues = record.cluesUsed ? `${record.cluesUsed} indice${record.cluesUsed > 1 ? 's' : ''}` : null
+  const clues = helpUsed(record)
   return [
     `Ma dégustation à l'aveugle — ${recordTitle(record)}`,
     [summarize(matches), level && `niveau ${level}`, clues].filter(Boolean).join(' · '),
@@ -180,7 +188,7 @@ export default function Comparison() {
           </p>
           <p className="summary-sub">
             {known
-              ? (summary ? `Confiance annoncée : ${record.hypotheses.confidence}/5${record.cluesUsed ? ` · ${record.cluesUsed} indice${record.cluesUsed > 1 ? 's' : ''}` : ''}` : 'Aucune de tes hypothèses ne porte sur un champ renseigné.')
+              ? (summary ? `Confiance annoncée : ${record.hypotheses.confidence}/5${helpUsed(record) ? ` · ${helpUsed(record)}` : ''}` : 'Aucune de tes hypothèses ne porte sur un champ renseigné.')
               : 'Complète la fiche plus tard pour comparer tes hypothèses.'}
           </p>
         </section>

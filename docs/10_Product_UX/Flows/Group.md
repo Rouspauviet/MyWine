@@ -14,21 +14,34 @@ Aucun serveur : la bouteille voyage **chiffrée dans le lien**. Chaque participa
 
 ---
 
-## Les trois niveaux
+## Les quatre niveaux
 
-Choisis par chaque dégustateur (invité, ou en solo sur l'écran Sommeil). Le dernier choix est proposé par défaut la fois suivante. Le niveau adapte le formulaire, il ne juge pas.
+Choisis par chaque dégustateur (invité, ou en solo sur l'écran Sommeil). Le dernier choix est proposé par défaut la fois suivante. Le niveau règle le **degré d'aide**, il ne juge pas — décision [`2026-11-14`](../../60_Decisions/2026-11-14-guidage-par-niveau.md).
 
-| | Débutant | Amateur | Expert |
-|---|---|---|---|
-| Perception | Couleur, arômes, notes | + intensité aromatique | idem Amateur |
-| Structure | 2 à 3 champs clés par type, aides affichées d'office | Grille complète, aides `?` à la demande | idem Amateur |
-| Hypothèses | Choix à cocher : cépage, région ou pays, tranche d'âge | Cépages, pays, région en saisie libre ; section avancée repliée | Section avancée toujours ouverte : appellation, millésime, producteur, climat, sol |
-| Style | Note, coup de cœur, impression | Grille complète | idem Amateur |
+| | Débutant | Amateur | Confirmé | Expert |
+|---|---|---|---|---|
+| Perception | Couleur, arômes, notes ; une consigne concrète par geste | + intensité aromatique | idem Amateur | idem Amateur |
+| Structure | 2 à 3 champs clés par type, aides affichées d'office | Grille complète, aides `?` à la demande | idem Amateur | idem Amateur |
+| Hypothèses | **Raisonnement guidé** en trois marches (climat, style, cépage), puis région ou pays et tranche d'âge à cocher | Saisie libre + bouton **"Aide-moi à raisonner"** ; section avancée repliée | Saisie libre, sans guidage ; section avancée repliée | Section avancée toujours ouverte : appellation, millésime, producteur, climat, sol |
+| Indices (à plusieurs) | Oui | Oui | Oui, sur demande | Aucun |
+| Piste de l'assistant | Oui | Oui | Non | Non |
+| Style | Note, coup de cœur, impression | Grille complète | idem Amateur | idem Amateur |
 
-**Choix à cocher du Débutant**
+**Raisonnement guidé du Débutant** (rouges et blancs tranquilles)
 
-- À plusieurs : pour le cépage et l'origine, 4 propositions préparées par l'app de l'hôte : la bonne réponse + 3 leurres **plausibles** (cépages qu'on confond réellement, régions ou pays voisins), complétés au hasard si la base de connaissances n'en a pas assez. L'origine porte sur la région si le vin est français, sinon sur le pays.
-- En solo (pas de vérité connue) : les cépages les plus courants pour le type supposé, et la liste des pays.
+L'app part de ce que le joueur a noté aux étapes Perception et Structure, jamais de la vraie bouteille :
+
+1. *Un climat frais ou chaud ?* — elle rappelle ses notes et dit vers quoi elles penchent ("un corps léger : plutôt frais").
+2. *Quel style de vin ?* — léger et fruité, rond et souple, structuré, puissant et épicé (ou vif, ample, très parfumé pour un blanc).
+3. *Quel cépage ?* — chaque proposition indique son style et **en quoi elle colle ou non avec ses notes** ("Colle avec tes notes : tanins, fruits rouges", "S'en écarte : corps").
+
+- À plusieurs : 4 propositions préparées par l'app de l'hôte — la bonne réponse + 3 leurres **plausibles** (cépages qu'on confond réellement), complétés au hasard si besoin. Pour un assemblage, la bonne réponse est le cépage dominant, et aucun autre cépage de la bouteille ne figure parmi les leurres.
+- En solo (pas de vérité connue) : les 4 cépages les plus compatibles avec ses notes, puis "Voir d'autres cépages".
+- Rosé, pétillant, orange : pas de marches (la base de cépages ne décrit pas ces vins), le cépage reste un choix à cocher.
+- L'origine : région si le vin est français, sinon pays ; à plusieurs, la bonne réponse + 3 voisins.
+
+**"Aide-moi à raisonner" de l'Amateur** : un panneau replié qui redit ses notes, le climat vers lequel elles penchent et les trois cépages les plus compatibles, avec leurs raisons. L'ouvrir figure dans le résultat ("aide au raisonnement"), comme les indices.
+
 - L'âge : toujours les 4 mêmes tranches de millésime, calculées sur l'année en cours.
 
 ---

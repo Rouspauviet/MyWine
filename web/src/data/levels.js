@@ -1,9 +1,10 @@
 // Niveaux de dégustateur — le niveau adapte le formulaire, il ne juge pas.
 
 export const LEVELS = [
-  { value: 'debutant', label: 'Débutant', description: 'Peu de questions, des mots simples, des choix à cocher.' },
-  { value: 'amateur',  label: 'Amateur',  description: 'La grille de dégustation complète, avec des aides.' },
-  { value: 'expert',   label: 'Expert',   description: 'Tout est ouvert : appellation, producteur, millésime, climat, sol.' },
+  { value: 'debutant', label: 'Débutant', description: 'Peu de questions, des mots simples, et l\'app te guide pas à pas.' },
+  { value: 'amateur',  label: 'Amateur',  description: 'La grille complète, avec une aide pour raisonner si tu bloques.' },
+  { value: 'confirme', label: 'Confirmé', description: 'La grille complète, sans guidage : des indices seulement si tu les demandes.' },
+  { value: 'expert',   label: 'Expert',   description: 'Tout est ouvert, aucune aide : appellation, producteur, millésime, climat, sol.' },
 ]
 
 export const DEFAULT_LEVEL = 'amateur'

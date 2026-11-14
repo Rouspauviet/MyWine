@@ -55,7 +55,8 @@ npm run build    # génère web/dist
 |---|---|
 | App native Expo + OCR (phases 4 → 5.x) | 🗄️ Abandonnée et supprimée — décision [`2026-11-13`](docs/60_Decisions/2026-11-13-pivot-webapp.md) |
 | Webapp v2 — parcours Aveugle + Mémoire, journal, photos, prix, sauvegarde | ✅ En ligne : https://rouspauviet.github.io/MyWine/ |
-| Niveaux (Débutant / Amateur / Expert) + dégustation à plusieurs sans serveur | ✅ À valider en conditions réelles |
+| Niveaux (Débutant / Amateur / Confirmé / Expert) + dégustation à plusieurs sans serveur | ✅ À valider en conditions réelles |
+| Guidage par niveau — décision [`2026-11-14`](docs/60_Decisions/2026-11-14-guidage-par-niveau.md) | 🚧 Étape 1 faite (raisonnement embarqué, écran Hypothèses) ; restent les relances de l'assistant par écran, le dossier enrichi au scan, la Comparaison par niveau |
 | Fiche "Pour comprendre", leurres plausibles, indices, mot de l'hôte | ✅ |
 | Partage de l'assistant avec un ami (lien chiffré + code de 8 lettres) | ✅ À valider entre deux iPhone |
 | Assistant IA optionnel (lecture d'étiquette, profil attendu) | ✅ Testé contre la vraie API sur une étiquette simple ; étiquettes difficiles à valider |

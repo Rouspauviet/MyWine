@@ -6,7 +6,7 @@ import { generateId, normalize } from './text'
 import { COUNTRIES } from '../data/wineData'
 import { REGIONS } from '../data/appellations'
 import { commonGrapesFor } from '../data/levels'
-import { findGrape, findRegion, findCountry, climateOf, GRAPE_STYLES, CLIMATE_CLUES } from '../data/wineKnowledge'
+import { findGrape, findRegion, findCountry, climateOf, grapeKey, GRAPE_STYLES, CLIMATE_CLUES } from '../data/wineKnowledge'
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ' // sans I ni O, trop faciles à confondre à l'oral
 const CODE_LENGTH = 4
@@ -104,12 +104,13 @@ function shuffle(list) {
 // La bonne réponse + 3 leurres, dans un ordre aléatoire.
 // Les leurres "plausibles" (cépages qu'on confond, régions voisines) passent d'abord : l'hésitation
 // doit être instructive. On complète au hasard dans la liste générale si besoin.
-function withDecoys(answer, plausible, pool, excluded = []) {
-  const taken = new Set([answer, ...excluded].map(normalize))
+// `keyOf` : ce qui fait que deux noms désignent la même chose (pour les cépages : grapeKey)
+function withDecoys(answer, plausible, pool, excluded = [], keyOf = normalize) {
+  const taken = new Set([answer, ...excluded].map(keyOf))
   const decoys = []
   // Les leurres plausibles gardent leur ordre (ceux de l'assistant d'abord) ; un même nom n'est pris qu'une fois
   for (const candidate of [...(plausible ?? []), ...shuffle(pool)]) {
-    const key = normalize(candidate)
+    const key = keyOf(candidate)
     if (!key || taken.has(key)) continue
     taken.add(key)
     decoys.push(candidate)
@@ -134,7 +135,8 @@ export function buildMcq(reality, ai = null) {
   const grape = reality.grapes?.[0]
   if (grape) {
     const plausible = [...(ai?.grapeDecoys ?? []), ...(findGrape(grape)?.confusables ?? [])]
-    const options = withDecoys(grape, plausible, commonGrapesFor(reality.type), reality.grapes)
+    // Aucun autre cépage de la bouteille parmi les leurres, même écrit autrement ("Grenache noir")
+    const options = withDecoys(grape, plausible, commonGrapesFor(reality.type), reality.grapes, grapeKey)
     if (options) mcq.grape = options
   }
   if (normalize(reality.country) === 'france' && reality.region) {

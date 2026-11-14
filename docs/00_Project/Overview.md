@@ -56,7 +56,7 @@ Avec sa propre clé d'API Claude, l'utilisateur peut remplir une fiche depuis la
 
 ### Niveaux
 
-Débutant, Amateur, Expert : chaque dégustateur choisit le sien. Le niveau adapte le nombre de questions et leur forme (choix à cocher pour le débutant), jamais un jugement.
+Débutant, Amateur, Confirmé, Expert : chaque dégustateur choisit le sien. Le niveau règle le degré d'aide (le Débutant est guidé pas à pas à partir de ce qu'il a noté, l'Expert n'a aucune aide), jamais un jugement.
 
 ### Mode Mémoire
 
@@ -76,7 +76,7 @@ Accueil → Fiche rapide (photo, identité, prix, impression) → Journal
 | **Brouillon** | Dégustation à l'aveugle en cours (`status: 'draft'`), reprenable depuis l'accueil |
 | **Invitation** | Lien (ou QR code) produit par l'hôte : bouteille chiffrée + propositions de choix multiples |
 | **Code de révélation** | 4 lettres annoncées par l'hôte ; déchiffre la bouteille chez les invités |
-| **Niveau** | Débutant / Amateur / Expert — adapte le formulaire à l'aveugle |
+| **Niveau** | Débutant / Amateur / Confirmé / Expert — règle le degré d'aide à l'aveugle |
 | **Réalité** | Les vraies informations de la bouteille, saisies à la Révélation ou en Mémoire |
 | **Hypothèses** | Ce que l'utilisateur a deviné à l'aveugle (cépages, pays, région, millésime…) |
 | **Cuvée** | Nom du vin (ex : "La Bergerie des Centenaires") |

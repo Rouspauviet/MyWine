@@ -111,6 +111,17 @@ export const GRAPE_STYLES = {
   'blanc-aromatique': 'un cépage très aromatique, reconnaissable au nez',
 }
 
+// Les mêmes styles en quelques mots, pour les choix du niveau Débutant
+export const STYLE_LABELS = {
+  'rouge-leger': 'Léger et fruité',
+  'rouge-rond': 'Rond et souple',
+  'rouge-structure': 'Structuré, tannique',
+  'rouge-epice': 'Puissant et épicé',
+  'blanc-vif': 'Vif et tendu',
+  'blanc-ample': 'Ample et rond',
+  'blanc-aromatique': 'Très parfumé',
+}
+
 // climate : 'frais' | 'tempere' | 'chaud' · neighbors : régions qu'on confond volontiers
 export const REGIONS = {
   'Alsace': { climate: 'frais', neighbors: ['Jura', 'Savoie', 'Loire'], about: 'Vins de cépage, surtout blancs et aromatiques, à l\'abri des Vosges.' },
@@ -162,10 +173,19 @@ function findIn(table, name) {
   return entry ? { name: entry[0], ...entry[1] } : null
 }
 
+// Comparaison de noms de cépage : sans tenir compte des tirets ni des apostrophes ("Cabernet-Sauvignon")
+const looseKey = (name) => normalize(name).replace(/[-'’\s]+/g, ' ')
+
 export function findGrape(name) {
-  const key = normalize(name)
+  const key = looseKey(name)
   if (!key) return null
-  return GRAPES.find(g => [g.name, ...(g.aliases ?? [])].some(n => normalize(n) === key)) ?? null
+  return GRAPES.find(g => [g.name, ...(g.aliases ?? [])].some(n => looseKey(n) === key)) ?? null
+}
+
+// Identité d'un cépage, quel que soit le nom sous lequel il est écrit : "Grenache noir" et "Garnacha"
+// désignent le même cépage que "Grenache". Sert à ne pas proposer en leurre un cépage de la bouteille.
+export function grapeKey(name) {
+  return looseKey(findGrape(name)?.name ?? name)
 }
 export const findRegion = (name) => findIn(REGIONS, name)
 export const findCountry = (name) => findIn(COUNTRIES, name)

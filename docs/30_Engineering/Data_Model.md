@@ -21,7 +21,7 @@ Deux magasins :
   createdAt: 'ISO',
   updatedAt: 'ISO',
   tastedAt: 'YYYY-MM-DD',          // date de dégustation, modifiable ; sert au tri du journal
-  level: 'debutant' | 'amateur' | 'expert',   // adapte le formulaire à l'aveugle ; absent des anciennes fiches → 'amateur'
+  level: 'debutant' | 'amateur' | 'confirme' | 'expert',   // règle le degré d'aide à l'aveugle ; absent des anciennes fiches → 'amateur'
   session: null | { … },           // dégustation à plusieurs, voir plus bas
 
   // ── Mode Aveugle uniquement (valeurs par défaut inertes en mode Mémoire) ──
@@ -32,6 +32,7 @@ Deux magasins :
   hypotheses: {
     grapes: [], confidence: 1..5, country: '', region: '',
     appellation: '', vintage: '', producer: '', climate: null, soil: null,
+    styleGuess: null,              // style supposé (clé de STYLE_LABELS) — raisonnement guidé du Débutant ; absent des anciennes fiches
     vintageRange: null | { label, min, max },   // millésime donné en tranche (Débutant) ; exclusif avec vintage
   },
   comparison: {
@@ -39,6 +40,7 @@ Deux magasins :
     insights: [],                                                                  // 0 à 2 phrases
   },
   cluesUsed: 0,                    // indices demandés pendant une dégustation à plusieurs
+  reasoningUsed: false,            // "Aide-moi à raisonner" ouverte (Amateur) ; absent des anciennes fiches
 
   // ── Commun aux deux modes ──
   style: { category: null, overallImpression: '', rating: 1..5 | null, favorite: false, pairings: [], context: '' },

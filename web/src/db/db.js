@@ -39,7 +39,7 @@ export function newRecord(mode) {
     createdAt: now,
     updatedAt: now,
     tastedAt: today(),
-    level: DEFAULT_LEVEL,   // 'debutant' | 'amateur' | 'expert' — adapte le formulaire à l'aveugle
+    level: DEFAULT_LEVEL,   // 'debutant' | 'amateur' | 'confirme' | 'expert' — règle le degré d'aide à l'aveugle
     session: null,          // dégustation à plusieurs : { role: 'host' | 'guest', id, hostName, … }
     // Mode Aveugle uniquement
     step: 0,
@@ -49,9 +49,11 @@ export function newRecord(mode) {
     hypotheses: {
       grapes: [], confidence: 3, country: '', region: '',
       appellation: '', vintage: '', vintageRange: null, producer: '', climate: null, soil: null,
+      styleGuess: null,     // style de vin supposé (clé de STYLE_LABELS) — raisonnement guidé du Débutant
     },
     comparison: {},
     cluesUsed: 0,           // indices demandés pendant une dégustation à plusieurs
+    reasoningUsed: false,   // "Aide-moi à raisonner" ouverte pendant la dégustation (niveau Amateur)
     // Commun aux deux modes
     style: emptyStyle(),
     reality: emptyReality(),

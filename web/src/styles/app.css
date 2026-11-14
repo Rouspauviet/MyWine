@@ -435,6 +435,8 @@ button.banner { text-align: left; width: 100%; }
 .level-label { font-size: var(--f-base); font-weight: var(--w-semibold); }
 .level-card.active .level-label { color: var(--primary); }
 .level-desc { font-size: var(--f-sm); color: var(--text-secondary); line-height: 1.4; }
+.level-desc.fit { color: var(--match); }
+.level-desc.fit svg { vertical-align: text-bottom; }
 
 .step-text { font-size: var(--f-sm); line-height: 1.5; color: var(--text-secondary); }
 .qr { display: block; width: 100%; max-width: calc(var(--photo) * 2.5); margin: 0 auto; border-radius: var(--r-md); }

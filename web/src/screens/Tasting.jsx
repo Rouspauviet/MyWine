@@ -22,6 +22,8 @@ import {
 import { GRAPE_VARIETIES_SORTED } from '../data/grapeVarieties'
 import { commonGrapesFor, DEFAULT_LEVEL } from '../data/levels'
 import { vintageRanges, buildClues, focusFor } from '../utils/session'
+import { reason } from '../utils/reasoning'
+import { GuidedGrape, ReasoningHelp } from '../components/Reasoning'
 import { Lightbulb, Sparkles } from 'lucide-react'
 
 const STEPS = [
@@ -175,10 +177,22 @@ export default function Tasting() {
         {focus && step <= 2 && <p className="banner focus"><Sparkles size={14} /> {focus}</p>}
         {step === 1 && <StepPerception wineType={rec.wineType} level={level} value={rec.perception} onChange={section('perception')} />}
         {step === 2 && <StepStructure wineType={rec.wineType} level={level} data={structureData} onChange={onStructureChange} />}
-        {step === 3 && clues.length > 0 && (
+        {/* Indices à la demande : pour tous sauf l'Expert, qui déguste sans aide */}
+        {step === 3 && clues.length > 0 && level !== 'expert' && (
           <ClueBox clues={clues} shown={shownClues.length} onAsk={() => update(r => ({ cluesUsed: (r.cluesUsed ?? 0) + 1 }))} />
         )}
-        {step === 3 && <StepHypotheses wineType={rec.wineType} level={level} mcq={mcq} removedGrapes={removedGrapes} value={rec.hypotheses} onChange={section('hypotheses')} />}
+        {step === 3 && (
+          <StepHypotheses
+            wineType={rec.wineType}
+            level={level}
+            mcq={mcq}
+            removedGrapes={removedGrapes}
+            reasoning={reason(rec)}
+            onUseReasoning={() => update({ reasoningUsed: true })}
+            value={rec.hypotheses}
+            onChange={section('hypotheses')}
+          />
+        )}
         {step === 4 && <StepStyle level={level} value={rec.style} onChange={section('style')} />}
       </Body>
       <Footer>
@@ -211,7 +225,8 @@ function StepPerception({ wineType, level, value, onChange }) {
   return (
     <>
       {robeOptions.length > 0 && (
-        <Field label={beginner ? 'Sa couleur' : 'Robe'} optional>
+        <Field label={beginner ? 'Sa couleur' : 'Robe'} optional hintOpen={beginner}
+          hint={beginner ? 'Penche le verre au-dessus de quelque chose de blanc et regarde le bord du vin.' : undefined}>
           <ChipGroup options={robeOptions} value={value.robe} onChange={v => set('robe', v)} multi />
         </Field>
       )}
@@ -221,7 +236,8 @@ function StepPerception({ wineType, level, value, onChange }) {
         </Field>
       )}
       {aromaOptions.length > 0 && (
-        <Field label={beginner ? 'Ce que tu sens' : 'Familles aromatiques'} optional>
+        <Field label={beginner ? 'Ce que tu sens' : 'Familles aromatiques'} optional hintOpen={beginner}
+          hint={beginner ? 'Fais tourner le vin dans le verre, puis sens. Coche tout ce qui te vient, sans chercher le mot juste.' : undefined}>
           <ChipGroup options={aromaOptions} value={value.aromaFamilies} onChange={v => set('aromaFamilies', v)} multi />
         </Field>
       )}
@@ -323,28 +339,44 @@ function ClueBox({ clues, shown, onAsk }) {
   )
 }
 
-function StepHypotheses({ wineType, level, mcq, removedGrapes, value, onChange }) {
-  if (level === 'debutant') return <BeginnerHypotheses wineType={wineType} mcq={mcq} removedGrapes={removedGrapes} value={value} onChange={onChange} />
-  return <FullHypotheses expert={level === 'expert'} value={value} onChange={onChange} />
+// Le degré d'aide dépend du niveau : Débutant guidé pas à pas, Amateur aidé s'il le demande,
+// Confirmé et Expert en saisie libre (l'Expert avec tous les champs ouverts).
+function StepHypotheses({ wineType, level, mcq, removedGrapes, reasoning, onUseReasoning, value, onChange }) {
+  if (level === 'debutant') return <BeginnerHypotheses wineType={wineType} mcq={mcq} removedGrapes={removedGrapes} reasoning={reasoning} value={value} onChange={onChange} />
+  return (
+    <>
+      {level === 'amateur' && <ReasoningHelp reasoning={reasoning} onUse={onUseReasoning} />}
+      <FullHypotheses expert={level === 'expert'} value={value} onChange={onChange} />
+    </>
+  )
 }
 
-// Débutant : des choix à cocher. En dégustation à plusieurs, les propositions viennent de l'invitation
-// (bonne réponse + leurres) ; en solo, ce sont les cépages et pays les plus courants.
-function BeginnerHypotheses({ wineType, mcq, removedGrapes = [], value, onChange }) {
+// Débutant : pour un rouge ou un blanc, le cépage se cherche en trois marches à partir de ses notes
+// (components/Reasoning.jsx) ; pour les autres types, des choix à cocher. En dégustation à plusieurs,
+// les propositions viennent de l'invitation (bonne réponse + leurres) ; en solo, de la base de cépages.
+function BeginnerHypotheses({ wineType, mcq, removedGrapes = [], reasoning, value, onChange }) {
   const set = (patch) => onChange(prev => ({ ...prev, ...patch }))
-  const grapeOptions = asOptions((mcq?.grape ?? commonGrapesFor(wineType)).filter(g => !removedGrapes.includes(g)))
+  const sessionGrapes = mcq?.grape ? mcq.grape.filter(g => !removedGrapes.includes(g)) : null
+  const grapeOptions = asOptions(sessionGrapes ?? commonGrapesFor(wineType))
   const placeKey = mcq?.region ? 'region' : 'country'
   const placeOptions = asOptions(mcq?.region ?? mcq?.country ?? COUNTRIES)
   const ranges = vintageRanges()
-  const hasChoices = !!(mcq?.grape || mcq?.region || mcq?.country)
+  const hasPlaceChoices = !!(mcq?.region || mcq?.country)
 
   return (
     <>
-      {hasChoices && <p className="banner">Parmi les propositions de cépage et d'origine, une seule est la bonne. Fie-toi à ce que tu as senti.</p>}
-      <Field label="Quel cépage ?" optional hint="Le cépage est la variété de raisin. C'est lui qui donne l'essentiel du goût." hintOpen>
-        <ChipGroup options={grapeOptions} value={value.grapes?.[0] ?? null} onChange={v => set({ grapes: v ? [v] : [] })} />
-      </Field>
-      <Field label={placeKey === 'region' ? 'Quelle région ?' : 'Quel pays ?'} optional>
+      {reasoning.available ? (
+        <GuidedGrape reasoning={reasoning} grapeOptions={sessionGrapes} fallbackGrapes={commonGrapesFor(wineType)} value={value} onChange={onChange} />
+      ) : (
+        <>
+          {mcq?.grape && <p className="banner">Parmi les propositions de cépage, une seule est la bonne. Fie-toi à ce que tu as senti.</p>}
+          <Field label="Quel cépage ?" optional hint="Le cépage est la variété de raisin. C'est lui qui donne l'essentiel du goût." hintOpen>
+            <ChipGroup options={grapeOptions} value={value.grapes?.[0] ?? null} onChange={v => set({ grapes: v ? [v] : [] })} />
+          </Field>
+        </>
+      )}
+      <Field label={placeKey === 'region' ? 'Quelle région ?' : 'Quel pays ?'} optional
+        hint={hasPlaceChoices ? 'Une seule proposition est la bonne. Pense au climat que tu as choisi plus haut.' : undefined} hintOpen={hasPlaceChoices}>
         <ChipGroup options={placeOptions} value={value[placeKey] || null} onChange={v => set({ [placeKey]: v ?? '' })} />
       </Field>
       <Field label="Quel âge ?" optional hint="Un vin jeune a des arômes de fruit frais. Avec l'âge viennent le sous-bois, le cuir, les fruits secs.">

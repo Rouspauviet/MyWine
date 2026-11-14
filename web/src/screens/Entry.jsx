@@ -176,6 +176,7 @@ export default function Entry() {
             <Card title="Perception sensorielle" tight>
               <InfoRow label="Niveau" value={labelOf(LEVELS, record.level)} />
               <InfoRow label="Indices demandés" value={record.cluesUsed ? String(record.cluesUsed) : null} />
+              <InfoRow label="Aide au raisonnement" value={record.reasoningUsed ? 'Oui' : null} />
               <InfoRow label="Type supposé" value={labelOf(WINE_TYPES, record.wineType)} />
               <InfoRow label="Robe" value={perc.robe?.join(', ')} />
               <InfoRow label="Intensité" value={perc.aromaIntensity ? `${perc.aromaIntensity}/5` : null} />

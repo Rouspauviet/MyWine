@@ -23,7 +23,8 @@
 
 ## Niveaux et dégustation à plusieurs — livré, à valider ✅
 
-- Trois niveaux (Débutant / Amateur / Expert), en solo comme à plusieurs
+- Quatre niveaux (Débutant / Amateur / Confirmé / Expert), en solo comme à plusieurs
+- Raisonnement embarqué : le Débutant est guidé à partir de ses notes, l'Amateur peut demander de l'aide
 - Hôte : bouteille → QR code et lien d'invitation → code de révélation
 - Invité : lien → niveau → dégustation → code → comparaison → partage du résultat
 - Sans serveur : bouteille chiffrée dans le lien

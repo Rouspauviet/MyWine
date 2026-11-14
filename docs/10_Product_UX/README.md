@@ -6,7 +6,7 @@ Intentions utilisateur, parcours complets, vocabulaire de dégustation.
 |---|---|
 | [Flows/Blind.md](Flows/Blind.md) | **Parcours Aveugle** — écrans, comportements, règles de comparaison |
 | [Flows/Memory.md](Flows/Memory.md) | **Parcours Mémoire** — fiche rapide, journal, fiche |
-| [Flows/Group.md](Flows/Group.md) | **Parcours À plusieurs** — hôte, invités, code de révélation · **les trois niveaux** |
+| [Flows/Group.md](Flows/Group.md) | **Parcours À plusieurs** — hôte, invités, code de révélation · **les quatre niveaux** |
 | [Tasting_Grammars.md](Tasting_Grammars.md) | **Grammaires sensorielles par type de vin** — champs, ordre, vocabulaire |
 | [UX_Workbench.md](UX_Workbench.md) | Intentions, rituels, principes acquis, questions ouvertes |
 

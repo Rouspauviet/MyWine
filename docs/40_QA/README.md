@@ -30,7 +30,12 @@ Checklist de test manuelle. Pas de tests automatisés pour l'instant.
 
 ### Niveaux
 
-- [ ] Sommeil : trois niveaux, le dernier choisi est présélectionné la fois suivante
+- [ ] Sommeil : quatre niveaux, le dernier choisi est présélectionné la fois suivante
+- [ ] Débutant, rouge ou blanc, étape Hypothèses : rappel des notes, trois marches (climat, style, cépage), chaque cépage dit en quoi il colle ou s'écarte
+- [ ] Débutant en solo : 4 cépages compatibles puis "Voir d'autres cépages" ; rosé ou pétillant : cépages à cocher, sans marches
+- [ ] Amateur : "Aide-moi à raisonner" → notes, climat, trois pistes ; "aide au raisonnement" apparaît dans le résultat
+- [ ] Confirmé : pas de bouton d'aide ; Expert : ni bouton ni indices
+- [ ] À plusieurs, bouteille d'assemblage : aucun autre cépage de la bouteille parmi les propositions, même écrit autrement ("Grenache noir")
 - [ ] Débutant : Structure réduite à 2–3 champs avec aides ouvertes ; Hypothèses en choix à cocher ; Style réduit
 - [ ] Débutant en solo : cépages courants du type supposé, liste des pays, 4 tranches d'âge
 - [ ] Expert : appellation, millésime, producteur, climat, sol visibles sans déplier
@@ -138,6 +143,8 @@ Même jour, après ajout de la pédagogie et de l'assistant : leurres plausibles
 Une photo de cette taille compte environ 3 300 tokens. Même jour, préparation d'une dégustation (`prepareTasting`, Sonnet 5.5) sur un champagne et un malbec argentin : pistes, indices, leurres et profil pertinents, sans fuite ; environ 0,6 centime par invitation (≈ 1 350 tokens en entrée, 350 en sortie). Contre-étiquette de champagne lue sans erreur (4 960 tokens en entrée).
 
 2026-11-14, partage de l'assistant : parcours complet vérifié dans le navigateur avec une fausse clé (code faux refusé, bon code accepté, clé marquée prêtée, lien collé dans les paramètres). À valider entre deux iPhone.
+
+2026-11-14, guidage par niveau (étape 1) : raisonnement vérifié sur trois profils (rouge léger → Pinot Noir et Gamay, rouge puissant → Syrah, Mourvèdre, Malbec, blanc vif → Sauvignon), écran Hypothèses vérifié aux quatre niveaux en format mobile, en solo et à plusieurs ; 300 tirages de leurres sur un assemblage Syrah / Grenache noir / Mourvèdre / Cabernet-Sauvignon sans aucun cépage de la bouteille.
 
 **Reste à valider** : étiquettes courbes, reflets, face + contre-étiquette, étiquettes étrangères, et l'appel depuis le navigateur d'un vrai iPhone (l'essai a été fait hors navigateur).
 
